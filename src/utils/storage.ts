@@ -30,7 +30,7 @@ export async function getNotaryApi() {
 }
 
 export async function getProxyApi() {
-  return await get(PROXY_API_LS_KEY, 'ws://localhost:55688');
+  return await get(PROXY_API_LS_KEY, 'wss://inn1.eternis.ai:55688');
 }
 
 export async function getLoggingFilter(): Promise<LoggingLevel> {

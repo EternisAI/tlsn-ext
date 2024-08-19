@@ -9,6 +9,7 @@
   "scripts": {
     "clone:tlsn": "bash ./utils/download-tlsn.sh",
     "build": "NODE_ENV=production node utils/build.js",
+    "build:dev": "NODE_ENV=development node utils/build.js",
     "build:webpack": "NODE_ENV=production webpack --config webpack.config.js",
     "websockify": "docker run -it --rm -p 55688:80 -v $(pwd):/app novnc/websockify 80 --target-config /app/websockify_config",
     "dev": "NODE_ENV=development node utils/webserver.js",
@@ -38,7 +39,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.4.2",
     "tailwindcss": "^3.3.3",
-    "tlsn-js": "file://../tlsn-js",
+    "tlsn-js": "../tlsn-js",
     "tlsn-jsV5.3": "npm:tlsn-js@0.1.0-alpha.5.3"
   },
   "devDependencies": {

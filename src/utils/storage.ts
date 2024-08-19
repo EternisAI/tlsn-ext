@@ -26,11 +26,11 @@ export async function getMaxRecv() {
 }
 
 export async function getNotaryApi() {
-  return await get(NOTARY_API_LS_KEY, 'https://notary.pse.dev/v0.1.0-alpha.6');
+  return await get(NOTARY_API_LS_KEY, 'http://18.207.122.203:7047');
 }
 
 export async function getProxyApi() {
-  return await get(PROXY_API_LS_KEY, 'wss://notary.pse.dev/proxy');
+  return await get(PROXY_API_LS_KEY, 'ws://localhost:55688');
 }
 
 export async function getLoggingFilter(): Promise<LoggingLevel> {

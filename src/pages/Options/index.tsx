@@ -28,7 +28,7 @@ import {
 import Modal, { ModalContent } from '../../components/Modal/Modal';
 import browser from 'webextension-polyfill';
 import { LoggingLevel } from 'tlsn-js';
-import { version } from '../../../package.json';
+// import { version } from '../../../package.json';
 
 export default function Options(): ReactElement {
   const [notary, setNotary] = useState(NOTARY_API);
@@ -194,7 +194,7 @@ function NormalOptions(props: {
     <div>
       <div className="flex flex-col flex-nowrap py-1 px-2 gap-2 cursor-default">
         <div className="font-semibold">Version</div>
-        <div className="input border bg-slate-100">{version}</div>
+        <div className="input border bg-slate-100">""</div>
       </div>
       <InputField
         label="Notary API"

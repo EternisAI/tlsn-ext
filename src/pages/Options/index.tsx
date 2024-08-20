@@ -216,10 +216,10 @@ function NormalOptions(props: {
           setDirty(true);
         }}
       />
-      <div className="flex flex-col flex-nowrap py-1 px-2 gap-2 cursor-default">
+      {/* <div className="flex flex-col flex-nowrap py-1 px-2 gap-2 cursor-default">
         <div className="font-semibold">Explorer URL</div>
         <div className="input border bg-slate-100">{EXPLORER_API}</div>
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -247,7 +247,7 @@ function AdvancedOptions(props: {
 
   return (
     <div>
-      <InputField
+      {/* <InputField
         label="Set Max Received Data"
         value={maxReceived.toString()}
         type="number"
@@ -266,7 +266,7 @@ function AdvancedOptions(props: {
           setMaxSent(parseInt(e.target.value));
           setDirty(true);
         }}
-      />
+      /> */}
       <div className="flex flex-col flex-nowrap py-1 px-2 gap-2">
         <div className="font-semibold">Logging Level</div>
         <select

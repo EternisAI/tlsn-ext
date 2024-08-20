@@ -1,16 +1,13 @@
 import React, { useEffect } from 'react';
 import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from './types';
-import {
-  NotaryServer,
-  Prover as _Prover,
-} from 'tlsn-js';
+import { NotaryServer, Prover as _Prover } from 'tlsn-js';
 import { verify } from 'tlsn-jsV5.3';
 
 import { urlify } from '../../utils/misc';
 import { BackgroundActiontype } from '../Background/rpc';
 import browser from 'webextension-polyfill';
-import { Proof, ProofV1 } from '../../utils/types';
+import { Proof, AttrAttestation } from '../../utils/types';
 import { Method } from 'tlsn-js/wasm/pkg';
 
 const { init, Prover, NotarizedSession, TlsProof }: any = Comlink.wrap(
@@ -33,7 +30,6 @@ const Offscreen = () => {
             (async () => {
               try {
                 const proof = await createProof(request.data);
-
                 browser.runtime.sendMessage({
                   type: BackgroundActiontype.finish_prove_request,
                   data: {
@@ -77,7 +73,7 @@ const Offscreen = () => {
             (async () => {
               try {
                 const proof = await createProof(request.data);
-
+                console.log('BackgroundActiontype ', proof);
                 browser.runtime.sendMessage({
                   type: BackgroundActiontype.finish_prove_request,
                   data: {
@@ -110,16 +106,15 @@ const Offscreen = () => {
           case BackgroundActiontype.verify_prove_request: {
             (async () => {
               const proof: Proof = request.data.proof;
-              const result: { sent: string; recv: string } =
-                await verifyProof(proof);
+              // const result: { sent: string; recv: string } =
+              //   await verifyProof(proof);
 
               chrome.runtime.sendMessage<any, string>({
                 type: BackgroundActiontype.finish_prove_request,
                 data: {
                   id: request.data.id,
                   verification: {
-                    sent: result.sent,
-                    recv: result.recv,
+                    proof,
                   },
                 },
               });
@@ -192,7 +187,7 @@ async function createProof(options: {
   id: string;
   secretHeaders: string[];
   secretResps: string[];
-}): Promise<ProofV1> {
+}): Promise<AttrAttestation> {
   const {
     url,
     method = 'GET',
@@ -225,15 +220,16 @@ async function createProof(options: {
     body,
   });
 
-  await prover.notarize()
+  const result = await prover.notarize();
 
-  const proof: ProofV1 = {
+  const proof: AttrAttestation = {
     version: '1.0',
     meta: {
       notaryUrl,
       websocketProxyUrl,
     },
-    data: '0x',
+    signature: result.signature,
+    signedSession: result.signedSession,
   };
   return proof;
 }

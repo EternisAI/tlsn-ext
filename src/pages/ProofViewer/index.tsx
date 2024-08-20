@@ -9,16 +9,14 @@ import c from 'classnames';
 import { useRequestHistory } from '../../reducers/history';
 import Icon from '../../components/Icon';
 import { download } from '../../utils/misc';
-
-export default function ProofViewer(props?: {
-  recv?: string;
-  sent?: string;
-}): ReactElement {
+import { printAttestation } from '../../utils/misc';
+export default function ProofViewer(props?: { proof?: any }): ReactElement {
   const { requestId } = useParams<{ requestId: string }>();
   const request = useRequestHistory(requestId);
   const navigate = useNavigate();
   const [tab, setTab] = useState('sent');
 
+  console.log('ProofViewer', request);
   return (
     <div className="flex flex-col w-full py-2 gap-2 flex-grow">
       <div className="flex flex-col px-2">
@@ -32,13 +30,11 @@ export default function ProofViewer(props?: {
             fa="fa-solid fa-xmark"
           />
           <TabLabel onClick={() => setTab('sent')} active={tab === 'sent'}>
-            Sent
+            Attribute Attestation
           </TabLabel>
-          <TabLabel onClick={() => setTab('recv')} active={tab === 'recv'}>
-            Recv
-          </TabLabel>
+
           <div className="flex flex-row flex-grow items-center justify-end">
-            {!props?.recv && (
+            {request && (
               <button
                 className="button"
                 onClick={() => {
@@ -53,20 +49,11 @@ export default function ProofViewer(props?: {
         </div>
       </div>
       <div className="flex flex-col flex-grow px-2">
-        {tab === 'sent' && (
-          <textarea
-            className="w-full resize-none bg-slate-100 text-slate-800 border p-2 text-[10px] break-all h-full outline-none font-mono"
-            value={props?.sent || request?.verification?.sent}
-            readOnly
-          ></textarea>
-        )}
-        {tab === 'recv' && (
-          <textarea
-            className="w-full resize-none bg-slate-100 text-slate-800 border p-2 text-[10px] break-all h-full outline-none font-mono"
-            value={props?.recv || request?.verification?.recv}
-            readOnly
-          ></textarea>
-        )}
+        <textarea
+          className="w-full resize-none bg-slate-100 text-slate-800 border p-2 text-[10px] break-all h-full outline-none font-mono"
+          value={request?.proof ? printAttestation(request?.proof) : ''}
+          readOnly
+        ></textarea>
       </div>
     </div>
   );

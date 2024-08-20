@@ -15,6 +15,7 @@ import { getNotaryApi, getProxyApi } from './storage';
 import { minimatch } from 'minimatch';
 import { getCookiesByHost, getHeadersByHost } from '../entries/Background/db';
 
+import { AttrAttestation } from '../utils/types';
 const charwise = require('charwise');
 
 export function urlify(
@@ -388,4 +389,14 @@ export function safeParseJSON(data?: string | null) {
   } catch (e) {
     return null;
   }
+}
+
+export function printAttestation(attrAttestation: AttrAttestation): string {
+  return `
+    Version: ${attrAttestation.version}
+    Notary URL: ${attrAttestation.meta.notaryUrl}
+    Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}
+    Signature: 0x${attrAttestation.signature}
+    Signed Session: ${attrAttestation.signedSession}
+  `;
 }

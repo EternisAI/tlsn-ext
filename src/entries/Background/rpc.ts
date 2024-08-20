@@ -46,7 +46,7 @@ import { OffscreenActionTypes } from '../Offscreen/types';
 import { SidePanelActionTypes } from '../SidePanel/types';
 
 const charwise = require('charwise');
-
+import { AttrAttestation } from '../../utils/types';
 export enum BackgroundActiontype {
   get_requests = 'get_requests',
   clear_requests = 'clear_requests',
@@ -122,7 +122,7 @@ export type RequestHistory = {
   websocketProxyUrl: string;
   status: '' | 'pending' | 'success' | 'error';
   error?: any;
-  proof?: { session: any; substrings: any };
+  proof?: AttrAttestation;
   requestBody?: any;
   verification?: {
     sent: string;
@@ -240,11 +240,16 @@ async function handleFinishProveRequest(
     const newReq = await addNotaryRequestProofs(id, proof);
     if (!newReq) return;
 
+    console.log('handleFinishProveRequest proof', proof);
+
+    console.log('getNotaryRequest', await getNotaryRequest(id));
+
     await browser.runtime.sendMessage({
       type: BackgroundActiontype.push_action,
       data: {
         tabId: 'background',
       },
+
       action: addRequestHistory(await getNotaryRequest(id)),
     });
   }

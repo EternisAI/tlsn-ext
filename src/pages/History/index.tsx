@@ -152,6 +152,12 @@ export function OneRequestHistory(props: {
             {request?.websocketProxyUrl}
           </div>
         </div>
+        <div className="flex flex-row">
+          <div className="font-bold text-slate-400">Notary signature</div>
+          <div className="ml-2 text-slate-800">
+            0x{request?.proof?.signature.substring(0, 20) + '...'}
+          </div>
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         {status === 'success' && (
@@ -160,7 +166,7 @@ export function OneRequestHistory(props: {
               className="bg-slate-600 text-slate-200 hover:bg-slate-500 hover:text-slate-100"
               onClick={onView}
               fa="fa-solid fa-receipt"
-              ctaText="View Proof"
+              ctaText="View Attestation"
               hidden={hideActions.includes('view')}
             />
             <ActionButton

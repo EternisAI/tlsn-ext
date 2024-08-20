@@ -25,27 +25,21 @@ export default function ProofUploader(): ReactElement {
         reader.addEventListener('load', async (event) => {
           const result = event.target?.result;
 
-          console.log('ProofUploader', result);
-          const proof = JSON.parse(result as string);
-          setProof('ahi');
-          // if (proof) {
-          //   setUploading(false);
-          //   setProof(proof);
-          // }
-          // if (result) {
-          //   const proof = JSON.parse(result as string);
-          //   const res = await chrome.runtime
-          //     .sendMessage<any, { recv: string; sent: string }>({
-          //       type: BackgroundActiontype.verify_proof,
-          //       data: proof,
-          //     })
-          //     .catch(() => null);
+          console.log('ProofViewer', result);
+          if (result) {
+            const proof = JSON.parse(result as string);
+            const res = await chrome.runtime
+              .sendMessage<any, { recv: string; sent: string }>({
+                type: BackgroundActiontype.verify_proof,
+                data: proof,
+              })
+              .catch(() => null);
 
-          //   if (proof) {
-          //     setUploading(false);
-          //     setProof(res);
-          //   }
-          // }
+            if (proof) {
+              setUploading(false);
+              setProof(res);
+            }
+          }
         });
 
         setUploading(true);
@@ -56,7 +50,7 @@ export default function ProofUploader(): ReactElement {
   );
 
   if (proof) {
-    return <ProofViewer proof={'ahi'} />;
+    return <ProofViewer proof={proof} />;
   }
 
   return (

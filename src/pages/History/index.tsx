@@ -178,21 +178,19 @@ export function OneRequestHistory(props: {
               ctaText="Download"
               hidden={hideActions.includes('download')}
             />
-            <ActionButton
+            {/* <ActionButton
               className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500 hover:font-bold"
               onClick={() => setShowingShareConfirmation(true)}
               fa="fa-solid fa-upload"
               ctaText="Share"
               hidden={hideActions.includes('share')}
-            />
+            /> */}
           </>
         )}
         {status === 'error' && !!request?.error && (
           <ErrorButton hidden={hideActions.includes('error')} />
         )}
-        {(!status || status === 'error') && (
-          <RetryButton hidden={hideActions.includes('retry')} />
-        )}
+        {<RetryButton hidden={hideActions.includes('retry')} />}
         {status === 'pending' && (
           <button className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 font-bold">
             <Icon className="animate-spin" fa="fa-solid fa-spinner" size={1} />

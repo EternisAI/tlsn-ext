@@ -25,22 +25,22 @@ export default function Home(): ReactElement {
           <span>Requests</span>
           <span>{`(${requests.length})`}</span>
         </NavButton>
-        <NavButton fa="fa-solid fa-hammer" onClick={() => navigate('/custom')}>
+        {/* <NavButton fa="fa-solid fa-hammer" onClick={() => navigate('/custom')}>
           Custom
-        </NavButton>
-        <NavButton
+        </NavButton> */}
+        {/* <NavButton
           fa="fa-solid fa-certificate"
           onClick={() => navigate('/verify')}
         >
           Verify
-        </NavButton>
+        </NavButton> */}
         <NavButton fa="fa-solid fa-list" onClick={() => navigate('/history')}>
           History
         </NavButton>
-        <NavButton className="relative" fa="fa-solid fa-plus">
+        {/* <NavButton className="relative" fa="fa-solid fa-plus">
           <PluginUploadInfo />
           Add a plugin
-        </NavButton>
+        </NavButton> */}
         <NavButton fa="fa-solid fa-gear" onClick={() => navigate('/options')}>
           Options
         </NavButton>

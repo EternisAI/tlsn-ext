@@ -19,11 +19,14 @@ import {
   LOGGING_FILTER_KEY,
 } from '../../utils/storage';
 import {
-  EXPLORER_API,
   NOTARY_API,
   NOTARY_PROXY,
+  NOTARY_API_LOCAL,
+  NOTARY_PROXY_LOCAL,
   MAX_RECV,
   MAX_SENT,
+  MODE,
+  Mode,
 } from '../../utils/constants';
 import Modal, { ModalContent } from '../../components/Modal/Modal';
 import browser from 'webextension-polyfill';
@@ -196,6 +199,31 @@ function NormalOptions(props: {
         {/* <div className="font-semibold">Version</div>
         <div className="input border bg-slate-100">{version}</div> */}
       </div>
+
+      {MODE === Mode.Development && (
+        <div className="flex items-center py-1 px-2 gap-2">
+          <input
+            type="checkbox"
+            id="localhost"
+            className="input border"
+            onChange={(e) => {
+              if (e.target.checked) {
+                setNotary(NOTARY_API_LOCAL);
+                setProxy(NOTARY_PROXY_LOCAL);
+              } else {
+                setNotary(NOTARY_API);
+                setProxy(NOTARY_PROXY);
+              }
+              setDirty(true);
+            }}
+          />
+
+          <label htmlFor="localhost" className="font-semibold cursor-pointer">
+            Use localhost notary
+          </label>
+        </div>
+      )}
+
       <InputField
         label="Notary API"
         placeholder="https://api.tlsnotary.org"

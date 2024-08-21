@@ -69,6 +69,7 @@ export default function RequestTable(props: Props): ReactElement {
                 Method
               </td>
               <td className="border border-slate-300 py-1 px-2 w-3/12">Type</td>
+              <td className="border border-slate-300 py-1 px-2">Domain</td>
               <td className="border border-slate-300 py-1 px-2">Name</td>
             </tr>
           </thead>
@@ -91,6 +92,9 @@ export default function RequestTable(props: Props): ReactElement {
                   </td>
                   <td className="border border-slate-200 align-top py-1 px-2 whitespace-nowrap w-3/12">
                     {r.type}
+                  </td>
+                  <td className="border border-slate-200 py-1 px-2 break-all truncate">
+                    {url?.host}
                   </td>
                   <td className="border border-slate-200 py-1 px-2 break-all truncate">
                     {url?.pathname}

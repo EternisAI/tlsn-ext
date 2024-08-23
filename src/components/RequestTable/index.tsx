@@ -17,11 +17,11 @@ export default function RequestTable(props: Props): ReactElement {
   const [query, setQuery] = useState('');
 
   const fuse = new Fuse(requests, {
-    isCaseSensitive: true,
+    isCaseSensitive: false,
     minMatchCharLength: 2,
     shouldSort: true,
     findAllMatches: true,
-    threshold: 0.2,
+    threshold: 0.5,
     includeMatches: true,
     ignoreLocation: true,
     keys: [

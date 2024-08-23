@@ -69,7 +69,9 @@ export default function RequestTable(props: Props): ReactElement {
                 Method
               </td>
               <td className="border border-slate-300 py-1 px-2 w-3/12">Type</td>
-              <td className="border border-slate-300 py-1 px-2">Domain</td>
+              <td className="border border-slate-300 py-1 px-2 w-2/12">
+                Domain
+              </td>
               <td className="border border-slate-300 py-1 px-2">Name</td>
             </tr>
           </thead>

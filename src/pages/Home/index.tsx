@@ -21,10 +21,28 @@ export default function Home(): ReactElement {
     <div className="flex flex-col gap-4 py-4 overflow-y-auto">
       {error && <ErrorModal onClose={() => showError('')} message={error} />}
       <div className="flex flex-col flex-nowrap justify-center gap-2 mx-4">
-        <NavButton fa="fa-solid fa-table" onClick={() => navigate('/requests')}>
-          <span>Requests</span>
+        <NavButton
+          fa="fa-solid fa-globe"
+          onClick={() => navigate('/bookmarks')}
+        >
+          Providers
+        </NavButton>
+
+        <NavButton
+          fa="fa-duotone fa-solid fa-passport"
+          onClick={() => navigate('/history')}
+        >
+          Attestations
+        </NavButton>
+
+        <NavButton
+          fa="fa-solid fa-magnifying-glass"
+          onClick={() => navigate('/requests')}
+        >
+          <span>Search Requests</span>
           <span>{`(${requests.length})`}</span>
         </NavButton>
+
         {/* <NavButton fa="fa-solid fa-hammer" onClick={() => navigate('/custom')}>
           Custom
         </NavButton> */}
@@ -34,9 +52,7 @@ export default function Home(): ReactElement {
         >
           Verify
         </NavButton> */}
-        <NavButton fa="fa-solid fa-list" onClick={() => navigate('/history')}>
-          History
-        </NavButton>
+
         {/* <NavButton className="relative" fa="fa-solid fa-plus">
           <PluginUploadInfo />
           Add a plugin

@@ -14,12 +14,11 @@ import Modal, { ModalContent } from '../../components/Modal/Modal';
 import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
 import { EXPLORER_API } from '../../utils/constants';
-import {
-  getNotaryRequest,
-  setNotaryRequestCid,
-} from '../../entries/Background/db';
+import { setNotaryRequestCid } from '../../entries/Background/db';
+import { BookmarkManager } from '../../reducers/bookmarks';
 const charwise = require('charwise');
 
+const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
   const history = useHistoryOrder();
 
@@ -51,9 +50,9 @@ export function OneRequestHistory(props: {
   const requestUrl = urlify(request?.url || '');
 
   useEffect(() => {
+    console.log('useEffect', request);
     const fetchData = async () => {
       try {
-        const request = await getNotaryRequest(props.requestId);
         if (request && request.cid) {
           setCid({ [props.requestId]: request.cid });
         }
@@ -129,7 +128,7 @@ export function OneRequestHistory(props: {
             {request?.method}
           </div>
           <div className="text-black font-bold px-2 py-1 rounded-md overflow-hidden text-ellipsis">
-            {requestUrl?.pathname}
+            {requestUrl?.host}
           </div>
         </div>
         <div className="flex flex-row">
@@ -140,7 +139,7 @@ export function OneRequestHistory(props: {
         </div>
         <div className="flex flex-row">
           <div className="font-bold text-slate-400">Host:</div>
-          <div className="ml-2 text-slate-800">{requestUrl?.host}</div>
+          <div className="ml-2 text-slate-800">{requestUrl?.pathname}</div>
         </div>
         <div className="flex flex-row">
           <div className="font-bold text-slate-400">Notary API:</div>
@@ -171,6 +170,13 @@ export function OneRequestHistory(props: {
             />
             <ActionButton
               className="bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500"
+              onClick={() => bookmarkManager.addBookmark(request!)}
+              fa="fa-solid fa-bookmark"
+              ctaText="Bookmark request"
+              hidden={hideActions.includes('save')}
+            />
+            <ActionButton
+              className="bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500"
               onClick={() =>
                 download(`${request?.id}.json`, JSON.stringify(request?.proof))
               }
@@ -178,6 +184,7 @@ export function OneRequestHistory(props: {
               ctaText="Download"
               hidden={hideActions.includes('download')}
             />
+
             {/* <ActionButton
               className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500 hover:font-bold"
               onClick={() => setShowingShareConfirmation(true)}

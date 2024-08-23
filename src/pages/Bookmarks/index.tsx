@@ -38,7 +38,11 @@ export default function History(): ReactElement {
       {bookmarks.length > 0 &&
         bookmarks.map((bookmark) => {
           return (
-            <OneRequestHistory key={bookmark.id} requestId={bookmark.id} />
+            <OneRequestHistory
+              key={bookmark.id}
+              requestId={bookmark.id}
+              request={bookmark}
+            />
           );
         })}
     </div>
@@ -47,12 +51,13 @@ export default function History(): ReactElement {
 
 export function OneRequestHistory(props: {
   requestId: string;
+  request: RequestHistory;
   className?: string;
   hideActions?: string[];
 }): ReactElement {
   const { hideActions = [] } = props;
   const dispatch = useDispatch();
-  const request = useRequestHistory(props.requestId);
+
   const [showingError, showError] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [showingShareConfirmation, setShowingShareConfirmation] =
@@ -60,6 +65,8 @@ export function OneRequestHistory(props: {
   const [cid, setCid] = useState<{ [key: string]: string }>({});
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
+
+  const { request } = props;
   const { status } = request || {};
   const requestUrl = urlify(request?.url || '');
 
@@ -67,11 +74,6 @@ export function OneRequestHistory(props: {
     console.log('useEffect', request);
     const fetchData = async () => {
       try {
-        // @TEST
-
-        const saved = await bookmarkManager.getBookmark('ahi');
-        console.log('saved', saved);
-
         if (request && request.cid) {
           setCid({ [props.requestId]: request.cid });
         }

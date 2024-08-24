@@ -28,19 +28,6 @@ const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
   const history = useHistoryOrder();
 
-  //@test
-  useEffect(() => {
-    async function fetchRequests() {
-      const requests = await getNotaryRequests();
-      console.log('requests', requests);
-      if (!requests) return;
-      const request = await getNotaryRequest(requests[0].url);
-      console.log('request', request);
-
-      // await removeNotaryRequest(request.id);
-    }
-    fetchRequests();
-  }, [history]);
   return (
     <div className="flex flex-col flex-nowrap overflow-y-auto">
       {history.map((id) => {
@@ -105,6 +92,8 @@ export function OneRequestHistory(props: {
   }, [request]);
 
   const onDelete = useCallback(async () => {
+    console.log('onDelete', props.requestId);
+
     dispatch(deleteRequestHistory(props.requestId));
   }, [props.requestId]);
 

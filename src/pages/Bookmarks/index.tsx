@@ -88,9 +88,15 @@ export function OneRequestHistory(props: {
   }, []);
 
   const generateAttestation = useCallback(async () => {
+    console.log('generateAttestation', request);
     if (!request) return;
+
     setStatus('pending');
-    notarizeRequest(request);
+
+    dispatch(notarizeRequest(request));
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setStatus('success');
   }, [request.id]);
 
   const onView = useCallback(() => {

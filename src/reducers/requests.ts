@@ -45,6 +45,7 @@ export const setRequests = (requests: RequestLog[]): Action<RequestLog[]> => ({
 });
 
 export const notarizeRequest = (options: RequestHistory) => async () => {
+  console.log('notarizeRequest', options);
   const notaryUrl = await getNotaryApi();
   const websocketProxyUrl = await getProxyApi();
   const maxSentData = await getMaxSent();

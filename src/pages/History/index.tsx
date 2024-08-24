@@ -194,7 +194,7 @@ export function OneRequestHistory(props: {
               }
               onClick={() => addBookmark(request!)}
               fa="fa-solid fa-bookmark"
-              ctaText="Bookmark request"
+              ctaText="Add provider"
               hidden={hideActions.includes('save')}
             />
 

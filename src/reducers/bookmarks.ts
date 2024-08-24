@@ -2,6 +2,8 @@ import { db } from '../entries/Background/db';
 import { RequestHistory } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
 
+import { defaultProviders } from '../utils/defaultProviders';
+
 export class BookmarkManager {
   historyDb = db.sublevel<string, RequestHistory>('history', {
     valueEncoding: 'json',

@@ -27,6 +27,7 @@ export default function History(): ReactElement {
 
   const fetchBookmarks = useCallback(async () => {
     const bookmarks = await bookmarkManager.getBookmarks();
+    console.log('fetchBookmarks', JSON.stringify(bookmarks[0]));
     setBookmarks(bookmarks);
   }, []);
 

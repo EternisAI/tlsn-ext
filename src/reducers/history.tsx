@@ -90,7 +90,7 @@ export default function history(
 
 export const useHistoryOrder = (): string[] => {
   return useSelector((state: AppRootState) => {
-    return state.history.order;
+    return [...state.history.order].reverse();
   }, deepEqual);
 };
 

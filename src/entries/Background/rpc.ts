@@ -318,6 +318,7 @@ async function handleProveRequestStart(
   request: BackgroundAction,
   sendResponse: (data?: any) => void,
 ) {
+  console.log('handleProveRequestStart', request);
   const {
     url,
     method,

@@ -17,6 +17,7 @@ import { EXPLORER_API } from '../../utils/constants';
 import { setNotaryRequestCid } from '../../entries/Background/db';
 import { BookmarkManager } from '../../reducers/bookmarks';
 import { RequestHistory } from '../../entries/Background/rpc';
+import { notarizeRequest } from '../../reducers/requests';
 
 const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
@@ -24,13 +25,13 @@ export default function History(): ReactElement {
 
   const [bookmarks, setBookmarks] = useState<RequestHistory[]>([]);
 
+  const fetchBookmarks = useCallback(async () => {
+    const bookmarks = await bookmarkManager.getBookmarks();
+    setBookmarks(bookmarks);
+  }, []);
+
   useEffect(() => {
-    async function fetchData() {
-      const bookmarks = await bookmarkManager.getBookmarks();
-      console.log('bookmarks', bookmarks);
-      setBookmarks(bookmarks);
-    }
-    fetchData();
+    fetchBookmarks();
   }, []);
 
   return (
@@ -42,6 +43,7 @@ export default function History(): ReactElement {
               key={bookmark.id}
               requestId={bookmark.id}
               request={bookmark}
+              fetchBookmarks={fetchBookmarks}
             />
           );
         })}
@@ -50,10 +52,11 @@ export default function History(): ReactElement {
 }
 
 export function OneRequestHistory(props: {
-  requestId: string;
   request: RequestHistory;
+  requestId: string;
   className?: string;
   hideActions?: string[];
+  fetchBookmarks: () => Promise<void>;
 }): ReactElement {
   const { hideActions = [] } = props;
   const dispatch = useDispatch();
@@ -65,17 +68,17 @@ export function OneRequestHistory(props: {
   const [cid, setCid] = useState<{ [key: string]: string }>({});
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
-
+  const [status, setStatus] = useState<'success' | 'error' | 'pending' | ''>(
+    '',
+  );
   const { request } = props;
-  const { status } = request || {};
-  const requestUrl = urlify(request?.url || '');
+  const requestUrl = urlify(props.request.url || '');
 
   useEffect(() => {
-    console.log('useEffect', request);
     const fetchData = async () => {
       try {
         if (request && request.cid) {
-          setCid({ [props.requestId]: request.cid });
+          setCid({ [request.id]: request.cid });
         }
       } catch (e) {
         console.error('Error fetching data', e);
@@ -85,19 +88,10 @@ export function OneRequestHistory(props: {
   }, []);
 
   const generateAttestation = useCallback(async () => {
-    const notaryUrl = await getNotaryApi();
-    const websocketProxyUrl = await getProxyApi();
-
-    console.log('generateAttestation', notaryUrl, websocketProxyUrl);
-    chrome.runtime.sendMessage<any, string>({
-      type: BackgroundActiontype.retry_prove_request,
-      data: {
-        id: props.requestId,
-        notaryUrl,
-        websocketProxyUrl,
-      },
-    });
-  }, [props.requestId]);
+    if (!request) return;
+    setStatus('pending');
+    notarizeRequest(request);
+  }, [request.id]);
 
   const onView = useCallback(() => {
     chrome.runtime.sendMessage<any, string>({
@@ -108,7 +102,8 @@ export function OneRequestHistory(props: {
   }, [request]);
 
   const onDelete = useCallback(async () => {
-    dispatch(deleteRequestHistory(props.requestId));
+    bookmarkManager.deleteBookmark(request.id);
+    props.fetchBookmarks();
   }, [props.requestId]);
 
   const onShowError = useCallback(async () => {
@@ -136,6 +131,7 @@ export function OneRequestHistory(props: {
     }
   }, [props.requestId, request, cid]);
 
+  // if (!request) return <></>;
   return (
     <div
       className={classNames(

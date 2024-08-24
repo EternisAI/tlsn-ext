@@ -37,13 +37,16 @@ export class BookmarkManager {
   async addBookmark(request: RequestHistory) {
     const id = await sha256(request.url);
     await this.addBookmarkId(id);
-    await this.historyDb.put(id, request);
+
+    const request_ = { ...request, id };
+
+    await localStorage.setItem(id, JSON.stringify(request_));
   }
 
   async getBookmark(id: string): Promise<RequestHistory | null> {
     try {
-      const existing = await this.historyDb.get(id);
-      return existing;
+      const existing = await localStorage.getItem(id);
+      return existing ? JSON.parse(existing) : null;
     } catch (e) {
       return null;
     }
@@ -57,5 +60,9 @@ export class BookmarkManager {
     return bookmarks.filter(
       (bookmark) => bookmark !== null,
     ) as RequestHistory[];
+  }
+
+  async deleteBookmark(id: string): Promise<void> {
+    await localStorage.removeItem(id);
   }
 }

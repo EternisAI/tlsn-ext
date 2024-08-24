@@ -14,7 +14,12 @@ import Modal, { ModalContent } from '../../components/Modal/Modal';
 import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
 import { EXPLORER_API } from '../../utils/constants';
-import { setNotaryRequestCid } from '../../entries/Background/db';
+import {
+  setNotaryRequestCid,
+  getNotaryRequest,
+  getNotaryRequests,
+  removeNotaryRequest,
+} from '../../entries/Background/db';
 import { BookmarkManager } from '../../reducers/bookmarks';
 const charwise = require('charwise');
 
@@ -22,6 +27,19 @@ const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
   const history = useHistoryOrder();
 
+  //@test
+  useEffect(() => {
+    async function fetchRequests() {
+      const requests = await getNotaryRequests();
+      console.log('requests', requests);
+      if (!requests) return;
+      const request = await getNotaryRequest(requests[0].url);
+      console.log('request', request);
+
+      // await removeNotaryRequest(request.id);
+    }
+    fetchRequests();
+  }, [history]);
   return (
     <div className="flex flex-col flex-nowrap overflow-y-auto">
       {history.map((id) => {
@@ -138,8 +156,10 @@ export function OneRequestHistory(props: {
           </div>
         </div>
         <div className="flex flex-row">
-          <div className="font-bold text-slate-400">Host:</div>
-          <div className="ml-2 text-slate-800">{requestUrl?.pathname}</div>
+          <div className="font-bold text-slate-400">Url:</div>
+          <div className="ml-2 text-slate-800">
+            {requestUrl?.pathname.substring(0, 100) + '...'}
+          </div>
         </div>
         <div className="flex flex-row">
           <div className="font-bold text-slate-400">Notary API:</div>

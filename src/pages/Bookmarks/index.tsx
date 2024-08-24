@@ -88,7 +88,6 @@ export function OneRequestHistory(props: {
   }, []);
 
   const generateAttestation = useCallback(async () => {
-    console.log('generateAttestation', request);
     if (!request) return;
 
     setStatus('pending');

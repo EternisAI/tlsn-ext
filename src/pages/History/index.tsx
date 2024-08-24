@@ -57,7 +57,6 @@ export function OneRequestHistory(props: {
 
   const [successBookmark, setSuccessBookmark] = useState(false);
   useEffect(() => {
-    console.log('useEffect', request);
     const fetchData = async () => {
       try {
         if (request && request.cid) {
@@ -92,8 +91,6 @@ export function OneRequestHistory(props: {
   }, [request]);
 
   const onDelete = useCallback(async () => {
-    console.log('onDelete', props.requestId);
-
     dispatch(deleteRequestHistory(props.requestId));
   }, [props.requestId]);
 

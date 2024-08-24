@@ -122,8 +122,6 @@ export async function setNotaryRequestVerification(
 export async function removeNotaryRequest(
   id: string,
 ): Promise<RequestHistory | null> {
-  console.log('delete', id);
-
   try {
     const existing = await historyDb.get(id);
     if (!existing) return null;
@@ -140,8 +138,6 @@ export async function removeNotaryRequest(
 export async function getNotaryRequests(): Promise<RequestHistory[]> {
   const retVal = [];
   for await (const [key, value] of historyDb.iterator()) {
-    console.log('key', key);
-    console.log('value', value);
     retVal.push(value);
   }
   return retVal;

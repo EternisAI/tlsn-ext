@@ -13,7 +13,7 @@ import {
 } from '../utils/storage';
 import { BackgroundActiontype } from '../entries/Background/rpc';
 import browser from 'webextension-polyfill';
-
+import { useState, useEffect } from 'react';
 enum ActionType {
   '/requests/setRequests' = '/requests/setRequests',
   '/requests/addRequest' = '/requests/addRequest',
@@ -38,6 +38,8 @@ const initialState: State = {
   map: {},
   activeTab: null,
 };
+
+const rejected_types = ['script', 'websocket', 'image', 'font'];
 
 export const setRequests = (requests: RequestLog[]): Action<RequestLog[]> => ({
   type: ActionType['/requests/setRequests'],
@@ -123,6 +125,29 @@ export const useRequests = (): RequestLog[] => {
   return useSelector((state: AppRootState) => {
     return Object.values(state.requests.map);
   }, deepEqual);
+};
+
+export const useUniqueRequests = (): RequestLog[] => {
+  const requests = useRequests();
+  const [uniqueRequests, setUniqueRequests] = useState<RequestLog[]>([]);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      if (!history) return;
+
+      const requestsSet = new Map<string, RequestLog>();
+
+      requests.forEach(async (request) => {
+        if (rejected_types.includes(request.type)) return;
+        requestsSet.set(request.url, request);
+      });
+
+      setUniqueRequests(Array.from(requestsSet.values()).reverse());
+    }
+    fetchHistory();
+  }, [history, requests]);
+
+  return uniqueRequests;
 };
 
 export const useRequest = (requestId?: string): RequestLog | null => {

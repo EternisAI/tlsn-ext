@@ -21,6 +21,7 @@ import {
   removeNotaryRequest,
 } from '../../entries/Background/db';
 import { BookmarkManager } from '../../reducers/bookmarks';
+import { RequestHistory } from '../../entries/Background/rpc';
 const charwise = require('charwise');
 
 const bookmarkManager = new BookmarkManager();
@@ -67,6 +68,7 @@ export function OneRequestHistory(props: {
   const { status } = request || {};
   const requestUrl = urlify(request?.url || '');
 
+  const [successBookmark, setSuccessBookmark] = useState(false);
   useEffect(() => {
     console.log('useEffect', request);
     const fetchData = async () => {
@@ -114,6 +116,14 @@ export function OneRequestHistory(props: {
     setShowingShareConfirmation(false);
     showError(false);
   }, [setShowingShareConfirmation, showError]);
+
+  const addBookmark = useCallback(
+    async (request: RequestHistory) => {
+      setSuccessBookmark(true);
+      bookmarkManager.addBookmark(request);
+    },
+    [request],
+  );
 
   const handleUpload = useCallback(async () => {
     setUploading(true);
@@ -189,12 +199,16 @@ export function OneRequestHistory(props: {
               hidden={hideActions.includes('view')}
             />
             <ActionButton
-              className="bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500"
-              onClick={() => bookmarkManager.addBookmark(request!)}
+              className={
+                'text-slate-300 hover:bg-slate-200 hover:text-slate-500 ' +
+                (successBookmark ? 'bg-slate-600' : 'bg-slate-100')
+              }
+              onClick={() => addBookmark(request!)}
               fa="fa-solid fa-bookmark"
               ctaText="Bookmark request"
               hidden={hideActions.includes('save')}
             />
+
             <ActionButton
               className="bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500"
               onClick={() =>

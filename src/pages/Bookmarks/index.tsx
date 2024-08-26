@@ -1,11 +1,6 @@
 import React, { ReactElement, useState, useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import {
-  useHistoryOrder,
-  useRequestHistory,
-  deleteRequestHistory,
-} from '../../reducers/history';
 import Icon from '../../components/Icon';
 import { getNotaryApi, getProxyApi } from '../../utils/storage';
 import { urlify, download, upload } from '../../utils/misc';
@@ -18,13 +13,18 @@ import { setNotaryRequestCid } from '../../entries/Background/db';
 import { BookmarkManager } from '../../reducers/bookmarks';
 import { RequestHistory } from '../../entries/Background/rpc';
 import { notarizeRequest } from '../../reducers/requests';
+import { useUniqueRequests } from '../../reducers/requests';
 
+import { TLSN } from '../../entries/Content/content';
+
+const tlsn = new TLSN();
 const bookmarkManager = new BookmarkManager();
-export default function History(): ReactElement {
-  const history = useHistoryOrder();
+export default function Bookmarks(): ReactElement {
+  const requests = useUniqueRequests();
 
   const [bookmarks, setBookmarks] = useState<RequestHistory[]>([]);
 
+  console.log('requests', requests);
   const fetchBookmarks = useCallback(async () => {
     const bookmarks = await bookmarkManager.getBookmarks();
     console.log('fetchBookmarks', JSON.stringify(bookmarks[0]));
@@ -91,9 +91,11 @@ export function OneRequestHistory(props: {
   const generateAttestation = useCallback(async () => {
     if (!request) return;
 
+    tlsn.loadPage(request.url);
+
     setStatus('pending');
 
-    dispatch(notarizeRequest(request));
+    //dispatch(notarizeRequest(request));
 
     await new Promise((resolve) => setTimeout(resolve, 500));
     setStatus('success');

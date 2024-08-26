@@ -1,7 +1,14 @@
 import { RequestHistory } from '../entries/Background/rpc';
 
-export const defaultProviders: RequestHistory[] = [
+export interface Provider extends RequestHistory {
+  pageUrl?: string;
+  default?: boolean;
+}
+
+export const defaultProviders: Provider[] = [
   {
+    pageUrl: 'https://dummyjson.com/products/1',
+    default: true,
     url: 'https://dummyjson.com/products/1',
     method: 'GET',
     headers: {

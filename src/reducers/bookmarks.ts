@@ -5,10 +5,6 @@ import { sha256 } from '../utils/misc';
 import { defaultProviders } from '../utils/defaultProviders';
 
 export class BookmarkManager {
-  historyDb = db.sublevel<string, RequestHistory>('history', {
-    valueEncoding: 'json',
-  });
-
   async getBookmarkIds(): Promise<string[]> {
     const bookmarksId = await sha256('bookmarks');
     try {
@@ -39,10 +35,12 @@ export class BookmarkManager {
   async addBookmark(request: RequestHistory) {
     const id = await sha256(request.url);
     await this.addBookmarkId(id);
-
     const request_ = { ...request, id };
-
     await localStorage.setItem(id, JSON.stringify(request_));
+  }
+
+  async addBookMarks(requests: RequestHistory[]) {
+    await Promise.all(requests.map((request) => this.addBookmark(request)));
   }
 
   async getBookmark(id: string): Promise<RequestHistory | null> {

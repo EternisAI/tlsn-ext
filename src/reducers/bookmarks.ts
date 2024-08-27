@@ -22,7 +22,7 @@ export class BookmarkManager {
   async getBookmarkIds(): Promise<string[]> {
     const bookmarksId = await sha256('bookmarks');
     try {
-      const storage = await chrome.storage.local.get(bookmarksId);
+      const storage = await chrome.storage.sync.get(bookmarksId);
       return storage[bookmarksId] ? JSON.parse(storage[bookmarksId]) : [];
     } catch (e) {
       return [];
@@ -32,7 +32,7 @@ export class BookmarkManager {
   async saveBookmarkIds(bookmarkIds: string[]): Promise<void> {
     const bookmarksId = await sha256('bookmarks');
     try {
-      await chrome.storage.local.set({
+      await chrome.storage.sync.set({
         [bookmarksId]: JSON.stringify(bookmarkIds),
       });
     } catch (e) {
@@ -54,7 +54,7 @@ export class BookmarkManager {
 
     await this.addBookmarkId(id);
 
-    await chrome.storage.local.set({ [id]: JSON.stringify(bookmark) });
+    await chrome.storage.sync.set({ [id]: JSON.stringify(bookmark) });
   }
 
   async addBookMarks(requests: RequestHistory[]) {
@@ -63,7 +63,7 @@ export class BookmarkManager {
 
   async getBookmark(id: string): Promise<Bookmark | null> {
     try {
-      const existing = await chrome.storage.local.get(id);
+      const existing = await chrome.storage.sync.get(id);
       return existing[id] ? JSON.parse(existing[id]) : null;
     } catch (e) {
       return null;

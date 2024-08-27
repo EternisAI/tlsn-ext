@@ -85,10 +85,18 @@ export function DefaultBookmark(props: { bookmark: Bookmark }): ReactElement {
           <div className="font-bold text-slate-400">Url:</div>
           <div className="ml-2 text-slate-800">{bookmark?.url}</div>
         </div>
+        <div className="flex flex-row">
+          <div className="ml-2 text-slate-800">{bookmark?.description}</div>
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         {<GenerateAttButton2 targetUrl={bookmark.targetUrl} />}
       </div>
+      {bookmark.icon && (
+        <div className="flex-shrink-0">
+          <img src={bookmark.icon} className="w-6 h-6 rounded-full" />
+        </div>
+      )}
     </div>
   );
 }

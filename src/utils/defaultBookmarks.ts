@@ -12,14 +12,25 @@ export type Bookmark = {
 
 export const defaultBookmarks: Bookmark[] = [
   {
+    url: 'https://app.carta.com/api/investors/holdings/portfolio/3423830/corporation/3331644/securities/',
+    targetUrl: 'https://app.carta.com/investors/individual/3423830/portfolio/',
+    method: 'GET',
+    type: 'xmlhttprequest',
+    title: 'Carta Holdings',
+    description: 'Notarize your portfolio',
+    responseSelector: '',
+    valueTransform: '',
+  },
+
+  {
     url: 'https://dummyjson.com/products/1',
     targetUrl: 'https://dummyjson.com/products/1',
     method: 'GET',
     type: 'main_frame',
     title: 'Dummy JSON',
     description: 'Dummy example',
-    responseSelector: '(?<="email":)"(.*?)"',
-    valueTransform: '"email":%s',
+    responseSelector: '',
+    valueTransform: '',
   },
   {
     url: 'https://api.x.com/1.1/account/settings.json',

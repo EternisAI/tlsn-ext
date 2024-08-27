@@ -94,12 +94,12 @@ export const handleNotarization = (
     const { tabId, requestId, frameId, url, method, type } = details;
     const cache = getCacheByTabId(tabId);
 
-    // console.log('=================');
-    // console.log('handleNotarization');
-    // console.log('url', url);
-    // console.log('method', method);
-    // console.log('type', type);
-    // console.log('=================');
+    console.log('=================');
+    console.log('handleNotarization');
+    console.log('url', url);
+    console.log('method', method);
+    console.log('type', type);
+    console.log('=================');
 
     if (tabId === -1 || frameId === -1) return;
 

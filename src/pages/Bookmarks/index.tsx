@@ -17,6 +17,11 @@ import { useUniqueRequests } from '../../reducers/requests';
 
 import { TLSN } from '../../entries/Content/content';
 
+import {
+  defaultBookmarks,
+  Bookmark,
+} from '../../entries/Background/defaultBookmarks';
+
 const tlsn = new TLSN();
 const bookmarkManager = new BookmarkManager();
 export default function Bookmarks(): ReactElement {
@@ -37,6 +42,10 @@ export default function Bookmarks(): ReactElement {
 
   return (
     <div className="flex flex-col flex-nowrap overflow-y-auto">
+      {defaultBookmarks.map((bookmark) => {
+        return <DefaultBookmark key={bookmark.url} bookmark={bookmark} />;
+      })}
+
       {bookmarks.length > 0 &&
         bookmarks.map((bookmark) => {
           return (
@@ -49,6 +58,58 @@ export default function Bookmarks(): ReactElement {
           );
         })}
     </div>
+  );
+}
+
+export function DefaultBookmark(props: { bookmark: Bookmark }): ReactElement {
+  const { bookmark } = props;
+
+  // if (!request) return <></>;
+  return (
+    <div
+      className={classNames(
+        'flex flex-row flex-nowrap border rounded-md p-2 gap-1 hover:bg-slate-50 cursor-pointer',
+      )}
+    >
+      <div className="flex flex-col flex-nowrap flex-grow flex-shrink w-0">
+        <div className="flex flex-row items-center text-xs">
+          <div className="bg-slate-200 text-slate-400 px-1 py-0.5 rounded-sm">
+            {bookmark?.method}
+          </div>
+          <div className="text-black font-bold px-2 py-1 rounded-md overflow-hidden text-ellipsis">
+            {bookmark?.url}
+          </div>
+        </div>
+
+        <div className="flex flex-row">
+          <div className="font-bold text-slate-400">Url:</div>
+          <div className="ml-2 text-slate-800">{bookmark?.url}</div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-1">
+        {<GenerateAttButton2 targetUrl={bookmark.targetUrl} />}
+      </div>
+    </div>
+  );
+}
+
+function GenerateAttButton2(p: {
+  hidden?: boolean;
+  targetUrl: string;
+}): ReactElement {
+  const { targetUrl } = p;
+  const generateAttestation = useCallback(async () => {
+    window.open(targetUrl, '_blank');
+  }, [targetUrl]);
+
+  if (p.hidden) return <></>;
+  return (
+    <button
+      className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500 hover:font-bold"
+      onClick={generateAttestation}
+    >
+      <span className="text-xs font-bold">Generate Attestation</span>
+    </button>
   );
 }
 

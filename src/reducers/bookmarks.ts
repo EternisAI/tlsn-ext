@@ -2,8 +2,6 @@ import { db } from '../entries/Background/db';
 import { RequestHistory } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
 
-import { defaultProviders } from '../utils/defaultProviders';
-
 export class BookmarkManager {
   async getBookmarkIds(): Promise<string[]> {
     const bookmarksId = await sha256('bookmarks');

@@ -84,7 +84,7 @@ export const onBeforeRequest = (
   });
 };
 
-import bookmarks from './bookmarks.json';
+import { defaultBookmarks as bookmarks } from './defaultBookmarks';
 import { get, NOTARY_API_LS_KEY, PROXY_API_LS_KEY } from '../../utils/storage';
 
 export const handleNotarization = (

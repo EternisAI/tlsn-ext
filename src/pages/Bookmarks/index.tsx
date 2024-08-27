@@ -119,9 +119,15 @@ export function OneBookmark(props: {
       <ErrorModal /> */}
       <div className="flex flex-col flex-nowrap flex-grow flex-shrink w-0">
         <div className="flex flex-row items-center text-xs">
+          {bookmark.default && (
+            <div className="bg-slate-200 text-slate-400 px-1 py-0.5 rounded-sm">
+              <Icon fa="fa-solid fa-check-circle" size={1} />
+            </div>
+          )}
           <div className="bg-slate-200 text-slate-400 px-1 py-0.5 rounded-sm">
             {bookmark?.method}
           </div>
+
           <div className="text-black font-bold px-2 py-1 rounded-md overflow-hidden text-ellipsis">
             {requestUrl?.host}
           </div>
@@ -151,16 +157,19 @@ export function OneBookmark(props: {
             <span className="text-xs font-bold">Pending</span>
           </button>
         )}
-        <CopyButton content={JSON.stringify(bookmark)} />
-
+        {}
         {!bookmark.default && (
-          <ActionButton
-            className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-red-100 hover:text-red-500 hover:font-bold"
-            onClick={onDelete}
-            fa="fa-solid fa-trash"
-            ctaText="Delete"
-            hidden={hideActions.includes('delete')}
-          />
+          <>
+            <CopyButton content={JSON.stringify(bookmark, null, 2)} />
+
+            <ActionButton
+              className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-red-100 hover:text-red-500 hover:font-bold"
+              onClick={onDelete}
+              fa="fa-solid fa-trash"
+              ctaText="Delete"
+              hidden={hideActions.includes('delete')}
+            />
+          </>
         )}
       </div>
     </div>

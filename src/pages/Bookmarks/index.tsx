@@ -151,6 +151,8 @@ export function OneBookmark(props: {
             <span className="text-xs font-bold">Pending</span>
           </button>
         )}
+        <CopyButton content={JSON.stringify(bookmark)} />
+
         {!bookmark.default && (
           <ActionButton
             className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-red-100 hover:text-red-500 hover:font-bold"
@@ -163,6 +165,36 @@ export function OneBookmark(props: {
       </div>
     </div>
   );
+
+  function CopyButton(p: { hidden?: boolean; content: string }): ReactElement {
+    const { hidden, content } = p;
+    const [showToast, setShowToast] = useState(false);
+
+    const handleCopy = useCallback(() => {
+      const beautifiedContent = JSON.stringify(JSON.parse(content), null, 2);
+      copy(beautifiedContent);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    }, [content]);
+
+    if (hidden) return <></>;
+    return (
+      <>
+        <button
+          className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-blue-100 hover:text-blue-500 hover:font-bold"
+          onClick={handleCopy}
+        >
+          <Icon fa="fa-solid fa-copy" size={1} />
+          <span className="text-xs font-bold">Copy</span>
+        </button>
+        {showToast && (
+          <div className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded">
+            Copied
+          </div>
+        )}
+      </>
+    );
+  }
 
   // function ErrorButton(p: { hidden?: boolean }): ReactElement {
   //   if (p.hidden) return <></>;

@@ -77,7 +77,7 @@ export function DefaultBookmark(props: { bookmark: Bookmark }): ReactElement {
             {bookmark?.method}
           </div>
           <div className="text-black font-bold px-2 py-1 rounded-md overflow-hidden text-ellipsis">
-            {bookmark?.url}
+            {bookmark?.title}
           </div>
         </div>
 

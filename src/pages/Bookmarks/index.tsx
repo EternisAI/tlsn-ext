@@ -17,10 +17,7 @@ import { useUniqueRequests } from '../../reducers/requests';
 
 import { TLSN } from '../../entries/Content/content';
 
-import {
-  defaultBookmarks,
-  Bookmark,
-} from '../../entries/Background/defaultBookmarks';
+import { defaultBookmarks, Bookmark } from '../../utils/defaultBookmarks';
 
 const tlsn = new TLSN();
 const bookmarkManager = new BookmarkManager();

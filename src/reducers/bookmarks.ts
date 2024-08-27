@@ -1,6 +1,21 @@
 import { db } from '../entries/Background/db';
 import { RequestHistory } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
+import { getCacheByTabId } from '../entries/Background/cache';
+
+export type Bookmark = {
+  id?: string;
+  requestId?: string;
+  url: string;
+  targetUrl: string;
+  method: string;
+  type: string;
+  title: string;
+  description: string;
+  responseSelector: string;
+  valueTransform: string;
+  icon?: string;
+};
 
 export class BookmarkManager {
   async getBookmarkIds(): Promise<string[]> {
@@ -32,16 +47,18 @@ export class BookmarkManager {
 
   async addBookmark(request: RequestHistory) {
     const id = await sha256(request.url);
+    const bookmark: Bookmark = this.convertRequestToBookmark(request, id);
+
     await this.addBookmarkId(id);
-    const request_ = { ...request, id };
-    await localStorage.setItem(id, JSON.stringify(request_));
+
+    await localStorage.setItem(id, JSON.stringify(bookmark));
   }
 
   async addBookMarks(requests: RequestHistory[]) {
     await Promise.all(requests.map((request) => this.addBookmark(request)));
   }
 
-  async getBookmark(id: string): Promise<RequestHistory | null> {
+  async getBookmark(id: string): Promise<Bookmark | null> {
     try {
       const existing = await localStorage.getItem(id);
       return existing ? JSON.parse(existing) : null;
@@ -50,17 +67,36 @@ export class BookmarkManager {
     }
   }
 
-  async getBookmarks(): Promise<RequestHistory[]> {
+  async getBookmarks(): Promise<Bookmark[]> {
     const bookmarkIds = await this.getBookmarkIds();
     const bookmarks = await Promise.all(
       bookmarkIds.map((id) => this.getBookmark(id)),
     );
-    return bookmarks.filter(
-      (bookmark) => bookmark !== null,
-    ) as RequestHistory[];
+    return bookmarks.filter((bookmark) => bookmark !== null) as Bookmark[];
   }
 
   async deleteBookmark(id: string): Promise<void> {
-    await localStorage.removeItem(id);
+    const hashId = await sha256(id);
+    await localStorage.removeItem(hashId);
+  }
+
+  convertRequestToBookmark(request: RequestHistory, id: string) {
+    // const cache = getCacheByTabId(request.tabId);
+    // const req = cache.get<RequestLog>(requestId);
+
+    const bookmark: Bookmark = {
+      requestId: request.id,
+      id,
+      url: request.url,
+      targetUrl: request.url,
+      method: request.method,
+      type: 'main_frame',
+      title: request.url,
+      description: '',
+      responseSelector: '',
+      valueTransform: '',
+      icon: '',
+    };
+    return bookmark;
   }
 }

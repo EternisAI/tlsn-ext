@@ -17,14 +17,15 @@ import { useUniqueRequests } from '../../reducers/requests';
 
 import { TLSN } from '../../entries/Content/content';
 
-import { defaultBookmarks, Bookmark } from '../../utils/defaultBookmarks';
+import { defaultBookmarks } from '../../utils/defaultBookmarks';
+import { Bookmark } from '../../reducers/bookmarks';
 
 const tlsn = new TLSN();
 const bookmarkManager = new BookmarkManager();
 export default function Bookmarks(): ReactElement {
   const requests = useUniqueRequests();
 
-  const [bookmarks, setBookmarks] = useState<RequestHistory[]>([]);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
   console.log('requests', requests);
   const fetchBookmarks = useCallback(async () => {
@@ -46,10 +47,9 @@ export default function Bookmarks(): ReactElement {
       {bookmarks.length > 0 &&
         bookmarks.map((bookmark) => {
           return (
-            <OneRequestHistory
-              key={bookmark.id}
-              requestId={bookmark.id}
-              request={bookmark}
+            <OneBookmark
+              key={bookmark.url}
+              bookmark={bookmark}
               fetchBookmarks={fetchBookmarks}
             />
           );
@@ -118,9 +118,8 @@ function GenerateAttButton2(p: {
   );
 }
 
-export function OneRequestHistory(props: {
-  request: RequestHistory;
-  requestId: string;
+export function OneBookmark(props: {
+  bookmark: Bookmark;
   className?: string;
   hideActions?: string[];
   fetchBookmarks: () => Promise<void>;
@@ -128,6 +127,7 @@ export function OneRequestHistory(props: {
   const { hideActions = [] } = props;
   const dispatch = useDispatch();
 
+  const [error, setError] = useState(false);
   const [showingError, showError] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [showingShareConfirmation, setShowingShareConfirmation] =
@@ -138,72 +138,18 @@ export function OneRequestHistory(props: {
   const [status, setStatus] = useState<'success' | 'error' | 'pending' | ''>(
     '',
   );
-  const { request } = props;
-  const requestUrl = urlify(props.request.url || '');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (request && request.cid) {
-          setCid({ [request.id]: request.cid });
-        }
-      } catch (e) {
-        console.error('Error fetching data', e);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const generateAttestation = useCallback(async () => {
-    if (!request) return;
-
-    tlsn.loadPage(request.url);
-
-    setStatus('pending');
-
-    //dispatch(notarizeRequest(request));
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setStatus('success');
-  }, [request.id]);
-
-  const onView = useCallback(() => {
-    chrome.runtime.sendMessage<any, string>({
-      type: BackgroundActiontype.verify_prove_request,
-      data: request,
-    });
-    navigate('/verify/' + request?.id);
-  }, [request]);
+  const { bookmark } = props;
+  const requestUrl = urlify(bookmark.url || '');
 
   const onDelete = useCallback(async () => {
-    bookmarkManager.deleteBookmark(request.id);
+    bookmarkManager.deleteBookmark(bookmark.url);
     props.fetchBookmarks();
-  }, [props.requestId]);
-
-  const onShowError = useCallback(async () => {
-    showError(true);
-  }, [request?.error, showError]);
+  }, [bookmark]);
 
   const closeAllModal = useCallback(() => {
     setShowingShareConfirmation(false);
     showError(false);
   }, [setShowingShareConfirmation, showError]);
-
-  const handleUpload = useCallback(async () => {
-    setUploading(true);
-    try {
-      const data = await upload(
-        `${request?.id}.json`,
-        JSON.stringify(request?.proof),
-      );
-      setCid((prevCid) => ({ ...prevCid, [props.requestId]: data }));
-      await setNotaryRequestCid(props.requestId, data);
-    } catch (e: any) {
-      setUploadError(e.message);
-    } finally {
-      setUploading(false);
-    }
-  }, [props.requestId, request, cid]);
 
   // if (!request) return <></>;
   return (
@@ -213,12 +159,12 @@ export function OneRequestHistory(props: {
         props.className,
       )}
     >
-      <ShareConfirmationModal />
-      <ErrorModal />
+      {/* <ShareConfirmationModal />
+      <ErrorModal /> */}
       <div className="flex flex-col flex-nowrap flex-grow flex-shrink w-0">
         <div className="flex flex-row items-center text-xs">
           <div className="bg-slate-200 text-slate-400 px-1 py-0.5 rounded-sm">
-            {request?.method}
+            {bookmark?.method}
           </div>
           <div className="text-black font-bold px-2 py-1 rounded-md overflow-hidden text-ellipsis">
             {requestUrl?.host}
@@ -229,23 +175,16 @@ export function OneRequestHistory(props: {
           <div className="font-bold text-slate-400">Url:</div>
           <div className="ml-2 text-slate-800">{requestUrl?.pathname}</div>
         </div>
+        <div className="flex flex-row">
+          <div className="font-bold text-slate-400">TargetUrl:</div>
+          <div className="ml-2 text-slate-800">{bookmark.targetUrl}</div>
+        </div>
       </div>
       <div className="flex flex-col gap-1">
-        {status === 'success' && (
-          <>
-            {/* <ActionButton
-              className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500 hover:font-bold"
-              onClick={() => setShowingShareConfirmation(true)}
-              fa="fa-solid fa-upload"
-              ctaText="Share"
-              hidden={hideActions.includes('share')}
-            /> */}
-          </>
-        )}
-        {status === 'error' && !!request?.error && (
+        {/* {status === 'error' && !!error && (
           <ErrorButton hidden={hideActions.includes('error')} />
-        )}
-        {<GenerateAttButton hidden={hideActions.includes('retry')} />}
+        )} */}
+        {<GenerateAttButton2 targetUrl={bookmark.targetUrl} />}
         {status === 'pending' && (
           <button className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 font-bold">
             <Icon className="animate-spin" fa="fa-solid fa-spinner" size={1} />
@@ -263,124 +202,112 @@ export function OneRequestHistory(props: {
     </div>
   );
 
-  function GenerateAttButton(p: { hidden?: boolean }): ReactElement {
-    if (p.hidden) return <></>;
-    return (
-      <button
-        className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500 hover:font-bold"
-        onClick={generateAttestation}
-      >
-        <span className="text-xs font-bold">Generate Attestation</span>
-      </button>
-    );
-  }
+  // function ErrorButton(p: { hidden?: boolean }): ReactElement {
+  //   if (p.hidden) return <></>;
+  //   return (
+  //     <button
+  //       className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-red-100 text-red-300 hover:bg-red-200 hover:text-red-500 hover:font-bold"
+  //       onClick={onShowError}
+  //     >
+  //       <Icon fa="fa-solid fa-circle-exclamation" size={1} />
+  //       <span className="text-xs font-bold">Error</span>
+  //     </button>
+  //   );
+  // }
 
-  function ErrorButton(p: { hidden?: boolean }): ReactElement {
-    if (p.hidden) return <></>;
-    return (
-      <button
-        className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-red-100 text-red-300 hover:bg-red-200 hover:text-red-500 hover:font-bold"
-        onClick={onShowError}
-      >
-        <Icon fa="fa-solid fa-circle-exclamation" size={1} />
-        <span className="text-xs font-bold">Error</span>
-      </button>
-    );
-  }
+  // function ErrorModal(): ReactElement {
+  //   const msg = typeof error === 'string' && error;
+  //   return !showingError ? (
+  //     <></>
+  //   ) : (
+  //     <Modal
+  //       className="flex flex-col gap-4 items-center text-base cursor-default justify-center !w-auto mx-4 my-[50%] min-h-24 p-4 border border-red-500"
+  //       onClose={closeAllModal}
+  //     >
+  //       <ModalContent className="flex justify-center items-center text-slate-500">
+  //         {msg || 'Something went wrong :('}
+  //       </ModalContent>
+  //       <button
+  //         className="m-0 w-24 bg-red-100 text-red-300 hover:bg-red-200 hover:text-red-500"
+  //         onClick={closeAllModal}
+  //       >
+  //         OK
+  //       </button>
+  //     </Modal>
+  //   );
+  // }
 
-  function ErrorModal(): ReactElement {
-    const msg = typeof request?.error === 'string' && request?.error;
-    return !showingError ? (
-      <></>
-    ) : (
-      <Modal
-        className="flex flex-col gap-4 items-center text-base cursor-default justify-center !w-auto mx-4 my-[50%] min-h-24 p-4 border border-red-500"
-        onClose={closeAllModal}
-      >
-        <ModalContent className="flex justify-center items-center text-slate-500">
-          {msg || 'Something went wrong :('}
-        </ModalContent>
-        <button
-          className="m-0 w-24 bg-red-100 text-red-300 hover:bg-red-200 hover:text-red-500"
-          onClick={closeAllModal}
-        >
-          OK
-        </button>
-      </Modal>
-    );
-  }
-
-  function ShareConfirmationModal(): ReactElement {
-    return !showingShareConfirmation ? (
-      <></>
-    ) : (
-      <Modal
-        className="flex flex-col items-center text-base cursor-default justify-center !w-auto mx-4 my-[50%] p-4 gap-4"
-        onClose={closeAllModal}
-      >
-        <ModalContent className="flex flex-col w-full gap-4 items-center text-base justify-center">
-          {!cid[props.requestId] ? (
-            <p className="text-slate-500 text-center">
-              {uploadError ||
-                'This will make your proof publicly accessible by anyone with the CID'}
-            </p>
-          ) : (
-            <input
-              className="input w-full bg-slate-100 border border-slate-200"
-              readOnly
-              value={`${EXPLORER_API}/ipfs/${cid[props.requestId]}`}
-              onFocus={(e) => e.target.select()}
-            />
-          )}
-        </ModalContent>
-        <div className="flex flex-row gap-2 justify-center">
-          {!cid[props.requestId] ? (
-            <>
-              {!uploadError && (
-                <button
-                  onClick={handleUpload}
-                  className="button button--primary flex flex-row items-center justify-center gap-2 m-0"
-                  disabled={uploading}
-                >
-                  {uploading && (
-                    <Icon
-                      className="animate-spin"
-                      fa="fa-solid fa-spinner"
-                      size={1}
-                    />
-                  )}
-                  I understand
-                </button>
-              )}
-              <button
-                className="m-0 w-24 bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 font-bold"
-                onClick={closeAllModal}
-              >
-                Close
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() =>
-                  copy(`${EXPLORER_API}/ipfs/${cid[props.requestId]}`)
-                }
-                className="m-0 w-24 bg-slate-600 text-slate-200 hover:bg-slate-500 hover:text-slate-100 font-bold"
-              >
-                Copy
-              </button>
-              <button
-                className="m-0 w-24 bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 font-bold"
-                onClick={closeAllModal}
-              >
-                Close
-              </button>
-            </>
-          )}
-        </div>
-      </Modal>
-    );
-  }
+  // function ShareConfirmationModal(): ReactElement {
+  //   return !showingShareConfirmation ? (
+  //     <></>
+  //   ) : (
+  //     <Modal
+  //       className="flex flex-col items-center text-base cursor-default justify-center !w-auto mx-4 my-[50%] p-4 gap-4"
+  //       onClose={closeAllModal}
+  //     >
+  //       <ModalContent className="flex flex-col w-full gap-4 items-center text-base justify-center">
+  //         {!cid[props.requestId] ? (
+  //           <p className="text-slate-500 text-center">
+  //             {uploadError ||
+  //               'This will make your proof publicly accessible by anyone with the CID'}
+  //           </p>
+  //         ) : (
+  //           <input
+  //             className="input w-full bg-slate-100 border border-slate-200"
+  //             readOnly
+  //             value={`${EXPLORER_API}/ipfs/${cid[props.requestId]}`}
+  //             onFocus={(e) => e.target.select()}
+  //           />
+  //         )}
+  //       </ModalContent>
+  //       <div className="flex flex-row gap-2 justify-center">
+  //         {!cid[props.requestId] ? (
+  //           <>
+  //             {!uploadError && (
+  //               <button
+  //                 onClick={handleUpload}
+  //                 className="button button--primary flex flex-row items-center justify-center gap-2 m-0"
+  //                 disabled={uploading}
+  //               >
+  //                 {uploading && (
+  //                   <Icon
+  //                     className="animate-spin"
+  //                     fa="fa-solid fa-spinner"
+  //                     size={1}
+  //                   />
+  //                 )}
+  //                 I understand
+  //               </button>
+  //             )}
+  //             <button
+  //               className="m-0 w-24 bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 font-bold"
+  //               onClick={closeAllModal}
+  //             >
+  //               Close
+  //             </button>
+  //           </>
+  //         ) : (
+  //           <>
+  //             <button
+  //               onClick={() =>
+  //                 copy(`${EXPLORER_API}/ipfs/${cid[props.requestId]}`)
+  //               }
+  //               className="m-0 w-24 bg-slate-600 text-slate-200 hover:bg-slate-500 hover:text-slate-100 font-bold"
+  //             >
+  //               Copy
+  //             </button>
+  //             <button
+  //               className="m-0 w-24 bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 font-bold"
+  //               onClick={closeAllModal}
+  //             >
+  //               Close
+  //             </button>
+  //           </>
+  //         )}
+  //       </div>
+  //     </Modal>
+  //   );
+  // }
 }
 
 function ActionButton(props: {

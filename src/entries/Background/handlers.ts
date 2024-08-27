@@ -10,6 +10,10 @@ import { addRequest } from '../../reducers/requests';
 import { urlify } from '../../utils/misc';
 import { setCookies, setHeaders } from './db';
 import { NOTARY_API, NOTARY_PROXY } from '../../utils/constants';
+import { Bookmark, BookmarkManager } from '../../reducers/bookmarks';
+import { defaultBookmarks } from '../../utils/defaultBookmarks';
+import { get, NOTARY_API_LS_KEY, PROXY_API_LS_KEY } from '../../utils/storage';
+
 export const onSendHeaders = (
   details: browser.WebRequest.OnSendHeadersDetailsType,
 ) => {
@@ -84,9 +88,6 @@ export const onBeforeRequest = (
   });
 };
 
-import { defaultBookmarks as bookmarks } from '../../utils/defaultBookmarks';
-import { get, NOTARY_API_LS_KEY, PROXY_API_LS_KEY } from '../../utils/storage';
-
 export const handleNotarization = (
   details: browser.WebRequest.OnCompletedDetailsType,
 ) => {
@@ -98,12 +99,12 @@ export const handleNotarization = (
 
     const req = cache.get<RequestLog>(requestId);
 
+    const bookmarkManager = new BookmarkManager();
+    const bookmarks = await bookmarkManager.getBookmarks();
     const bookmark = bookmarks.find(
-      (bm) =>
-        url.startsWith(bm.url) && method === bm.method && type === bm.type,
+      (bm) => url.includes(bm.url) && method === bm.method && type === bm.type,
     );
-
-    if (!bookmark || !req) return;
+    const bookmarkIds = await bookmarkManager.getBookmarkIds();
 
     console.log('=================');
     console.log('handleNotarization');
@@ -113,6 +114,11 @@ export const handleNotarization = (
     console.log('tabId', tabId);
     console.log('id', requestId);
     console.log('=================');
+
+    console.log('bookmarks', bookmarks);
+    console.log('bookmarkIds', bookmarkIds);
+
+    if (!bookmark || !req) return;
 
     console.log('req', req);
 
@@ -136,6 +142,7 @@ export const handleNotarization = (
     const notaryUrl = await get(NOTARY_API_LS_KEY, NOTARY_API);
     const websocketProxyUrl = await get(PROXY_API_LS_KEY, NOTARY_PROXY);
 
+    console.log('handleNotarization', req.url, req.type);
     await handleProveRequestStart(
       {
         type: BackgroundActiontype.prove_request_start,

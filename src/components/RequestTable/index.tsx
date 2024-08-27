@@ -25,13 +25,13 @@ export default function RequestTable(props: Props): ReactElement {
     includeMatches: true,
     ignoreLocation: true,
     keys: [
-      { name: 'method', weight: 2 },
-      { name: 'type', weight: 2 },
+      { name: 'method', weight: 1 },
+      { name: 'type', weight: 1 },
       { name: 'requestHeaders.name', weight: 1 },
       { name: 'requestHeaders.value', weight: 1 },
       { name: 'responseHeaders.name', weight: 1 },
       { name: 'responseHeaders.value', weight: 1 },
-      { name: 'url', weight: 1 },
+      { name: 'url', weight: 3 },
     ],
   });
 

@@ -336,6 +336,7 @@ export async function handleProveRequestStart(
     secretResps,
   } = request.data;
 
+  console.log('addNotaryRequest1', cid, type);
   const { id } = await addNotaryRequest(Date.now(), {
     cid,
     type,
@@ -402,6 +403,7 @@ async function runPluginProver(request: BackgroundAction, now = Date.now()) {
   const maxRecvData = _maxRecvData || (await getMaxRecv());
   const maxTranscriptSize = 16384;
 
+  console.log('addNotaryRequest2');
   const { id } = await addNotaryRequest(now, {
     url,
     method,
@@ -855,6 +857,7 @@ async function handleNotarizeRequest(request: BackgroundAction) {
       if (req.data) {
         try {
           const { secretHeaders, secretResps } = req.data;
+          console.log('addNotaryRequest3');
           await addNotaryRequest(now, req.data);
           await setNotaryRequestStatus(id, 'pending');
 

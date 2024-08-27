@@ -21,8 +21,8 @@ export class BookmarkManager {
   async getBookmarkIds(): Promise<string[]> {
     const bookmarksId = await sha256('bookmarks');
     try {
-      const storage = await localStorage.getItem(bookmarksId);
-      return storage ? JSON.parse(storage) : [];
+      const storage = await chrome.storage.local.get(bookmarksId);
+      return storage[bookmarksId] ? JSON.parse(storage[bookmarksId]) : [];
     } catch (e) {
       return [];
     }
@@ -31,7 +31,9 @@ export class BookmarkManager {
   async saveBookmarkIds(bookmarkIds: string[]): Promise<void> {
     const bookmarksId = await sha256('bookmarks');
     try {
-      await localStorage.setItem(bookmarksId, JSON.stringify(bookmarkIds));
+      await chrome.storage.local.set({
+        [bookmarksId]: JSON.stringify(bookmarkIds),
+      });
     } catch (e) {
       console.error('Error saving bookmark IDs', e);
     }
@@ -51,7 +53,7 @@ export class BookmarkManager {
 
     await this.addBookmarkId(id);
 
-    await localStorage.setItem(id, JSON.stringify(bookmark));
+    await chrome.storage.local.set({ [id]: JSON.stringify(bookmark) });
   }
 
   async addBookMarks(requests: RequestHistory[]) {
@@ -60,8 +62,8 @@ export class BookmarkManager {
 
   async getBookmark(id: string): Promise<Bookmark | null> {
     try {
-      const existing = await localStorage.getItem(id);
-      return existing ? JSON.parse(existing) : null;
+      const existing = await chrome.storage.local.get(id);
+      return existing[id] ? JSON.parse(existing[id]) : null;
     } catch (e) {
       return null;
     }

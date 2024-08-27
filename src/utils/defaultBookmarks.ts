@@ -22,7 +22,7 @@ export const defaultBookmarks: Bookmark[] = [
     valueTransform: '"email":%s',
   },
   {
-    url: 'https://x.com/i/api/2/badge_count/badge_count.json',
+    url: 'https://api.x.com/1.1/account/settings.json',
     targetUrl: 'https://www.twitter.com/home',
     method: 'GET',
     type: 'xmlhttprequest',

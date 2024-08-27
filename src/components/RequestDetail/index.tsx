@@ -414,12 +414,23 @@ function WebResponse(props: Props): ReactElement {
               </tr>
             </thead>
             <tr>
-              <td colSpan={2}>
+              <td colSpan={2} className="relative">
                 <textarea
                   rows={16}
                   className="w-full bg-slate-100 text-slate-600 p-2 text-xs break-all h-full outline-none font-mono"
                   value={JSON.stringify(json, null, 2)}
+                  readOnly
                 ></textarea>
+                <button
+                  className="absolute top-2 right-2 bg-slate-500 text-white px-2 py-1 text-xs rounded"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      JSON.stringify(json, null, 2),
+                    );
+                  }}
+                >
+                  Copy
+                </button>
               </td>
             </tr>
           </>

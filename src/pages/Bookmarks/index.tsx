@@ -40,10 +40,6 @@ export default function Bookmarks(): ReactElement {
 
   return (
     <div className="flex flex-col flex-nowrap overflow-y-auto">
-      {defaultBookmarks.map((bookmark) => {
-        return <DefaultBookmark key={bookmark.url} bookmark={bookmark} />;
-      })}
-
       {bookmarks.length > 0 &&
         bookmarks.map((bookmark) => {
           return (
@@ -58,50 +54,7 @@ export default function Bookmarks(): ReactElement {
   );
 }
 
-export function DefaultBookmark(props: { bookmark: Bookmark }): ReactElement {
-  const { bookmark } = props;
-
-  // if (!request) return <></>;
-  return (
-    <div
-      className={classNames(
-        'flex flex-row flex-nowrap border rounded-md p-2 gap-1 hover:bg-slate-50 cursor-pointer',
-      )}
-    >
-      <div className="flex flex-col flex-nowrap flex-grow flex-shrink w-0">
-        <div className="flex flex-row items-center text-xs">
-          <div className="bg-slate-200 text-slate-400 px-1 py-0.5 rounded-sm">
-            {bookmark?.method}
-          </div>
-          <div className="text-black font-bold px-2 py-1 rounded-md overflow-hidden text-ellipsis">
-            {bookmark?.title}
-          </div>
-        </div>
-
-        <div className="flex flex-row">
-          <div className="font-bold text-slate-400">Url:</div>
-          <div className="ml-2 text-slate-800">{bookmark?.url}</div>
-        </div>
-        <div className="flex flex-row">
-          <div className="ml-2 text-slate-800">{bookmark?.description}</div>
-        </div>
-        <div className="flex flex-row">
-          <div className="ml-2 text-slate-800">{bookmark?.type}</div>
-        </div>
-      </div>
-      <div className="flex flex-col gap-1">
-        {<GenerateAttButton2 targetUrl={bookmark.targetUrl} />}
-      </div>
-      {bookmark.icon && (
-        <div className="flex-shrink-0">
-          <img src={bookmark.icon} className="w-6 h-6 rounded-full" />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function GenerateAttButton2(p: {
+function GenerateAttButton(p: {
   hidden?: boolean;
   targetUrl: string;
 }): ReactElement {
@@ -191,20 +144,22 @@ export function OneBookmark(props: {
         {/* {status === 'error' && !!error && (
           <ErrorButton hidden={hideActions.includes('error')} />
         )} */}
-        {<GenerateAttButton2 targetUrl={bookmark.targetUrl} />}
+        {<GenerateAttButton targetUrl={bookmark.targetUrl} />}
         {status === 'pending' && (
           <button className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 font-bold">
             <Icon className="animate-spin" fa="fa-solid fa-spinner" size={1} />
             <span className="text-xs font-bold">Pending</span>
           </button>
         )}
-        <ActionButton
-          className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-red-100 hover:text-red-500 hover:font-bold"
-          onClick={onDelete}
-          fa="fa-solid fa-trash"
-          ctaText="Delete"
-          hidden={hideActions.includes('delete')}
-        />
+        {!bookmark.default && (
+          <ActionButton
+            className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-red-100 hover:text-red-500 hover:font-bold"
+            onClick={onDelete}
+            fa="fa-solid fa-trash"
+            ctaText="Delete"
+            hidden={hideActions.includes('delete')}
+          />
+        )}
       </div>
     </div>
   );

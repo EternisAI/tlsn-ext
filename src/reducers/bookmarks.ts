@@ -2,9 +2,10 @@ import { db } from '../entries/Background/db';
 import { RequestHistory, RequestLog } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
 import { getCacheByTabId } from '../entries/Background/cache';
-
+import { defaultBookmarks } from '../utils/defaultBookmarks';
 export type Bookmark = {
   id?: string;
+  default?: boolean;
   requestId?: string;
   url: string;
   targetUrl: string;
@@ -74,7 +75,12 @@ export class BookmarkManager {
     const bookmarks = await Promise.all(
       bookmarkIds.map((id) => this.getBookmark(id)),
     );
-    return bookmarks.filter((bookmark) => bookmark !== null) as Bookmark[];
+
+    const allBookmarks = [
+      ...defaultBookmarks.map((bookmark) => ({ ...bookmark, default: true })),
+      ...bookmarks.filter((bookmark) => bookmark !== null),
+    ];
+    return allBookmarks as Bookmark[];
   }
 
   async deleteBookmark(id: string): Promise<void> {

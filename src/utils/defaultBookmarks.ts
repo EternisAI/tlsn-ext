@@ -1,17 +1,17 @@
 import { Bookmark } from '../reducers/bookmarks';
 
 export const defaultBookmarks: Bookmark[] = [
-  // {
-  //   url: 'https://app.carta.com/profiles/settings/',
-  //   targetUrl: 'https://app.carta.com/profiles/settings/',
-  //   method: 'GET',
-  //   type: 'main_frame',
-  //   title: 'Carta Profile',
-  //   description: '',
-  //   responseSelector: '',
-  //   valueTransform: '',
-  //   icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstore-app-images.s3.us-east-1.amazonaws.com%2F4b00d4f0a3be5eae76c93058ddb352dc-400x400.png&f=1&nofb=1&ipt=62c13557d086a2c30079a55774f58bfeb46c8b8554af84f22d0a215febfdffa8&ipo=images',
-  // },
+  {
+    url: 'https://app.carta.com/profiles/settings/',
+    targetUrl: 'https://app.carta.com/profiles/settings/',
+    method: 'GET',
+    type: 'main_frame',
+    title: 'Carta Profile',
+    description: '',
+    responseSelector: '',
+    valueTransform: '',
+    icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstore-app-images.s3.us-east-1.amazonaws.com%2F4b00d4f0a3be5eae76c93058ddb352dc-400x400.png&f=1&nofb=1&ipt=62c13557d086a2c30079a55774f58bfeb46c8b8554af84f22d0a215febfdffa8&ipo=images',
+  },
 
   // {
   //   url: 'https://dummyjson.com/products/1',

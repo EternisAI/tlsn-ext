@@ -172,12 +172,16 @@ export function OneBookmark(props: {
         </div>
 
         <div className="flex flex-row">
-          <div className="font-bold text-slate-400">Url:</div>
+          <div className="font-bold text-slate-400">Url</div>
           <div className="ml-2 text-slate-800">{requestUrl?.pathname}</div>
         </div>
         <div className="flex flex-row">
-          <div className="font-bold text-slate-400">TargetUrl:</div>
+          <div className="font-bold text-slate-400">TargetUrl</div>
           <div className="ml-2 text-slate-800">{bookmark.targetUrl}</div>
+        </div>
+        <div className="flex flex-row">
+          <div className="font-bold text-slate-400">Type</div>
+          <div className="ml-2 text-slate-800">{bookmark.type}</div>
         </div>
       </div>
       <div className="flex flex-col gap-1">

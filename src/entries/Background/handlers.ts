@@ -94,13 +94,6 @@ export const handleNotarization = (
     const { tabId, requestId, frameId, url, method, type } = details;
     const cache = getCacheByTabId(tabId);
 
-    console.log('=================');
-    console.log('handleNotarization');
-    console.log('url', url);
-    console.log('method', method);
-    console.log('type', type);
-    console.log('=================');
-
     if (tabId === -1 || frameId === -1) return;
 
     const req = cache.get<RequestLog>(requestId);
@@ -110,8 +103,16 @@ export const handleNotarization = (
         url.startsWith(bm.url) && method === bm.method && type === bm.type,
     );
 
-    console.log('bookmark', bookmark);
     if (!bookmark || !req) return;
+
+    console.log('=================');
+    console.log('handleNotarization');
+    console.log('url', url);
+    console.log('method', method);
+    console.log('type', type);
+    console.log('tabId', tabId);
+    console.log('id', requestId);
+    console.log('=================');
 
     console.log('req', req);
 
@@ -139,6 +140,8 @@ export const handleNotarization = (
       {
         type: BackgroundActiontype.prove_request_start,
         data: {
+          cid: requestId,
+          type: req.type,
           url: req.url,
           method: req.method,
           headers: headers,

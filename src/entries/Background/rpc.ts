@@ -134,6 +134,7 @@ export type RequestHistory = {
   metadata?: {
     [k: string]: string;
   };
+  type?: string;
 };
 
 export const initRPC = () => {
@@ -320,6 +321,8 @@ export async function handleProveRequestStart(
 ) {
   console.log('handleProveRequestStart', request);
   const {
+    cid,
+    type,
     url,
     method,
     headers,
@@ -334,6 +337,8 @@ export async function handleProveRequestStart(
   } = request.data;
 
   const { id } = await addNotaryRequest(Date.now(), {
+    cid,
+    type,
     url,
     method,
     headers,

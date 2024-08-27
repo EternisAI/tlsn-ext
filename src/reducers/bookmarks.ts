@@ -1,5 +1,5 @@
 import { db } from '../entries/Background/db';
-import { RequestHistory } from '../entries/Background/rpc';
+import { RequestHistory, RequestLog } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
 import { getCacheByTabId } from '../entries/Background/cache';
 
@@ -47,7 +47,7 @@ export class BookmarkManager {
 
   async addBookmark(request: RequestHistory) {
     const id = await sha256(request.url);
-    const bookmark: Bookmark = this.convertRequestToBookmark(request, id);
+    const bookmark: Bookmark = await this.convertRequestToBookmark(request, id);
 
     await this.addBookmarkId(id);
 
@@ -80,17 +80,36 @@ export class BookmarkManager {
     await localStorage.removeItem(hashId);
   }
 
-  convertRequestToBookmark(request: RequestHistory, id: string) {
-    // const cache = getCacheByTabId(request.tabId);
-    // const req = cache.get<RequestLog>(requestId);
+  async getCurrentTabInfo(): Promise<chrome.tabs.Tab | null> {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length === 0) {
+          reject(new Error('No active tab found'));
+        } else {
+          resolve(tabs[0] || null);
+        }
+      });
+    });
+  }
+
+  async convertRequestToBookmark(request: RequestHistory, id: string) {
+    const currentTabInfo = await this.getCurrentTabInfo();
+
+    const cache = getCacheByTabId(currentTabInfo?.id || 0);
+
+    console.log('=================');
+    console.log('convertRequestToBookmark');
+    console.log('currentTabInfo', currentTabInfo?.id);
+    console.log('requestId', request.cid);
+    console.log('request', request.type);
 
     const bookmark: Bookmark = {
       requestId: request.id,
       id,
-      url: request.url,
-      targetUrl: request.url,
-      method: request.method,
-      type: 'main_frame',
+      url: request?.url || '',
+      targetUrl: currentTabInfo?.url || '',
+      method: request?.method || '',
+      type: request?.type || '',
       title: request.url,
       description: '',
       responseSelector: '',

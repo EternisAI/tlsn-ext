@@ -106,17 +106,17 @@ export const handleNotarization = (
     );
     const bookmarkIds = await bookmarkManager.getBookmarkIds();
 
-    console.log('=================');
-    console.log('handleNotarization');
-    console.log('url', url);
-    console.log('method', method);
-    console.log('type', type);
-    console.log('tabId', tabId);
-    console.log('id', requestId);
-    console.log('=================');
+    // console.log('=================');
+    // console.log('handleNotarization');
+    // console.log('url', url);
+    // console.log('method', method);
+    // console.log('type', type);
+    // console.log('tabId', tabId);
+    // console.log('id', requestId);
+    // console.log('=================');
 
-    console.log('bookmarks', bookmarks);
-    console.log('bookmarkIds', bookmarkIds);
+    // console.log('bookmarks', bookmarks);
+    // console.log('bookmarkIds', bookmarkIds);
 
     if (!bookmark || !req) return;
 
@@ -142,7 +142,6 @@ export const handleNotarization = (
     const notaryUrl = await get(NOTARY_API_LS_KEY, NOTARY_API);
     const websocketProxyUrl = await get(PROXY_API_LS_KEY, NOTARY_PROXY);
 
-    console.log('handleNotarization', req.url, req.type);
     await handleProveRequestStart(
       {
         type: BackgroundActiontype.prove_request_start,

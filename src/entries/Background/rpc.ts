@@ -241,10 +241,6 @@ async function handleFinishProveRequest(
     const newReq = await addNotaryRequestProofs(id, proof);
     if (!newReq) return;
 
-    console.log('handleFinishProveRequest proof', proof);
-
-    console.log('getNotaryRequest', await getNotaryRequest(id));
-
     await browser.runtime.sendMessage({
       type: BackgroundActiontype.push_action,
       data: {
@@ -319,7 +315,6 @@ export async function handleProveRequestStart(
   request: BackgroundAction,
   sendResponse: (data?: any) => void,
 ) {
-  console.log('handleProveRequestStart', request);
   const {
     cid,
     type,
@@ -336,7 +331,6 @@ export async function handleProveRequestStart(
     secretResps,
   } = request.data;
 
-  console.log('addNotaryRequest1', cid, type);
   const { id } = await addNotaryRequest(Date.now(), {
     cid,
     type,
@@ -403,7 +397,6 @@ async function runPluginProver(request: BackgroundAction, now = Date.now()) {
   const maxRecvData = _maxRecvData || (await getMaxRecv());
   const maxTranscriptSize = 16384;
 
-  console.log('addNotaryRequest2');
   const { id } = await addNotaryRequest(now, {
     url,
     method,
@@ -857,7 +850,6 @@ async function handleNotarizeRequest(request: BackgroundAction) {
       if (req.data) {
         try {
           const { secretHeaders, secretResps } = req.data;
-          console.log('addNotaryRequest3');
           await addNotaryRequest(now, req.data);
           await setNotaryRequestStatus(id, 'pending');
 
@@ -1063,7 +1055,6 @@ async function handleRunPluginCSRequest(request: BackgroundAction) {
   );
 
   const onPluginRequest = async (req: any) => {
-    console.log(req);
     if (req.type !== SidePanelActionTypes.execute_plugin_response) return;
     if (req.data.hash !== hash) return;
 

@@ -48,19 +48,6 @@ export class BookmarkManager {
     }
   }
 
-  async addBookmark(request: RequestHistory) {
-    const id = await sha256(request.url);
-    const bookmark: Bookmark = await this.convertRequestToBookmark(request, id);
-
-    await this.addBookmarkId(id);
-
-    await chrome.storage.sync.set({ [id]: JSON.stringify(bookmark) });
-  }
-
-  async addBookMarks(requests: RequestHistory[]) {
-    await Promise.all(requests.map((request) => this.addBookmark(request)));
-  }
-
   async getBookmark(id: string): Promise<Bookmark | null> {
     try {
       const existing = await chrome.storage.sync.get(id);
@@ -83,9 +70,20 @@ export class BookmarkManager {
     return allBookmarks as Bookmark[];
   }
 
-  async deleteBookmark(id: string): Promise<void> {
-    const hashId = await sha256(id);
-    await localStorage.removeItem(hashId);
+  async deleteBookmark(bookmark: Bookmark): Promise<void> {
+    await chrome.storage.sync.remove([bookmark.id || '']);
+  }
+
+  async addBookmark(request: RequestHistory) {
+    const id = await sha256(request.url);
+    const bookmark: Bookmark = await this.convertRequestToBookmark(request, id);
+
+    await this.addBookmarkId(id);
+    await chrome.storage.sync.set({ [id]: JSON.stringify(bookmark) });
+  }
+
+  async addBookMarks(requests: RequestHistory[]) {
+    await Promise.all(requests.map((request) => this.addBookmark(request)));
   }
 
   async getCurrentTabInfo(): Promise<chrome.tabs.Tab | null> {
@@ -104,12 +102,6 @@ export class BookmarkManager {
     const currentTabInfo = await this.getCurrentTabInfo();
 
     const cache = getCacheByTabId(currentTabInfo?.id || 0);
-
-    console.log('=================');
-    console.log('convertRequestToBookmark');
-    console.log('currentTabInfo', currentTabInfo?.id);
-    console.log('requestId', request.cid);
-    console.log('request', request.type);
 
     const bookmark: Bookmark = {
       requestId: request.id,

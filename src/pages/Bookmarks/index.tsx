@@ -27,10 +27,8 @@ export default function Bookmarks(): ReactElement {
 
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
-  console.log('requests', requests);
   const fetchBookmarks = useCallback(async () => {
     const bookmarks = await bookmarkManager.getBookmarks();
-    console.log('fetchBookmarks', JSON.stringify(bookmarks[0]));
     setBookmarks(bookmarks);
   }, []);
 
@@ -98,7 +96,7 @@ export function OneBookmark(props: {
   const requestUrl = urlify(bookmark.url || '');
 
   const onDelete = useCallback(async () => {
-    bookmarkManager.deleteBookmark(bookmark.url);
+    bookmarkManager.deleteBookmark(bookmark);
     props.fetchBookmarks();
   }, [bookmark]);
 

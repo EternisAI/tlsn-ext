@@ -27,13 +27,28 @@ jobs:
         with:
           node-version: 20
 
+      - name: Cache node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./tlsn-js/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Display directory structure
         run: tree -L 2 && npm --version
 
       - name: Install dependencies
         run: |
-          cd ./tlsn-js && npm install && cd -
-          npm install
+          cd ./tlsn-js && npm ci && cd -
+          npm ci
 
       - name: Build tlsn-js
         run: cd ./tlsn-js && npm run build && cd -

@@ -48,6 +48,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd ./tlsn-js && npm i && cd -
+          npm i
           npm ci
 
       - name: Build tlsn-js

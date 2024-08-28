@@ -35,6 +35,7 @@ export async function addNotaryRequest(
   request: Omit<RequestHistory, 'status' | 'id'>,
 ): Promise<RequestHistory> {
   const id = charwise.encode(now).toString('hex');
+  console.log('addNotaryRequest', id, request);
   const newReq: RequestHistory = {
     ...request,
     id,
@@ -121,13 +122,17 @@ export async function setNotaryRequestVerification(
 export async function removeNotaryRequest(
   id: string,
 ): Promise<RequestHistory | null> {
-  const existing = await historyDb.get(id);
+  try {
+    const existing = await historyDb.get(id);
+    if (!existing) return null;
 
-  if (!existing) return null;
+    await historyDb.del(id);
 
-  await historyDb.del(id);
-
-  return existing;
+    return existing;
+  } catch (e) {
+    console.log('error retrieving request', e);
+    return null;
+  }
 }
 
 export async function getNotaryRequests(): Promise<RequestHistory[]> {

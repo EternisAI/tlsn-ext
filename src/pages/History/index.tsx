@@ -15,11 +15,16 @@ import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
 import { EXPLORER_API } from '../../utils/constants';
 import {
-  getNotaryRequest,
   setNotaryRequestCid,
+  getNotaryRequest,
+  getNotaryRequests,
+  removeNotaryRequest,
 } from '../../entries/Background/db';
+import { BookmarkManager } from '../../reducers/bookmarks';
+import { RequestHistory } from '../../entries/Background/rpc';
 const charwise = require('charwise');
 
+const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
   const history = useHistoryOrder();
 
@@ -50,10 +55,10 @@ export function OneRequestHistory(props: {
   const { status } = request || {};
   const requestUrl = urlify(request?.url || '');
 
+  const [successBookmark, setSuccessBookmark] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const request = await getNotaryRequest(props.requestId);
         if (request && request.cid) {
           setCid({ [props.requestId]: request.cid });
         }
@@ -98,6 +103,14 @@ export function OneRequestHistory(props: {
     showError(false);
   }, [setShowingShareConfirmation, showError]);
 
+  const addBookmark = useCallback(
+    async (request: RequestHistory) => {
+      setSuccessBookmark(true);
+      bookmarkManager.addBookmark(request);
+    },
+    [request],
+  );
+
   const handleUpload = useCallback(async () => {
     setUploading(true);
     try {
@@ -129,7 +142,7 @@ export function OneRequestHistory(props: {
             {request?.method}
           </div>
           <div className="text-black font-bold px-2 py-1 rounded-md overflow-hidden text-ellipsis">
-            {requestUrl?.pathname}
+            {requestUrl?.host}
           </div>
         </div>
         <div className="flex flex-row">
@@ -139,8 +152,10 @@ export function OneRequestHistory(props: {
           </div>
         </div>
         <div className="flex flex-row">
-          <div className="font-bold text-slate-400">Host:</div>
-          <div className="ml-2 text-slate-800">{requestUrl?.host}</div>
+          <div className="font-bold text-slate-400">Url:</div>
+          <div className="ml-2 text-slate-800">
+            {requestUrl?.pathname.substring(0, 100) + '...'}
+          </div>
         </div>
         <div className="flex flex-row">
           <div className="font-bold text-slate-400">Notary API:</div>
@@ -170,6 +185,17 @@ export function OneRequestHistory(props: {
               hidden={hideActions.includes('view')}
             />
             <ActionButton
+              className={
+                'text-slate-300 hover:bg-slate-200 hover:text-slate-500 ' +
+                (successBookmark ? 'bg-slate-600' : 'bg-slate-100')
+              }
+              onClick={() => addBookmark(request!)}
+              fa="fa-solid fa-bookmark"
+              ctaText="Add provider"
+              hidden={hideActions.includes('save')}
+            />
+
+            <ActionButton
               className="bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500"
               onClick={() =>
                 download(`${request?.id}.json`, JSON.stringify(request?.proof))
@@ -178,6 +204,7 @@ export function OneRequestHistory(props: {
               ctaText="Download"
               hidden={hideActions.includes('download')}
             />
+
             {/* <ActionButton
               className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500 hover:font-bold"
               onClick={() => setShowingShareConfirmation(true)}

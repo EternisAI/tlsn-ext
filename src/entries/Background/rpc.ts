@@ -134,6 +134,7 @@ export type RequestHistory = {
   metadata?: {
     [k: string]: string;
   };
+  type?: string;
 };
 
 export const initRPC = () => {
@@ -240,10 +241,6 @@ async function handleFinishProveRequest(
     const newReq = await addNotaryRequestProofs(id, proof);
     if (!newReq) return;
 
-    console.log('handleFinishProveRequest proof', proof);
-
-    console.log('getNotaryRequest', await getNotaryRequest(id));
-
     await browser.runtime.sendMessage({
       type: BackgroundActiontype.push_action,
       data: {
@@ -314,11 +311,13 @@ async function handleRetryProveReqest(
   return sendResponse();
 }
 
-async function handleProveRequestStart(
+export async function handleProveRequestStart(
   request: BackgroundAction,
   sendResponse: (data?: any) => void,
 ) {
   const {
+    cid,
+    type,
     url,
     method,
     headers,
@@ -333,6 +332,8 @@ async function handleProveRequestStart(
   } = request.data;
 
   const { id } = await addNotaryRequest(Date.now(), {
+    cid,
+    type,
     url,
     method,
     headers,
@@ -1054,7 +1055,6 @@ async function handleRunPluginCSRequest(request: BackgroundAction) {
   );
 
   const onPluginRequest = async (req: any) => {
-    console.log(req);
     if (req.type !== SidePanelActionTypes.execute_plugin_response) return;
     if (req.data.hash !== hash) return;
 

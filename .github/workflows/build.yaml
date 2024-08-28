@@ -22,6 +22,9 @@ jobs:
           path: tlsn-js
           ref: tee-tls
 
+      - name: Display directory structure
+        run: tree -L 2
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -29,11 +32,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd ../tlsn-js && npm install && cd -
+          cd ./tlsn-js && npm install && cd -
           npm install
 
       - name: Build tlsn-js
-        run: cd ../tlsn-js && npm run build && cd -
+        run: cd ./tlsn-js && npm run build && cd -
 
       - name: Build current project
         run: npm run build

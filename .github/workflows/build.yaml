@@ -19,7 +19,7 @@ jobs:
         with:
           repository: eternisai/tlsn-js
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: ../tlsn-js
+          path: tlsn-js
           ref: tee-tls
 
       - name: Install Node.js

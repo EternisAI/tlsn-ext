@@ -22,13 +22,13 @@ jobs:
           path: tlsn-js
           ref: tee-tls
 
-      - name: Display directory structure
-        run: tree -L 2
-
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
+
+      - name: Display directory structure
+        run: tree -L 2 && npm --version
 
       - name: Install dependencies
         run: |

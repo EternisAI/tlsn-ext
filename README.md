@@ -63,7 +63,7 @@ Now, the content of `build` folder will be the extension ready to be submitted t
 
 ## Providers 
 
-Defined in utils/defaultBookmarks.ts
+Defined in [utils/defaultBookmarks.ts](/src/utils/defaultBookmarks.ts)
 
 ## Resources:
 

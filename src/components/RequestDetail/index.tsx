@@ -409,6 +409,16 @@ function WebResponse(props: Props): ReactElement {
             <thead className="bg-slate-200">
               <tr>
                 <td colSpan={2} className="border border-slate-300 py-1 px-2">
+                  <button
+                    className=" right-2 bg-slate-500 text-white px-2 py-1 text-xs rounded"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        JSON.stringify(json, null, 2),
+                      );
+                    }}
+                  >
+                    Copy
+                  </button>
                   JSON
                 </td>
               </tr>
@@ -421,16 +431,6 @@ function WebResponse(props: Props): ReactElement {
                   value={JSON.stringify(json, null, 2)}
                   readOnly
                 ></textarea>
-                <button
-                  className="absolute top-2 right-2 bg-slate-500 text-white px-2 py-1 text-xs rounded"
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      JSON.stringify(json, null, 2),
-                    );
-                  }}
-                >
-                  Copy
-                </button>
               </td>
             </tr>
           </>
@@ -440,6 +440,14 @@ function WebResponse(props: Props): ReactElement {
             <thead className="bg-slate-200">
               <tr>
                 <td colSpan={2} className="border border-slate-300 py-1 px-2">
+                  <button
+                    className=" right-2 bg-slate-500 text-white px-2 py-1 text-xs rounded"
+                    onClick={() => {
+                      navigator.clipboard.writeText(text);
+                    }}
+                  >
+                    Copy
+                  </button>
                   Text
                 </td>
               </tr>

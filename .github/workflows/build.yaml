@@ -49,7 +49,6 @@ jobs:
         run: |
           cd ./tlsn-js && npm i && cd -
           npm i
-          npm ci
 
       - name: Build tlsn-js
         run: cd ./tlsn-js && npm run build && cd -
@@ -61,4 +60,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-output
-          path: ./build
+          path: ./zip

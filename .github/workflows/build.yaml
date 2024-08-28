@@ -14,9 +14,13 @@ jobs:
       - name: Checkout current project
         uses: actions/checkout@v3
 
-      - name: Clone tlsn-js repository
-        run: |
-          git clone --branch tee-tls https://github.com/EternisAI/tlsn-js.git ../tlsn-js
+      - name: Checkout tlsn-js
+        uses: actions/checkout@v3
+        with:
+          repository: eternisai/tlsn-js
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ../tlsn-js
+          ref: tee-tls
 
       - name: Install Node.js
         uses: actions/setup-node@v3

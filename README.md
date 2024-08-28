@@ -65,12 +65,6 @@ Now, the content of `build` folder will be the extension ready to be submitted t
 
 Defined in [utils/defaultBookmarks.ts](/src/utils/defaultBookmarks.ts)
 
-## Find latest build artifacts
-
-- Go to github actions
-- Find the "Build" workflow
-- Download the artifacts
-
 ## Resources:
 
 - [Webpack documentation](https://webpack.js.org/concepts/)

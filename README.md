@@ -9,12 +9,17 @@
 
 <img src="src/assets/img/icon-128.png" width="64"/>
 
-# Chrome Extension (MV3) for TLSNotary
+# Eternis Fork of Chrome Extension (MV3) for TLSNotary
 
 > [!IMPORTANT]
 > ⚠️ When running the extension against a [notary server](https://github.com/tlsnotary/tlsn/tree/dev/notary-server), please ensure that the server's version is the same as the version of this extension
 
+## Fork changes
+
+This extension has been forked from the original TLSNotary Chrome Extension and modified to work with the Eternis Notary Server running an enclave.
+
 ## License
+
 This repository is licensed under either of
 
 - [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
@@ -64,6 +69,13 @@ Now, the content of `build` folder will be the extension ready to be submitted t
 ## Providers 
 
 Defined in [utils/defaultBookmarks.ts](/src/utils/defaultBookmarks.ts)
+
+
+## Access extension build artifacts
+
+- Go to github actions
+- Find the "Build" workflow
+- Go to artifacts
 
 ## Resources:
 

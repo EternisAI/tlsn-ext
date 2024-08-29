@@ -39,11 +39,13 @@ import { RunPluginApproval } from '../../pages/RunPluginApproval';
 import Icon from '../../components/Icon';
 import classNames from 'classnames';
 import { getConnection } from '../Background/db';
-
+import { useRemoteAttestation } from '../../reducers/remote-attestation';
 const Popup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { remoteAttestation, loading, error, isValid } = useRemoteAttestation();
 
   useEffect(() => {
     (async () => {
@@ -93,6 +95,24 @@ const Popup = () => {
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       <div className="flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 h-9 p-2 cursor-default justify-center bg-slate-300 w-full">
+        {isValid && (
+          <>
+            <Icon
+              className="h-5 text-green-500"
+              fa="fa-solid fa-check-circle"
+            />{' '}
+            <a
+              href="https://aws.amazon.com/blogs/compute/validating-attestation-documents-produced-by-aws-nitro-enclaves/"
+              target="_blank"
+              title="The remote attestation guarantees the
+            authenticity of the code running the notary.   Click to learn more"
+              style={{ color: 'black', textDecoration: 'none' }}
+            >
+              Remote attestation
+            </a>
+          </>
+        )}
+
         {location.pathname === '/home' && (
           <img
             className="absolute left-2 h-5 cursor-pointer"
@@ -108,7 +128,6 @@ const Popup = () => {
             onClick={() => navigate('/')}
           />
         )}
-
         <AppConnectionLogo />
       </div>
       <Routes>

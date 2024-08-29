@@ -61,7 +61,7 @@ export default function Home(): ReactElement {
           Options
         </NavButton>
       </div>
-      <PluginList className="mx-4" />
+      {/* <PluginList className="mx-4" /> */}
     </div>
   );
 }

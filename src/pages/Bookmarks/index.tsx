@@ -2,22 +2,12 @@ import React, { ReactElement, useState, useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import Icon from '../../components/Icon';
-import { getNotaryApi, getProxyApi } from '../../utils/storage';
-import { urlify, download, upload } from '../../utils/misc';
-import { BackgroundActiontype } from '../../entries/Background/rpc';
-import Modal, { ModalContent } from '../../components/Modal/Modal';
+import { urlify } from '../../utils/misc';
 import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
-import { EXPLORER_API } from '../../utils/constants';
-import { setNotaryRequestCid } from '../../entries/Background/db';
 import { BookmarkManager } from '../../reducers/bookmarks';
-import { RequestHistory } from '../../entries/Background/rpc';
-import { notarizeRequest } from '../../reducers/requests';
 import { useUniqueRequests } from '../../reducers/requests';
-
 import { TLSN } from '../../entries/Content/content';
-
-import { defaultBookmarks } from '../../utils/defaultBookmarks';
 import { Bookmark } from '../../reducers/bookmarks';
 
 const tlsn = new TLSN();

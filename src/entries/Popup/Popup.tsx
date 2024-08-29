@@ -47,6 +47,7 @@ const Popup = () => {
 
   const { remoteAttestation, loading, error, isValid } = useRemoteAttestation();
 
+  console.log('remoteAttestation', remoteAttestation);
   useEffect(() => {
     (async () => {
       const [tab] = await browser.tabs.query({

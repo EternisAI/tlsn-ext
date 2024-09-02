@@ -49,8 +49,8 @@ function decodeCbor() {
     const decoded = cbor.decodeAllSync(remote_attestation_uint8);
 
     const remoteAttestation: RemoteAttestation = {
-      payload: decoded[0][2],
-      signature: decoded[0][3],
+      payload: new Uint8Array(decoded[0][2]),
+      signature: new Uint8Array(decoded[0][3]),
     };
     return remoteAttestation;
   } catch (e) {

@@ -2,6 +2,8 @@ const fs = require('fs');
 import * as crypto from 'crypto';
 import { chainCerts, ChainCert } from './chain-certs';
 
+import * as cbor from 'cbor-web';
+
 const certPath = './cert.pem';
 
 function verifyCertificate(certPath: string, chainCerts: ChainCert[]) {
@@ -29,8 +31,33 @@ function verifyCertificate(certPath: string, chainCerts: ChainCert[]) {
   return result;
 }
 
-if (verifyCertificate(certPath, chainCerts)) {
-  console.log('====\n End Certificate is valid 🟢');
-} else {
-  console.log('====\n End Certificate verification failed 🚫');
+// if (verifyCertificate(certPath, chainCerts)) {
+//   console.log('====\n End Certificate is valid 🟢');
+// } else {
+//   console.log('====\n End Certificate verification failed 🚫');
+// }
+
+interface RemoteAttestation {
+  payload: Uint8Array;
+  signature: Uint8Array;
 }
+
+function decodeCbor() {
+  try {
+    const base64String = fs.readFileSync('./remote_attestation', 'utf8');
+    const remote_attestation_uint8 = Buffer.from(base64String, 'base64');
+    const decoded = cbor.decodeAllSync(remote_attestation_uint8);
+
+    const remoteAttestation: RemoteAttestation = {
+      payload: decoded[0][2],
+      signature: decoded[0][3],
+    };
+    return remoteAttestation;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
+const decoded = decodeCbor();
+console.log(decoded);

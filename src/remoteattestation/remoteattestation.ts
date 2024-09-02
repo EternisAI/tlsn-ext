@@ -53,8 +53,8 @@ function decodeCbor() {
       signature: new Uint8Array(decoded[0][3]),
     };
     return remoteAttestation;
-  } catch (e) {
-    console.log(e);
+  } catch (e: any) {
+    console.log('Error decoding CBOR data', e.toString());
     return null;
   }
 }

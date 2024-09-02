@@ -66,7 +66,6 @@ function decodeCbor(data: Buffer) {
 function decodeCborPayload(data: Buffer) {
   try {
     const decoded = cbor.decodeAllSync(data);
-    console.log(decoded);
     const payload = decoded[0] as Payload;
     return payload;
   } catch (e: any) {
@@ -114,18 +113,20 @@ async function verifyRemoteAttestation() {
   if (!payload) return;
 
   //verify signature of attestation
-  const publicKey = payload.public_key;
 
+  const cert = new crypto.X509Certificate(payload.certificate);
+  const publicKey = cert.publicKey.export({ type: 'spki', format: 'der' });
   const message = remote_attestation.payload;
   const signature = remote_attestation.signature;
+
+  console.log('signature', signature, signature.length);
+  console.log('publicKey', new Uint8Array(publicKey), publicKey.length);
 
   const isValid = verifyES384Signature(
     publicKey,
     new Uint8Array(message),
     signature,
   );
-  console.log('signature', signature);
-  console.log('publicKey', new Uint8Array(publicKey));
   console.log('Signature is valid:', isValid);
 
   //verify x509 certificate
@@ -136,5 +137,7 @@ async function verifyRemoteAttestation() {
   // }
 
   // verify PCR values
+
+  //verify nonce
 }
 verifyRemoteAttestation();

@@ -18,7 +18,7 @@ interface Payload {
   pcrs: Uint8Array[];
   certificate: Uint8Array;
   cabundle: Uint8Array[];
-  public_key: Uint8Array | null;
+  public_key: Buffer;
   user_data: Uint8Array | null;
   nonce: Uint8Array | null;
 }
@@ -48,24 +48,6 @@ function verifyCertificate(certPath: string, chainCerts: ChainCert[]) {
   return result;
 }
 
-function verifyES384Signature(publicKey: any, message: any, signature: any) {
-  try {
-    // Create a verifier object
-    const verifier = crypto.createVerify('SHA384');
-
-    // Add the message to be verified
-    verifier.update(message);
-
-    // Verify the signature
-    const isValid = verifier.verify(publicKey, signature, 'base64');
-
-    return isValid;
-  } catch (error) {
-    console.error('Error verifying signature:', error);
-    return false;
-  }
-}
-
 function decodeCbor(data: Buffer) {
   try {
     const decoded = cbor.decodeAllSync(data);
@@ -93,36 +75,66 @@ function decodeCborPayload(data: Buffer) {
   }
 }
 
-//fetch attestation
-// add axios code here..
+function verifyES384Signature(
+  publicKey: Buffer,
+  message: Uint8Array,
+  signature: Uint8Array,
+) {
+  try {
+    // Create a verifier object
+    const verifier = crypto.createVerify('SHA384');
 
-//parse cbor structure
-const base64String = fs.readFileSync('./remote_attestation', 'utf8');
-const remote_attestation_uint8 = Buffer.from(base64String, 'base64');
-const remote_attestation = decodeCbor(remote_attestation_uint8);
+    // Add the message to be verified
+    verifier.update(message);
 
-if (remote_attestation) {
-  const payload = decodeCborPayload(remote_attestation.payload);
-  console.log(payload);
+    // Verify the signature
+    const isValid = verifier.verify(publicKey, signature);
+
+    return isValid;
+  } catch (error) {
+    console.error('Error verifying signature:', error);
+    return false;
+  }
 }
 
-//verify signature
-const publicKey = `-----BEGIN PUBLIC KEY-----
-MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEXtIZwd2RFvOX+0YxccGAnzyzL4dN6Rb6
-WiZJxVIRdgHWCIALp5CASV7H+rvwlPG6P+TsFXzcZ+MoTkFLkF2WiF9vdv/IDnYw
-tC5tAYBgtJmEEZmZEFoSV5MXqvTfzUKC
------END PUBLIC KEY-----`;
+async function verifyRemoteAttestation() {
+  //fetch attestation
+  // add axios code here..
 
-const message = 'Hello, world!';
-const signature =
-  'MEUCIQCvj5ZAMhm1/XMEQ6fCMj3jfRQyy8VjagL7h1SihLZiygIgDbL+hJtxZ1X7MThvvPPUBB/3eL6YHwcOF6FXKTsCj6g=';
+  //parse cbor structure
+  const base64String = fs.readFileSync('./remote_attestation', 'utf8');
+  const remote_attestation_uint8 = Buffer.from(base64String, 'base64');
+  const remote_attestation = decodeCbor(remote_attestation_uint8);
 
-const isValid = verifyES384Signature(publicKey, message, signature);
-console.log('Signature is valid:', isValid);
+  if (!remote_attestation) return;
 
-//verify x509 certificate
-// if (verifyCertificate(certPath, chainCerts)) {
-//   console.log('====\n End Certificate is valid 🟢');
-// } else {
-//   console.log('====\n End Certificate verification failed 🚫');
-// }
+  const payload = decodeCborPayload(remote_attestation.payload);
+  console.log(payload);
+
+  if (!payload) return;
+
+  //verify signature of attestation
+  const publicKey = payload.public_key;
+
+  const message = remote_attestation.payload;
+  const signature = remote_attestation.signature;
+
+  const isValid = verifyES384Signature(
+    publicKey,
+    new Uint8Array(message),
+    signature,
+  );
+  console.log('signature', signature);
+  console.log('publicKey', new Uint8Array(publicKey));
+  console.log('Signature is valid:', isValid);
+
+  //verify x509 certificate
+  // if (verifyCertificate(certPath, chainCerts)) {
+  //   console.log('====\n End Certificate is valid 🟢');
+  // } else {
+  //   console.log('====\n End Certificate verification failed 🚫');
+  // }
+
+  // verify PCR values
+}
+verifyRemoteAttestation();

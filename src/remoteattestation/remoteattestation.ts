@@ -1,34 +1,36 @@
 const fs = require('fs');
 import * as crypto from 'crypto';
-import { chainCerts } from './chain-certs';
+import { chainCerts, ChainCert } from './chain-certs';
 
-function verifyCertificate(certPath: string) {
+const certPath = './cert.pem';
+
+function verifyCertificate(certPath: string, chainCerts: ChainCert[]) {
   // Read the certificate and CA certificate
 
-  const cert = new crypto.X509Certificate(fs.readFileSync(certPath));
-  const ca = new crypto.X509Certificate(chainCerts[1].Cert);
+  //enclave certificate
+  let cert = new crypto.X509Certificate(fs.readFileSync(certPath));
 
-  // Verify the certificate
+  //1st certificate is ec2 instance certificate
+  // final certificate is the root certificate
+  let result = true;
+  for (let i = 0; i < chainCerts.length; i++) {
+    const ca = new crypto.X509Certificate(chainCerts[i].Cert);
+    const result_ = cert.verify(ca.publicKey);
 
-  const result = cert.verify(ca.publicKey);
-
-  console.log('Subject:', cert);
+    result = result && result_;
+    cert = ca;
+  }
 
   // console.log('Subject:', cert.subject);
   // console.log('Issuer:', cert.issuer);
   // console.log('Valid from:', cert.validFrom);
   // console.log('Valid to:', cert.validTo);
   // console.log('publicKey:', cert.publicKey);
-
-  if (result) {
-    console.log('====\n Certificate is valid 🟢');
-  } else {
-    console.log('====\nCertificate verification failed 🚫');
-  }
+  return result;
 }
 
-// Usage
-const certPath = './cert.pem';
-const caPath = './ca.pem';
-
-verifyCertificate(certPath);
+if (verifyCertificate(certPath, chainCerts)) {
+  console.log('====\n End Certificate is valid 🟢');
+} else {
+  console.log('====\n End Certificate verification failed 🚫');
+}

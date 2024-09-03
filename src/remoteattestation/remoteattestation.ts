@@ -7,6 +7,8 @@ import * as cbor from 'cbor-web';
 const certPath = './cert.pem';
 
 interface RemoteAttestation {
+  protected: Buffer;
+  unprotected: Buffer;
   payload: Buffer;
   signature: Uint8Array;
 }
@@ -52,7 +54,10 @@ function decodeCbor(data: Buffer) {
   try {
     const decoded = cbor.decodeAllSync(data);
 
+    console.log(decoded);
     const remoteAttestation: RemoteAttestation = {
+      protected: decoded[0][0],
+      unprotected: decoded[0][1],
       payload: decoded[0][2],
       signature: new Uint8Array(decoded[0][3]),
     };
@@ -81,7 +86,7 @@ function verifyES384Signature(
 ) {
   try {
     // Create a verifier object
-    const verifier = crypto.createVerify('SHA384');
+    const verifier = crypto.createVerify('sha384');
 
     // Add the message to be verified
     verifier.update(message);
@@ -108,7 +113,7 @@ async function verifyRemoteAttestation() {
   if (!remote_attestation) return;
 
   const payload = decodeCborPayload(remote_attestation.payload);
-  console.log(payload);
+  // console.log(payload);
 
   if (!payload) return;
 
@@ -116,15 +121,41 @@ async function verifyRemoteAttestation() {
 
   const cert = new crypto.X509Certificate(payload.certificate);
   const publicKey = cert.publicKey.export({ type: 'spki', format: 'der' });
-  const message = remote_attestation.payload;
   const signature = remote_attestation.signature;
 
-  console.log('signature', signature, signature.length);
-  console.log('publicKey', new Uint8Array(publicKey), publicKey.length);
+  const sig_structure = new Uint8Array([
+    // ...new Uint8Array([132, 106]),
+    // ...Buffer.from('Signature1'),
+    // ...new Uint8Array(remote_attestation.protected),
+    // ...new Uint8Array(),
+    //@test : replace here with above data in DER format with type prefixes
+    ...new Uint8Array([
+      132, 106, 83, 105, 103, 110, 97, 116, 117, 114, 101, 49, 68, 161, 1, 56,
+      34, 64, 89, 17, 93,
+    ]),
+    ...new Uint8Array(remote_attestation.payload),
+  ]);
+
+  //hash message
+  const hash = crypto.createHash('sha384');
+  hash.update(sig_structure);
+  const hashedMessage = hash.digest();
+
+  fs.writeFileSync('sig_structure', sig_structure.toString());
+
+  console.log(
+    'publicKey',
+    new Uint8Array(publicKey),
+    new Uint8Array(publicKey).slice(110, 120),
+  );
+  console.log('Digest:', new Uint8Array(hashedMessage));
+
+  console.log('signature', signature);
+  //console.log('sig_structure', sig_structure);
 
   const isValid = verifyES384Signature(
     publicKey,
-    new Uint8Array(message),
+    new Uint8Array(hashedMessage),
     signature,
   );
   console.log('Signature is valid:', isValid);

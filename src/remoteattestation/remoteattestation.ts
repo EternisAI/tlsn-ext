@@ -4,6 +4,9 @@ import { chainCerts, ChainCert } from './chain-certs';
 
 import * as cbor from 'cbor-web';
 
+import * as jws from 'jws';
+import * as jwa from 'jwa';
+
 const certPath = './cert.pem';
 
 interface RemoteAttestation {
@@ -86,7 +89,7 @@ function verifyES384Signature(
 ) {
   try {
     // Create a verifier object
-    const verifier = crypto.createVerify('sha384');
+    const verifier = crypto.createVerify('ES384');
 
     // Add the message to be verified
     verifier.update(message);
@@ -99,6 +102,10 @@ function verifyES384Signature(
     console.error('Error verifying signature:', error);
     return false;
   }
+}
+
+function uint8ArrayToBase64(uint8Array: Uint8Array) {
+  return Buffer.from(uint8Array).toString('base64');
 }
 
 async function verifyRemoteAttestation() {
@@ -150,16 +157,21 @@ async function verifyRemoteAttestation() {
   );
   console.log('Digest:', new Uint8Array(hashedMessage));
 
-  console.log('signature', signature);
-  //console.log('sig_structure', sig_structure);
+  const base64Signature = uint8ArrayToBase64(signature);
+  console.log('Base64 Signature:', base64Signature);
 
-  const isValid = verifyES384Signature(
-    publicKey,
-    new Uint8Array(hashedMessage),
-    signature,
-  );
-  console.log('Signature is valid:', isValid);
+  const base64payload = uint8ArrayToBase64(new Uint8Array(hashedMessage));
+  console.log('Base64 Payload:', base64payload);
 
+  //verify signature
+  console.log('publicKey', cert.publicKey);
+  const ecdsa = jwa('ES384');
+  const verify = ecdsa.verify(base64payload, base64Signature, cert.publicKey);
+  console.log('verified:', verify);
+
+  //@test
+
+  //@todo
   //verify x509 certificate
   // if (verifyCertificate(certPath, chainCerts)) {
   //   console.log('====\n End Certificate is valid 🟢');
@@ -167,8 +179,32 @@ async function verifyRemoteAttestation() {
   //   console.log('====\n End Certificate verification failed 🚫');
   // }
 
-  // verify PCR values
+  //@todo verify PCR values
 
-  //verify nonce
+  //@todo verify nonce
 }
 verifyRemoteAttestation();
+
+function testJWA() {
+  console.log('_____________\ntestVerifyES384');
+
+  const privkeyStr = `-----BEGIN PRIVATE KEY-----
+MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCAHpFQ62QnGCEvYh/p
+E9QmR1C9aLcDItRbslbmhen/h1tt8AyMhskeenT+rAyyPhGhZANiAAQLW5ZJePZz
+MIPAxMtZXkEWbDF0zo9f2n4+T1h/2sh/fviblc/VTyrv10GEtIi5qiOy85Pf1RRw
+8lE5IPUWpgu553SteKigiKLUPeNpbqmYZUkWGh3MLfVzLmx85ii2vMU=
+-----END PRIVATE KEY-----
+`;
+
+  const publicKey = crypto.createPublicKey(privkeyStr);
+
+  const ecdsa = jwa('ES384');
+  const input = 'very important stuff';
+
+  const signature = ecdsa.sign(input, privkeyStr);
+  console.log('signature', signature);
+  const res = ecdsa.verify(input, signature, publicKey); // === true
+  console.log(res);
+}
+
+//testJWA();

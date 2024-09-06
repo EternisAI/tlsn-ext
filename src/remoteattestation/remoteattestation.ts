@@ -4,15 +4,12 @@ import { chainCerts, ChainCert } from './chain-certs';
 
 import * as cbor from 'cbor-web';
 
-import * as jws from 'jws';
-import * as jwa from 'jwa';
-
 const certPath = './cert.pem';
 
 interface RemoteAttestation {
-  protected: Buffer;
-  unprotected: Buffer;
-  payload: Buffer;
+  protected: Uint8Array;
+  unprotected: Uint8Array;
+  payload: Uint8Array;
   signature: Uint8Array;
 }
 
@@ -59,9 +56,9 @@ function decodeCbor(data: Buffer) {
 
     console.log(decoded);
     const remoteAttestation: RemoteAttestation = {
-      protected: decoded[0][0],
-      unprotected: decoded[0][1],
-      payload: decoded[0][2],
+      protected: new Uint8Array(decoded[0][0]),
+      unprotected: new Uint8Array(decoded[0][1]),
+      payload: new Uint8Array(decoded[0][2]),
       signature: new Uint8Array(decoded[0][3]),
     };
     return remoteAttestation;
@@ -71,7 +68,7 @@ function decodeCbor(data: Buffer) {
   }
 }
 
-function decodeCborPayload(data: Buffer) {
+function decodeCborPayload(data: Uint8Array) {
   try {
     const decoded = cbor.decodeAllSync(data);
     const payload = decoded[0] as Payload;
@@ -79,28 +76,6 @@ function decodeCborPayload(data: Buffer) {
   } catch (e: any) {
     console.log('Error decoding CBOR payload', e.toString());
     return undefined;
-  }
-}
-
-function verifyES384Signature(
-  publicKey: Buffer,
-  message: Uint8Array,
-  signature: Uint8Array,
-) {
-  try {
-    // Create a verifier object
-    const verifier = crypto.createVerify('ES384');
-
-    // Add the message to be verified
-    verifier.update(message);
-
-    // Verify the signature
-    const isValid = verifier.verify(publicKey, signature);
-
-    return isValid;
-  } catch (error) {
-    console.error('Error verifying signature:', error);
-    return false;
   }
 }
 
@@ -125,86 +100,17 @@ async function verifyRemoteAttestation() {
   if (!payload) return;
 
   //verify signature of attestation
-
   const cert = new crypto.X509Certificate(payload.certificate);
-  const publicKey = cert.publicKey.export({ type: 'spki', format: 'der' });
-  const signature = remote_attestation.signature;
+  console.log('payload.certificate', new Uint8Array(payload.certificate));
 
-  const sig_structure = new Uint8Array([
-    // ...new Uint8Array([132, 106]),
-    // ...Buffer.from('Signature1'),
-    // ...new Uint8Array(remote_attestation.protected),
-    // ...new Uint8Array(),
-    //@test : replace here with above data in DER format with type prefixes
-    ...new Uint8Array([
-      132, 106, 83, 105, 103, 110, 97, 116, 117, 114, 101, 49, 68, 161, 1, 56,
-      34, 64, 89, 17, 93,
-    ]),
-    ...new Uint8Array(remote_attestation.payload),
-  ]);
-
-  //hash message
-  const hash = crypto.createHash('sha384');
-  hash.update(sig_structure);
-  const hashedMessage = hash.digest();
-
-  fs.writeFileSync('sig_structure', sig_structure.toString());
-
-  console.log(
-    'publicKey',
-    new Uint8Array(publicKey),
-    new Uint8Array(publicKey).slice(110, 120),
-  );
-  console.log('Digest:', new Uint8Array(hashedMessage));
-
-  const base64Signature = uint8ArrayToBase64(signature);
-  console.log('Base64 Signature:', base64Signature);
-
-  const base64payload = uint8ArrayToBase64(new Uint8Array(hashedMessage));
-  console.log('Base64 Payload:', base64payload);
-
-  //verify signature
-  console.log('publicKey', cert.publicKey);
-  const ecdsa = jwa('ES384');
-  const verify = ecdsa.verify(base64payload, base64Signature, cert.publicKey);
-  console.log('verified:', verify);
-
-  //@test
-
-  //@todo
-  //verify x509 certificate
-  // if (verifyCertificate(certPath, chainCerts)) {
-  //   console.log('====\n End Certificate is valid 🟢');
-  // } else {
-  //   console.log('====\n End Certificate verification failed 🚫');
-  // }
+  //@todo verify signature with rust
+  console.log('payload', payload);
+  console.log('signature', remote_attestation.signature);
+  console.log('protected', remote_attestation.protected);
+  console.log('unprotected', remote_attestation.unprotected);
 
   //@todo verify PCR values
 
   //@todo verify nonce
 }
 verifyRemoteAttestation();
-
-function testJWA() {
-  console.log('_____________\ntestVerifyES384');
-
-  const privkeyStr = `-----BEGIN PRIVATE KEY-----
-MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCAHpFQ62QnGCEvYh/p
-E9QmR1C9aLcDItRbslbmhen/h1tt8AyMhskeenT+rAyyPhGhZANiAAQLW5ZJePZz
-MIPAxMtZXkEWbDF0zo9f2n4+T1h/2sh/fviblc/VTyrv10GEtIi5qiOy85Pf1RRw
-8lE5IPUWpgu553SteKigiKLUPeNpbqmYZUkWGh3MLfVzLmx85ii2vMU=
------END PRIVATE KEY-----
-`;
-
-  const publicKey = crypto.createPublicKey(privkeyStr);
-
-  const ecdsa = jwa('ES384');
-  const input = 'very important stuff';
-
-  const signature = ecdsa.sign(input, privkeyStr);
-  console.log('signature', signature);
-  const res = ecdsa.verify(input, signature, publicKey); // === true
-  console.log(res);
-}
-
-//testJWA();

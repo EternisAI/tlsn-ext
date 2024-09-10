@@ -109,18 +109,17 @@ async function verifyRemoteAttestation() {
   console.log('protected', remote_attestation.protected);
   console.log('payload.certificate', new Uint8Array(payload.certificate));
 
-  fs.writeFileSync(
-    './out/certificate',
-    uint8ArrayToBase64(payload.certificate),
-  );
-  fs.writeFileSync(
-    './out/signature',
-    uint8ArrayToBase64(remote_attestation.signature),
-  );
-  fs.writeFileSync(
-    './out/protected',
-    uint8ArrayToBase64(remote_attestation.protected),
-  );
+  const str =
+    'protected\n' +
+    uint8ArrayToBase64(remote_attestation.protected) +
+    '\npayload\n' +
+    uint8ArrayToBase64(remote_attestation.payload) +
+    '\nsignature\n' +
+    uint8ArrayToBase64(remote_attestation.signature) +
+    '\ncertificate\n' +
+    uint8ArrayToBase64(new Uint8Array(payload.certificate));
+
+  fs.writeFileSync('./out/decoded', str);
 
   //@todo verify PCR values
 

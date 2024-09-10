@@ -101,13 +101,26 @@ async function verifyRemoteAttestation() {
 
   //verify signature of attestation
   const cert = new crypto.X509Certificate(payload.certificate);
-  console.log('payload.certificate', new Uint8Array(payload.certificate));
+  //console.log('payload.certificate', new Uint8Array(payload.certificate));
 
-  //@todo verify signature with rust
-  console.log('payload', payload);
+  //@todo verify signature by calling wasm
+  console.log('payload', remote_attestation.payload);
   console.log('signature', remote_attestation.signature);
   console.log('protected', remote_attestation.protected);
-  console.log('unprotected', remote_attestation.unprotected);
+  console.log('payload.certificate', new Uint8Array(payload.certificate));
+
+  fs.writeFileSync(
+    './out/certificate',
+    uint8ArrayToBase64(payload.certificate),
+  );
+  fs.writeFileSync(
+    './out/signature',
+    uint8ArrayToBase64(remote_attestation.signature),
+  );
+  fs.writeFileSync(
+    './out/protected',
+    uint8ArrayToBase64(remote_attestation.protected),
+  );
 
   //@todo verify PCR values
 

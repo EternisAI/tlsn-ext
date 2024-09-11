@@ -91,15 +91,15 @@ const Popup = () => {
   }, []);
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden">
-      <div className="flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 h-9 p-2 cursor-default justify-center bg-slate-300 w-full">
+    <div className="flex flex-col w-full h-full overflow-hidden bg-[#F9FAFB]">
+      <div className="flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 py-4 cursor-default justify-center bg-white w-full border-[#E4E6EA] border-b">
         {location.pathname === '/home' && (
-          <img
-            className="absolute left-2 h-5 cursor-pointer"
-            src={logo}
-            alt="logo"
+          <div
+            className="cursor-pointer leading-6 text-[1rem]"
             onClick={() => navigate('/')}
-          />
+          >
+            Home
+          </div>
         )}
         {location.pathname !== '/home' && (
           <Icon
@@ -109,7 +109,7 @@ const Popup = () => {
           />
         )}
 
-        <AppConnectionLogo />
+        {/* <AppConnectionLogo /> */}
       </div>
       <Routes>
         <Route path="/requests/:requestId/*" element={<Request />} />

@@ -24,7 +24,6 @@ export const useRemoteAttestation = () => {
                 'OffscreenActionTypes.remote_attestation_verification_response',
                 result,
               );
-              setIsValid(result);
             }
           }
         },

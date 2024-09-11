@@ -20,114 +20,125 @@ const Offscreen = () => {
       const loggingLevel = await browser.runtime.sendMessage({
         type: BackgroundActiontype.get_logging_level,
       });
-      await init({ loggingLevel });
+      //await init({ loggingLevel }, null);
       // @ts-ignore
-      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        switch (request.type) {
-          case OffscreenActionTypes.remote_attestation_verification: {
-            console.log('OffscreenActionTypes.remote_attestation_verification');
-          }
-          case OffscreenActionTypes.notarization_request: {
-            const { id } = request.data;
-
-            (async () => {
-              try {
-                const proof = await createProof(request.data);
-                browser.runtime.sendMessage({
-                  type: BackgroundActiontype.finish_prove_request,
-                  data: {
-                    id,
-                    proof,
-                  },
-                });
-
-                browser.runtime.sendMessage({
-                  type: OffscreenActionTypes.notarization_response,
-                  data: {
-                    id,
-                    proof,
-                  },
-                });
-              } catch (error) {
-                console.error(error);
-                browser.runtime.sendMessage({
-                  type: BackgroundActiontype.finish_prove_request,
-                  data: {
-                    id,
-                    error,
-                  },
-                });
-
-                browser.runtime.sendMessage({
-                  type: OffscreenActionTypes.notarization_response,
-                  data: {
-                    id,
-                    error,
-                  },
-                });
-              }
-            })();
-
-            break;
-          }
-          case BackgroundActiontype.process_prove_request: {
-            const { id } = request.data;
-
-            (async () => {
-              try {
-                const proof = await createProof(request.data);
-                console.log('BackgroundActiontype ', proof);
-                browser.runtime.sendMessage({
-                  type: BackgroundActiontype.finish_prove_request,
-                  data: {
-                    id,
-                    proof: proof,
-                  },
-                });
-              } catch (error) {
-                console.error(error);
-                browser.runtime.sendMessage({
-                  type: BackgroundActiontype.finish_prove_request,
-                  data: {
-                    id,
-                    error,
-                  },
-                });
-              }
-            })();
-
-            break;
-          }
-          case BackgroundActiontype.verify_proof: {
-            (async () => {
-              const result = await verifyProof(request.data);
-              sendResponse(result);
-            })();
-
-            return true;
-          }
-          case BackgroundActiontype.verify_prove_request: {
-            (async () => {
-              const proof: Proof = request.data.proof;
-              // const result: { sent: string; recv: string } =
-              //   await verifyProof(proof);
-
-              chrome.runtime.sendMessage<any, string>({
-                type: BackgroundActiontype.finish_prove_request,
-                data: {
-                  id: request.data.id,
-                  verification: {
-                    proof,
-                  },
-                },
+      chrome.runtime.onMessage.addListener(
+        async (request, sender, sendResponse) => {
+          switch (request.type) {
+            case OffscreenActionTypes.remote_attestation_verification: {
+              const remoteAttestation = request.data.decoded;
+              console.log(
+                'OffscreenActionTypes.remote_attestation_verification',
+                remoteAttestation,
+              );
+              const result = await init({ loggingLevel }, remoteAttestation);
+              chrome.runtime.sendMessage({
+                type: OffscreenActionTypes.remote_attestation_verification_response,
+                data: result,
               });
-            })();
-            break;
+            }
+            case OffscreenActionTypes.notarization_request: {
+              const { id } = request.data;
+
+              (async () => {
+                try {
+                  const proof = await createProof(request.data);
+                  browser.runtime.sendMessage({
+                    type: BackgroundActiontype.finish_prove_request,
+                    data: {
+                      id,
+                      proof,
+                    },
+                  });
+
+                  browser.runtime.sendMessage({
+                    type: OffscreenActionTypes.notarization_response,
+                    data: {
+                      id,
+                      proof,
+                    },
+                  });
+                } catch (error) {
+                  console.error(error);
+                  browser.runtime.sendMessage({
+                    type: BackgroundActiontype.finish_prove_request,
+                    data: {
+                      id,
+                      error,
+                    },
+                  });
+
+                  browser.runtime.sendMessage({
+                    type: OffscreenActionTypes.notarization_response,
+                    data: {
+                      id,
+                      error,
+                    },
+                  });
+                }
+              })();
+
+              break;
+            }
+            case BackgroundActiontype.process_prove_request: {
+              const { id } = request.data;
+
+              (async () => {
+                try {
+                  const proof = await createProof(request.data);
+                  console.log('BackgroundActiontype ', proof);
+                  browser.runtime.sendMessage({
+                    type: BackgroundActiontype.finish_prove_request,
+                    data: {
+                      id,
+                      proof: proof,
+                    },
+                  });
+                } catch (error) {
+                  console.error(error);
+                  browser.runtime.sendMessage({
+                    type: BackgroundActiontype.finish_prove_request,
+                    data: {
+                      id,
+                      error,
+                    },
+                  });
+                }
+              })();
+
+              break;
+            }
+            case BackgroundActiontype.verify_proof: {
+              (async () => {
+                const result = await verifyProof(request.data);
+                sendResponse(result);
+              })();
+
+              return true;
+            }
+            case BackgroundActiontype.verify_prove_request: {
+              (async () => {
+                const proof: Proof = request.data.proof;
+                // const result: { sent: string; recv: string } =
+                //   await verifyProof(proof);
+
+                chrome.runtime.sendMessage<any, string>({
+                  type: BackgroundActiontype.finish_prove_request,
+                  data: {
+                    id: request.data.id,
+                    verification: {
+                      proof,
+                    },
+                  },
+                });
+              })();
+              break;
+            }
+            default:
+              break;
           }
-          default:
-            break;
-        }
-      });
+        },
+      );
     })();
   }, []);
 

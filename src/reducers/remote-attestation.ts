@@ -14,6 +14,24 @@ export const useRemoteAttestation = () => {
   const enclaveEndpoint = `${ENCLAVE_ENDPOINT}/enclave/attestation?nonce=0000000000000000000000000000000000000000`;
 
   useEffect(() => {
+    (async () => {
+      chrome.runtime.onMessage.addListener(
+        async (request, sender, sendResponse) => {
+          switch (request.type) {
+            case OffscreenActionTypes.remote_attestation_verification_response: {
+              const result = request.data;
+              console.log(
+                'OffscreenActionTypes.remote_attestation_verification_response',
+                result,
+              );
+              setIsValid(result);
+            }
+          }
+        },
+      );
+    })();
+  }, []);
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(enclaveEndpoint);
@@ -27,7 +45,7 @@ export const useRemoteAttestation = () => {
         chrome.runtime.sendMessage({
           type: OffscreenActionTypes.remote_attestation_verification,
           data: {
-            // Your data here
+            decoded,
           },
         });
       } catch (error) {

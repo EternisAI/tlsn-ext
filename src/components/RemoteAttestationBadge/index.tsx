@@ -16,16 +16,17 @@ export default function RemoteAttestationBadge(): ReactElement {
   if (isValid === null) return <></>;
   return (
     <>
-      {isValid ? (
-        <Icon className="h-5 text-green-500" fa="fa-solid fa-check-circle" />
-      ) : (
-        <Icon className="h-5 text-red-500" fa="fa-solid fa-xmark" />
-      )}
+      {isValid ? <>🟢</> : <>🔴</>}
       <a
         href="https://aws.amazon.com/blogs/compute/validating-attestation-documents-produced-by-aws-nitro-enclaves/"
         target="_blank"
-        title="The remote attestation guarantees the
-      authenticity of the code running the notary.   Click to learn more"
+        title={
+          (isValid
+            ? 'Valid remote attestation ! '
+            : 'Invalid remoteattestation') +
+          `The remote attestation guarantees the
+      authenticity of the code running the notary. Click to learn more`
+        }
         style={{ color: 'black', textDecoration: 'none' }}
       >
         Remote attestation

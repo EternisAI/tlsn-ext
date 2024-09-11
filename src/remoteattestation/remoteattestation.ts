@@ -101,23 +101,34 @@ async function verifyRemoteAttestation() {
 
   //verify signature of attestation
   const cert = new crypto.X509Certificate(payload.certificate);
+
+  let certificate_bytes = new Uint8Array(payload.certificate);
   //console.log('payload.certificate', new Uint8Array(payload.certificate));
 
   //@todo verify signature by calling wasm
-  console.log('payload', remote_attestation.payload);
+  console.log(
+    'payload',
+    remote_attestation.payload,
+    remote_attestation.payload.slice(-10),
+  );
   console.log('signature', remote_attestation.signature);
   console.log('protected', remote_attestation.protected);
-  console.log('payload.certificate', new Uint8Array(payload.certificate));
+  console.log(
+    'payload.certificate',
+    certificate_bytes,
+    certificate_bytes.slice(-10),
+  );
 
   const str =
-    'protected\n' +
+    'let protected="' +
     uint8ArrayToBase64(remote_attestation.protected) +
-    '\npayload\n' +
+    '";\nlet payload="' +
     uint8ArrayToBase64(remote_attestation.payload) +
-    '\nsignature\n' +
+    '";\nlet signature="' +
     uint8ArrayToBase64(remote_attestation.signature) +
-    '\ncertificate\n' +
-    uint8ArrayToBase64(new Uint8Array(payload.certificate));
+    '";\ncertificate="' +
+    uint8ArrayToBase64(certificate_bytes) +
+    '",';
 
   fs.writeFileSync('./out/decoded', str);
 

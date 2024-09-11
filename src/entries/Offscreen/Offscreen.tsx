@@ -24,6 +24,9 @@ const Offscreen = () => {
       // @ts-ignore
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         switch (request.type) {
+          case OffscreenActionTypes.remote_attestation_verification: {
+            console.log('OffscreenActionTypes.remote_attestation_verification');
+          }
           case OffscreenActionTypes.notarization_request: {
             const { id } = request.data;
 

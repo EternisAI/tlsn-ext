@@ -102,7 +102,7 @@ async function verifyRemoteAttestation() {
   //verify signature of attestation
   const cert = new crypto.X509Certificate(payload.certificate);
 
-  let certificate_bytes = new Uint8Array(payload.certificate);
+  const certificate_bytes = new Uint8Array(payload.certificate);
   //console.log('payload.certificate', new Uint8Array(payload.certificate));
 
   //@todo verify signature by calling wasm

@@ -128,7 +128,7 @@ async function verifyRemoteAttestation() {
     uint8ArrayToBase64(remote_attestation.signature) +
     '";\nlet certificate="' +
     uint8ArrayToBase64(certificate_bytes) +
-    '",';
+    '";';
 
   fs.writeFileSync('./out/decoded', str);
 

@@ -126,7 +126,7 @@ async function verifyRemoteAttestation() {
     uint8ArrayToBase64(remote_attestation.payload) +
     '";\nlet signature="' +
     uint8ArrayToBase64(remote_attestation.signature) +
-    '";\ncertificate="' +
+    '";\nlet certificate="' +
     uint8ArrayToBase64(certificate_bytes) +
     '",';
 

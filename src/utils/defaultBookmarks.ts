@@ -36,6 +36,20 @@ export const defaultBookmarks: Bookmark[] = [
     valueTransform: '"screen_name":%s',
     icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn-icons-png.flaticon.com%2F128%2F5969%2F5969020.png&f=1&nofb=1&ipt=a56216fd08bcdc1487b23d84251395468cb2459709b08c0e19ba893d72d74897&ipo=images',
   },
+  {
+    requestId: 'FE512M1.72598796970500000000000000000000',
+    id: '6aeb2c2b35778d5bac1db5d606f68ddc6a510bac44af1b2231c433aeb5d86fa9',
+    url: 'https://bonfire.robinhood.com/portfolio/performance/589423219?chart_style=PERFORMANCE&chart_type=historical_portfolio&display_span=day&include_all_hours=true',
+    targetUrl: 'https://robinhood.com/',
+    method: 'GET',
+    type: 'xmlhttprequest',
+    title:
+      'https://bonfire.robinhood.com/portfolio/performance/589423219?chart_style=PERFORMANCE&chart_type=historical_portfolio&display_span=day&include_all_hours=true',
+    description: '',
+    responseSelector: '',
+    valueTransform: '',
+    icon: '',
+  },
   // {
   //   url: 'https://gateway.reddit.com/desktopapi/v1/prefs',
   //   targetUrl: 'https://www.reddit.com/settings',

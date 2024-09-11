@@ -36,6 +36,7 @@ const Offscreen = () => {
                 type: OffscreenActionTypes.remote_attestation_verification_response,
                 data: result,
               });
+              break;
             }
             case OffscreenActionTypes.notarization_request: {
               const { id } = request.data;

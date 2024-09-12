@@ -17,7 +17,7 @@ export default function RemoteAttestationBadge(): ReactElement {
   return (
     <>
       {isValid ? (
-        <span>🟢 Notary Authentified</span>
+        <span>🟢 Notary Authenticated</span>
       ) : (
         <span title={error}>🔴 Notary Not Authentified</span>
       )}

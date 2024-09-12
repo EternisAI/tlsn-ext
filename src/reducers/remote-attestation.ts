@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { ENCLAVE_ENDPOINT } from '../utils/constants';
-import { decodeCborAll, RemoteAttestation } from 'tlsn-js';
+import { decodeCborAll, RemoteAttestation, generateNonce } from 'tlsn-js';
 import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from '../entries/Offscreen/types';
 import { EXPECTED_PCRS } from '../utils/constants';
@@ -11,8 +11,6 @@ export const useRemoteAttestation = () => {
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null);
-
-  const enclaveEndpoint = `${ENCLAVE_ENDPOINT}/enclave/attestation?nonce=0000000000000000000000000000000000000000`;
 
   useEffect(() => {
     (async () => {
@@ -39,6 +37,9 @@ export const useRemoteAttestation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const nonce = generateNonce();
+        const enclaveEndpoint = `${ENCLAVE_ENDPOINT}/enclave/attestation?nonce=${nonce}`;
+
         const response = await axios.get(enclaveEndpoint);
         setRemoteAttestation(response.data);
         //analyze attestation validity here
@@ -60,7 +61,16 @@ export const useRemoteAttestation = () => {
           setLoading(false);
           return setError('pcrs values are not the one expected');
         }
+        //verify nonce
+        const nonce_ = remoteAttestation?.payload_object.nonce;
+        console.log('nonce_', nonce_);
 
+        console.log('nonce', nonce);
+        if (nonce_ !== nonce) {
+          setIsValid(false);
+          setLoading(false);
+          return setError('nonce is not the one expected');
+        }
         //verify x509 certificate
         // const resultx509 = verifyx509Certificate(certificateUint8Array);
         // console.log('resultx509', resultx509);

@@ -16,7 +16,12 @@ export default function RemoteAttestationBadge(): ReactElement {
   if (isValid === null) return <></>;
   return (
     <>
-      {isValid ? <>🟢 Notary Authentified</> : <>🔴 Notary Not Authentified</>}
+      {isValid ? (
+        <span>🟢 Notary Authentified</span>
+      ) : (
+        <span title={error}>🔴 Notary Not Authentified</span>
+      )}
+
       <a
         href="https://aws.amazon.com/blogs/compute/validating-attestation-documents-produced-by-aws-nitro-enclaves/"
         target="_blank"

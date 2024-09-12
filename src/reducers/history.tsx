@@ -90,9 +90,14 @@ export default function history(
   }
 }
 
-export const useHistoryOrder = (): string[] => {
+export const useHistoryOrder = (host?: string): string[] => {
   return useSelector((state: AppRootState) => {
-    return [...state.history.order].reverse();
+    const allRequests = [...state.history.order].reverse();
+    return allRequests.filter((id) => {
+      if (!host) return true;
+      const req = state.history.map[id];
+      return extractHostFromUrl(req.url) === host;
+    });
   }, deepEqual);
 };
 

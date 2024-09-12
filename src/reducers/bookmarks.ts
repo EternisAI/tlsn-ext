@@ -8,6 +8,7 @@ export type Bookmark = {
   default?: boolean;
   requestId?: string;
   url: string;
+  faviconUrl?: string;
   targetUrl: string;
   method: string;
   type: string;

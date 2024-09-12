@@ -18,7 +18,6 @@ import Requests from '../../pages/Requests';
 import Options from '../../pages/Options';
 import Request from '../../pages/Requests/Request';
 import Home from '../../pages/Home';
-import logo from '../../assets/img/icon-128.png';
 import RequestBuilder from '../../pages/RequestBuilder';
 import Notarize from '../../pages/Notarize';
 import ProofViewer from '../../pages/ProofViewer';
@@ -40,26 +39,8 @@ import Icon from '../../components/Icon';
 import classNames from 'classnames';
 import { getConnection } from '../Background/db';
 import Websites from '../../pages/Websites';
-import Back from '../../components/SvgIcons/Back';
-
-const getTitleFromPath = (path: string) => {
-  switch (path) {
-    case '/requests':
-      return 'Requests';
-    case '/history':
-      return 'History';
-    case '/bookmarks':
-      return 'Favorites';
-    case '/websites':
-      return 'Websites';
-    case '/options':
-      return 'Settings';
-    case '/home':
-      return 'Home';
-    default:
-      return 'Request';
-  }
-};
+import PopupHeader from './Header';
+import AttestationDetails from '../../pages/AttestationDetails';
 
 const Popup = () => {
   const dispatch = useDispatch();
@@ -113,35 +94,39 @@ const Popup = () => {
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-[#F9FAFB]">
-      <div className="flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 py-4 cursor-default justify-center bg-white w-full border-[#E4E6EA] border-b">
-        {/* {location.pathname === '/home' && (
-          
-        )} */}
-        <div
-          className="cursor-pointer leading-6 text-[1rem]"
-          onClick={() => navigate('/')}
-        >
-          {getTitleFromPath(location.pathname)}
-        </div>
-        {location.pathname !== '/home' && (
-          <div
-            className="absolute left-[18px] h-8 w-8 cursor-pointer hover:bg-gray-100 rounded-md border border-[#E4E6EA] flex items-center justify-center"
-            onClick={() => navigate('/')}
-          >
-            <Back />
-          </div>
-        )}
-
-        {/* <AppConnectionLogo /> */}
-      </div>
+      <PopupHeader pathname={location.pathname} navigate={navigate} />
       <Routes>
         <Route path="/requests/:requestId/*" element={<Request />} />
         <Route path="/notary/:requestId" element={<Notarize />} />
         <Route path="/verify/:requestId/*" element={<ProofViewer />} />
         <Route path="/verify" element={<ProofUploader />} />
+
         <Route path="/history" element={<History />} />
+        <Route path="/history/:host" element={<History />} />
+        <Route path="/websites/history/:host" element={<History />} />
+        <Route path="/websites/favorites/history/:host" element={<History />} />
+
         <Route path="/bookmarks" element={<Bookmarks />} />
+
+        <Route
+          path="/websites/favorites"
+          element={<Websites onlyFavorites />}
+        />
         <Route path="/websites" element={<Websites />} />
+
+        <Route
+          path="/history/:host/attestation/:requestId"
+          element={<AttestationDetails />}
+        />
+        <Route
+          path="/websites/history/:host/attestation/:requestId"
+          element={<AttestationDetails />}
+        />
+        <Route
+          path="/websites/favorites/history/:host/attestation/:requestId"
+          element={<AttestationDetails />}
+        />
+
         <Route path="/requests" element={<Requests />} />
         <Route path="/custom/*" element={<RequestBuilder />} />
         <Route path="/options" element={<Options />} />

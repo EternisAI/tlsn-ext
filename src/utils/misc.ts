@@ -391,14 +391,27 @@ export function safeParseJSON(data?: string | null) {
   }
 }
 
-export function printAttestation(attrAttestation: AttrAttestation): string {
-  return `
+export function printAttestation(
+  attrAttestation: AttrAttestation,
+  arrayOutput = false,
+): string | string[] {
+  if (!arrayOutput) {
+    return `
     Version: ${attrAttestation.version}
     Notary URL: ${attrAttestation.meta.notaryUrl}
     Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}
     Signature: 0x${attrAttestation.signature}
     Signed Session: ${attrAttestation.signedSession}
   `;
+  }
+
+  return [
+    `Version: ${attrAttestation.version}`,
+    `Notary URL: ${attrAttestation.meta.notaryUrl}`,
+    `Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}`,
+    `Signature: 0x${attrAttestation.signature}`,
+    `Signed Session: ${attrAttestation.signedSession}`,
+  ];
 }
 
 export function extractHostFromUrl(url: string) {

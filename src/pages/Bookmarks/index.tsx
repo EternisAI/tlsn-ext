@@ -3,7 +3,13 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import Icon from '../../components/Icon';
 import { getNotaryApi, getProxyApi } from '../../utils/storage';
-import { urlify, download, upload } from '../../utils/misc';
+import {
+  urlify,
+  download,
+  upload,
+  extractHostFromUrl,
+  extractPathFromUrl,
+} from '../../utils/misc';
 import { BackgroundActiontype } from '../../entries/Background/rpc';
 import Modal, { ModalContent } from '../../components/Modal/Modal';
 import classNames from 'classnames';
@@ -19,6 +25,7 @@ import { TLSN } from '../../entries/Content/content';
 
 import { defaultBookmarks } from '../../utils/defaultBookmarks';
 import { Bookmark } from '../../reducers/bookmarks';
+import NavButton from '../../components/NavButton';
 
 const tlsn = new TLSN();
 const bookmarkManager = new BookmarkManager();
@@ -37,17 +44,28 @@ export default function Bookmarks(): ReactElement {
   }, []);
 
   return (
-    <div className="flex flex-col flex-nowrap overflow-y-auto">
-      {bookmarks.length > 0 &&
-        bookmarks.map((bookmark) => {
-          return (
-            <OneBookmark
-              key={bookmark.url}
-              bookmark={bookmark}
-              fetchBookmarks={fetchBookmarks}
-            />
-          );
-        })}
+    <div className="flex flex-col flex-nowrap">
+      <div className="text-sm font-bold mt-3 ml-4 mb-2">Popular</div>
+      <div className="flex flex-col gap-2 mx-4">
+        {bookmarks.length > 0 &&
+          bookmarks.map((bookmark) => {
+            return (
+              <NavButton
+                ImageIcon={
+                  <img src={bookmark.faviconUrl} className="w-4 h-4" />
+                }
+                title={extractHostFromUrl(bookmark.url)}
+                subtitle={extractPathFromUrl(
+                  bookmark.targetUrl || bookmark.url,
+                )}
+                onClick={() => {
+                  const targetUrl = bookmark.targetUrl || bookmark.url;
+                  window.open(targetUrl, '_blank');
+                }}
+              />
+            );
+          })}
+      </div>
     </div>
   );
 }

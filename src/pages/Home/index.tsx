@@ -7,6 +7,7 @@ import Clipboard from '../../components/SvgIcons/Clipboard';
 import Search from '../../components/SvgIcons/Search';
 import Settings from '../../components/SvgIcons/Settings';
 import NavButton from '../../components/NavButton';
+import Bookmarks from '../Bookmarks';
 
 export default function Home(): ReactElement {
   const requests = useUniqueRequests();
@@ -63,6 +64,8 @@ export default function Home(): ReactElement {
           Options
         </NavButton> */}
       </div>
+
+      <Bookmarks />
       {/* <PluginList className="mx-4" /> */}
     </div>
   );

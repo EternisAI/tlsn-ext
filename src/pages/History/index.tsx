@@ -1,6 +1,6 @@
 import React, { ReactElement, useState, useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import {
   useHistoryOrder,
   useRequestHistory,
@@ -22,17 +22,273 @@ import {
 } from '../../entries/Background/db';
 import { BookmarkManager } from '../../reducers/bookmarks';
 import { RequestHistory } from '../../entries/Background/rpc';
+import Error from '../../components/SvgIcons/Error';
 const charwise = require('charwise');
 
 const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
-  const history = useHistoryOrder();
+  const params = useParams<{ host: string }>();
+  const history = useHistoryOrder(params.host);
+  const showDate = !Boolean(params.host);
+
+  const request = useRequestHistory(history[0]);
 
   return (
-    <div className="flex flex-col flex-nowrap overflow-y-auto">
-      {history.map((id) => {
-        return <OneRequestHistory key={id} requestId={id} />;
-      })}
+    <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
+      <div className="flex flex-col flex-nowrap justify-center gap-2 mx-4">
+        {!showDate && (
+          <div className="text-sm font-bold mb-2 leading-5">
+            Previous Attestations
+          </div>
+        )}
+        {history.map((id, index) => (
+          <AttestationCard
+            key={id}
+            requestId={id}
+            showDate={showDate}
+            previousRequestId={index > 0 ? history[index - 1] : undefined}
+          />
+        ))}
+
+        {!showDate && (
+          <div
+            onClick={() => {
+              const targetUrl = urlify(request?.url || '');
+              const host = targetUrl?.host;
+              const scheme = targetUrl?.protocol;
+              window.open(`${scheme}//${host}`, '_blank');
+            }}
+            className="cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[10px] px-2 rounded-lg text-center"
+          >
+            Generate new attestation
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // return (
+  //   <div className="flex flex-col flex-nowrap overflow-y-auto">
+  //     {history.map((id) => {
+  //       return <OneRequestHistory key={id} requestId={id} />;
+  //     })}
+  //   </div>
+  // );
+}
+
+function formatDate(requestId: string) {
+  const date = new Date(charwise.decode(requestId, 'hex'));
+  const today = new Date();
+
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isToday = date.toDateString() === today.toDateString();
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  if (isToday) {
+    return 'Today';
+  }
+
+  if (isYesterday) {
+    return 'Yesterday';
+  }
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function formatAttestationDate(requestId: string, previousRequestId?: string) {
+  const date = formatDate(requestId);
+  const previousDate = previousRequestId ? formatDate(previousRequestId) : null;
+
+  if (!previousDate) {
+    return date;
+  }
+
+  if (date !== previousDate) {
+    return date;
+  }
+
+  return '';
+}
+
+export function AttestationCard({
+  requestId,
+  previousRequestId,
+  showDate,
+}: {
+  requestId: string;
+  previousRequestId?: string;
+  showDate: boolean;
+}): ReactElement {
+  const request = useRequestHistory(requestId);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const requestUrl = urlify(request?.url || '');
+  const date = formatAttestationDate(requestId, previousRequestId);
+
+  const { status } = request || {};
+
+  const [showingError, showError] = useState(false);
+
+  const onRetry = useCallback(async () => {
+    const notaryUrl = await getNotaryApi();
+    const websocketProxyUrl = await getProxyApi();
+    chrome.runtime.sendMessage<any, string>({
+      type: BackgroundActiontype.retry_prove_request,
+      data: {
+        id: requestId,
+        notaryUrl,
+        websocketProxyUrl,
+      },
+    });
+  }, [requestId]);
+
+  const onDelete = useCallback(async () => {
+    dispatch(deleteRequestHistory(requestId));
+  }, [requestId]);
+
+  const onShowError = useCallback(async () => {
+    showError(true);
+  }, [request?.error, showError]);
+
+  const closeAllModal = useCallback(() => {
+    showError(false);
+  }, [showingError, showError]);
+
+  function ErrorModal(): ReactElement {
+    const msg = typeof request?.error === 'string' && request?.error;
+    return !showingError ? (
+      <></>
+    ) : (
+      <Modal
+        className="p-4 border border-[#E4E6EA] bg-white rounded-xl flex flex-col mx-6"
+        onClose={closeAllModal}
+      >
+        <ModalContent className="flex flex-col">
+          <div className="flex-1 font-bold text-[#4B5563] text-lg truncate">
+            Error
+          </div>
+          <div className="text-[#9BA2AE] text-sm leading-5 font-bold mb-4">
+            {msg || 'Something went wrong...'}
+          </div>
+        </ModalContent>
+        <div
+          onClick={closeAllModal}
+          className="cursor-pointer self-center flex items-center ml-2 bg-[#F6E2E2] hover:bg-[#e4d2d2] text-[#B50E0E] text-sm font-medium py-[6px] px-2 rounded-lg"
+        >
+          Close
+        </div>
+      </Modal>
+    );
+  }
+
+  return (
+    <div className="flex flex-col">
+      <ErrorModal />
+      {showDate && date && (
+        <div className="text-sm font-bold mb-2 leading-5">{date}</div>
+      )}
+      <div className="p-4 border border-[#E4E6EA] bg-white rounded-xl flex flex-col">
+        <div className="flex flex-row items-center ">
+          <div className="flex-1 font-bold text-[#4B5563] text-lg truncate">
+            {requestUrl?.host}
+          </div>
+          {status === 'error' && !!request?.error && (
+            <>
+              <div
+                onClick={onShowError}
+                className="cursor-pointer flex items-center ml-2 bg-[#F6E2E2] hover:bg-[#e4d2d2] text-[#B50E0E] text-sm font-medium py-[6px] px-2 rounded-lg"
+              >
+                <Error />
+                &nbsp;Error
+              </div>
+            </>
+          )}
+          <div
+            onClick={() => {
+              if (status === 'pending') return;
+              onRetry();
+            }}
+            className="cursor-pointer ml-2 border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[6px] px-2 rounded-lg"
+          >
+            {status === 'pending' ? 'Pending' : 'Retry'}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-[80px,1fr] gap-2 mt-4">
+          <div className="text-[#9BA2AE] text-sm leading-5 font-bold">Path</div>
+          <div className="text-[#4B5563] text-sm leading-5 truncate">
+            {requestUrl?.pathname}
+          </div>
+
+          {[
+            { label: 'Url', value: request?.url },
+            {
+              label: 'Time',
+              value: new Date(charwise.decode(requestId, 'hex')).toISOString(),
+            },
+          ].map(({ label, value }) => (
+            <>
+              <div className="text-[#9BA2AE] text-sm leading-5">{label}</div>
+              <div className="text-[#4B5563] text-sm leading-5 truncate">
+                {value}
+              </div>
+            </>
+          ))}
+
+          {status === 'success' && (
+            <div className="text-[#9BA2AE] text-sm leading-5 whitespace-nowrap">
+              See details...
+            </div>
+          )}
+        </div>
+
+        <div className="flex mt-4">
+          {status === 'success' && (
+            <>
+              <div
+                onClick={() => {
+                  if (!showDate) {
+                    navigate(`${location.pathname}/attestation/${requestId}`);
+                    return;
+                  }
+                  navigate(
+                    `/history/${requestUrl?.host}/attestation/${requestId}`,
+                  );
+                }}
+                className="cursor-pointer border border-[#E9EBF3] bg-[#F6F7FC] hover:bg-[#dfe0e5] text-[#092EEA] text-sm font-medium py-[10px] px-4 rounded-lg"
+              >
+                View
+              </div>
+
+              <div
+                onClick={() => {
+                  download(
+                    `${request?.id}.json`,
+                    JSON.stringify(request?.proof),
+                  );
+                }}
+                className="ml-3 cursor-pointer border border-[#E9EBF3] bg-[#F6F7FC] hover:bg-[#e2e3e8] text-[#092EEA] text-sm font-medium py-[10px] px-4 rounded-lg"
+              >
+                Save
+              </div>
+            </>
+          )}
+
+          <div
+            onClick={onDelete}
+            className="ml-auto cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#B50E0E] text-sm font-medium py-[10px] px-4 rounded-lg"
+          >
+            Delete
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

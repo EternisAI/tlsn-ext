@@ -3,6 +3,7 @@ import { Bookmark } from '../reducers/bookmarks';
 export const defaultBookmarks: Bookmark[] = [
   {
     url: 'https://app.carta.com/profiles/settings/',
+    faviconUrl: 'https://carta.com/favicon.svg',
     targetUrl: 'https://app.carta.com/profiles/settings/',
     method: 'GET',
     type: 'main_frame',
@@ -26,6 +27,7 @@ export const defaultBookmarks: Bookmark[] = [
   // },
   {
     url: 'https://api.x.com/1.1/account/settings.json',
+    faviconUrl: 'https://abs.twimg.com/favicons/twitter.3.ico',
     targetUrl: 'https://www.twitter.com/home',
     method: 'GET',
     type: 'xmlhttprequest',
@@ -40,6 +42,8 @@ export const defaultBookmarks: Bookmark[] = [
     requestId: 'FE512M1.72598796970500000000000000000000',
     id: '6aeb2c2b35778d5bac1db5d606f68ddc6a510bac44af1b2231c433aeb5d86fa9',
     url: 'https://bonfire.robinhood.com/portfolio/performance/589423219?chart_style=PERFORMANCE&chart_type=historical_portfolio&display_span=day&include_all_hours=true',
+    faviconUrl:
+      'https://cdn.robinhood.com/assets/robinhood/shared/favicon_v2.ico',
     targetUrl: 'https://robinhood.com/',
     method: 'GET',
     type: 'xmlhttprequest',

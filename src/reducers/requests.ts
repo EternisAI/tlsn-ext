@@ -57,6 +57,7 @@ export const notarizeRequest = (options: RequestHistory) => async () => {
     type: BackgroundActiontype.prove_request_start,
     data: {
       url: options.url,
+      faviconUrl: options.faviconUrl,
       method: options.method,
       headers: options.headers,
       body: options.body,

@@ -100,6 +100,7 @@ export type RequestLog = {
   method: string;
   type: string;
   url: string;
+  faviconUrl: string;
   initiator: string | null;
   requestHeaders: browser.WebRequest.HttpHeaders;
   requestBody?: string;
@@ -112,6 +113,7 @@ export type RequestLog = {
 export type RequestHistory = {
   id: string;
   url: string;
+  faviconUrl: string;
   method: string;
   headers: { [key: string]: string };
   body?: string;
@@ -319,6 +321,7 @@ export async function handleProveRequestStart(
     cid,
     type,
     url,
+    faviconUrl,
     method,
     headers,
     body,
@@ -335,6 +338,7 @@ export async function handleProveRequestStart(
     cid,
     type,
     url,
+    faviconUrl: faviconUrl || '',
     method,
     headers,
     body,
@@ -381,6 +385,7 @@ export async function handleProveRequestStart(
 async function runPluginProver(request: BackgroundAction, now = Date.now()) {
   const {
     url,
+    faviconUrl,
     method,
     headers,
     body,
@@ -399,6 +404,7 @@ async function runPluginProver(request: BackgroundAction, now = Date.now()) {
 
   const { id } = await addNotaryRequest(now, {
     url,
+    faviconUrl,
     method,
     headers,
     body,
@@ -799,6 +805,7 @@ async function handleNotarizeRequest(request: BackgroundAction) {
   const defer = deferredPromise();
   const {
     url,
+    faviconUrl,
     method = 'GET',
     headers,
     body,
@@ -859,6 +866,7 @@ async function handleNotarizeRequest(request: BackgroundAction) {
             data: {
               id,
               url,
+              faviconUrl: faviconUrl || '',
               method,
               headers,
               body,

@@ -54,6 +54,7 @@ export default function Notarize(): ReactElement {
       // @ts-ignore
       notarizeRequest({
         url: req.url,
+        faviconUrl: req.faviconUrl,
         method: req.method,
         headers,
         body: req.requestBody,

@@ -400,3 +400,13 @@ export function printAttestation(attrAttestation: AttrAttestation): string {
     Signed Session: ${attrAttestation.signedSession}
   `;
 }
+
+export function extractHostFromUrl(url: string) {
+  const u = new URL(url);
+  return u.host;
+}
+
+export function extractPathFromUrl(url: string) {
+  const u = new URL(url);
+  return u.pathname.substring(1);
+}

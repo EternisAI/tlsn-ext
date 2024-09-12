@@ -91,6 +91,7 @@ import { urlify } from '../../utils/misc';
     async (
       request: ContentScriptRequest<{
         url: string;
+        faviconUrl?: string;
         method?: string;
         headers?: { [key: string]: string };
         metadata?: { [key: string]: string };
@@ -104,6 +105,7 @@ import { urlify } from '../../utils/misc';
     ) => {
       const {
         url,
+        faviconUrl,
         method,
         headers,
         body,
@@ -122,6 +124,7 @@ import { urlify } from '../../utils/misc';
         data: {
           ...getPopupData(),
           url,
+          faviconUrl: faviconUrl || '',
           method,
           headers,
           body,

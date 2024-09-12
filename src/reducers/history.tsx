@@ -5,6 +5,8 @@ import {
 import { useSelector } from 'react-redux';
 import { AppRootState } from './index';
 import deepEqual from 'fast-deep-equal';
+import { extractHostFromUrl, extractPathFromUrl } from '../utils/misc';
+import requests from './requests';
 
 enum ActionType {
   '/history/addRequest' = '/history/addRequest',
@@ -104,5 +106,36 @@ export const useRequestHistory = (id?: string): RequestHistory | undefined => {
   return useSelector((state: AppRootState) => {
     if (!id) return undefined;
     return state.history.map[id];
+  }, deepEqual);
+};
+
+export const useAllWebsites = (): {
+  host: string;
+  requests: string;
+  faviconUrl: string;
+}[] => {
+  return useSelector((state: AppRootState) => {
+    const allRequests = state.history.order.map((id) => state.history.map[id]);
+    const websites = {} as { [host: string]: Set<string> };
+    const faviconUrls = {} as { [host: string]: string };
+
+    allRequests.forEach((req) => {
+      const host = extractHostFromUrl(req.url);
+      const path = extractPathFromUrl(req.url);
+      if (!websites[host]) {
+        websites[host] = new Set();
+      }
+      websites[host].add(path);
+
+      if (!faviconUrls[host]) {
+        faviconUrls[host] = req.faviconUrl;
+      }
+    });
+
+    return Object.keys(websites).map((host) => ({
+      host,
+      requests: Array.from(websites[host]).join(', '),
+      faviconUrl: faviconUrls[host],
+    }));
   }, deepEqual);
 };

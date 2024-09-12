@@ -35,6 +35,7 @@ enum TabType {
 export default function RequestBuilder(props?: {
   subpath?: string;
   url?: string;
+  faviconUrl?: string;
   params?: [string, string, boolean?][];
   headers?: [string, string, boolean?][];
   body?: string;
@@ -180,6 +181,7 @@ export default function RequestBuilder(props?: {
         //@ts-ignore
         {
           url: href || '',
+          faviconUrl: props?.faviconUrl || '',
           method,
           headers: headers.reduce((map: { [key: string]: string }, [k, v]) => {
             if (k !== 'Cookie') {

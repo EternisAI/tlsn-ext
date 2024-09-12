@@ -149,6 +149,7 @@ export const handleNotarization = (
           cid: requestId,
           type: req.type,
           url: req.url,
+          faviconUrl: req.faviconUrl,
           method: req.method,
           headers: headers,
           body: req.requestBody,
@@ -175,6 +176,16 @@ export const onResponseStarted = (
 
     const cache = getCacheByTabId(tabId);
 
+    // const faviconUrl = chrome.tabs.get(tabId, (tab) => tab.favIconUrl);
+    const faviconUrl = await new Promise<string>((resolve) => {
+      try {
+        chrome.tabs.get(tabId, (tab) => resolve(tab.favIconUrl ?? ''));
+      } catch (e) {
+        // No need to fail if favicon is not found
+        resolve('');
+      }
+    });
+
     const existing = cache.get<RequestLog>(requestId);
     const newLog: RequestLog = {
       requestHeaders: [],
@@ -182,6 +193,7 @@ export const onResponseStarted = (
       method: details.method,
       type: details.type,
       url: details.url,
+      faviconUrl: faviconUrl,
       initiator: details.initiator || null,
       tabId: tabId,
       requestId: requestId,

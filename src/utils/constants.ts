@@ -2,7 +2,7 @@ export const EXPLORER_API = 'https://explorer.tlsnotary.org';
 export const MAX_RECV = 16384;
 export const MAX_SENT = 4096;
 
-export const ENCLAVE_ENDPOINT = 'https://tlsn.eternis.ai';
+export const ENCLAVE_ENDPOINT = 'https://notary.eternis.ai';
 
 export const NOTARY_API = `${ENCLAVE_ENDPOINT}:7047`;
 export const NOTARY_PROXY = 'wss://inn1.eternis.ai:55688';
@@ -18,6 +18,11 @@ export enum Mode {
 export const MODE: Mode = (process.env.NODE_ENV as Mode) || Mode.Production;
 
 export const EXPECTED_PCRS = {
+  '1': 'A0OwVs2Ehcp4kN3YM0dteEYK7SqhYVSOTia+3zIXJmliV9Yj6IBfP2BZRrPYsMaq',
+  '2': 'zSXYI5okdCeoVmYli53NaW/c4QUcs3XCgJ154ksWovEdniGdlkLjWDr0/SJs375/',
+};
+
+export const EXPECTED_PCRS_DEBUG = {
   '1': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   '2': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
 };

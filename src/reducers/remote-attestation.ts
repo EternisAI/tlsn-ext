@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ENCLAVE_ENDPOINT } from '../utils/constants';
-import { decodeCborAll, RemoteAttestation } from 'tlsn-js';
+import {
+  decodeCborAll,
+  RemoteAttestation,
+  verifyx509Certificate,
+} from 'tlsn-js';
 import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from '../entries/Offscreen/types';
 export const useRemoteAttestation = () => {
@@ -17,13 +21,18 @@ export const useRemoteAttestation = () => {
     (async () => {
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
+          console.log('OffscreenActionTypes', request);
           switch (request.type) {
             case OffscreenActionTypes.remote_attestation_verification_response: {
+              console.log(
+                'OffscreenActionTypes.remote_attestation_verification_response',
+              );
               const result = request.data;
               console.log(
                 'OffscreenActionTypes.remote_attestation_verification_response',
                 result,
               );
+              setIsValid(result);
             }
           }
         },
@@ -36,15 +45,25 @@ export const useRemoteAttestation = () => {
         const response = await axios.get(enclaveEndpoint);
         setRemoteAttestation(response.data);
         //analyze attestation validity here
-        const decoded = decodeCborAll(response.data);
-        console.log(decoded);
+        const remoteAttestation = decodeCborAll(response.data);
+        console.log(remoteAttestation?.certificate);
 
-        setIsValid(true);
+        // const certificateUint8Array = Buffer.from(
+        //   remoteAttestation?.certificate as string,
+        //   'base64',
+        // );
+
+        // const resultx509 = verifyx509Certificate(certificateUint8Array);
+        // console.log('resultx509', resultx509);
+        // if (!resultx509) {
+        //   console.log('x509 certificate is not valid');
+        //   setError('x509 certificate is not valid');
+        // }
 
         chrome.runtime.sendMessage({
           type: OffscreenActionTypes.remote_attestation_verification,
           data: {
-            decoded,
+            remoteAttestation,
           },
         });
       } catch (error) {

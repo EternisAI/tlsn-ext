@@ -24,14 +24,19 @@ const Offscreen = () => {
       // @ts-ignore
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
+          console.log('request', request);
           switch (request.type) {
             case OffscreenActionTypes.remote_attestation_verification: {
-              const remoteAttestation = request.data.decoded;
+              console.log(
+                'OffscreenActionTypes.remote_attestation_verification',
+              );
+              const remoteAttestation = request.data.remoteAttestation;
               console.log(
                 'OffscreenActionTypes.remote_attestation_verification',
                 remoteAttestation,
               );
               const result = await init({ loggingLevel }, remoteAttestation);
+              console.log('result', result);
               chrome.runtime.sendMessage({
                 type: OffscreenActionTypes.remote_attestation_verification_response,
                 data: result,

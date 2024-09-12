@@ -10,9 +10,8 @@ import browser from 'webextension-polyfill';
 import { Proof, AttrAttestation } from '../../utils/types';
 import { Method } from 'tlsn-js/wasm/pkg';
 
-const { init, Prover, NotarizedSession, TlsProof }: any = Comlink.wrap(
-  new Worker(new URL('./worker.ts', import.meta.url)),
-);
+const { init, verify_attestation, Prover, NotarizedSession, TlsProof }: any =
+  Comlink.wrap(new Worker(new URL('./worker.ts', import.meta.url)));
 
 const Offscreen = () => {
   useEffect(() => {
@@ -35,8 +34,13 @@ const Offscreen = () => {
                 'OffscreenActionTypes.remote_attestation_verification',
                 remoteAttestation,
               );
-              const result = await init({ loggingLevel }, remoteAttestation);
-              console.log('result', result);
+
+              try {
+                await init({ loggingLevel });
+              } catch (error) {
+                console.error('wasm aready init');
+              }
+              let result = await verify_attestation(remoteAttestation);
               chrome.runtime.sendMessage({
                 type: OffscreenActionTypes.remote_attestation_verification_response,
                 data: result,

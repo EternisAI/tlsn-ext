@@ -53,8 +53,8 @@ export const useRemoteAttestation = () => {
           return setError('pcrs not found');
         }
         if (
-          pcrs?.get(1) !== EXPECTED_PCRS[1] ||
-          pcrs?.get(2) !== EXPECTED_PCRS[2]
+          pcrs?.get('1') !== EXPECTED_PCRS['1'] ||
+          pcrs?.get('2') !== EXPECTED_PCRS['2']
         ) {
           setIsValid(false);
           setLoading(false);

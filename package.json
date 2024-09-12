@@ -19,6 +19,7 @@
   "dependencies": {
     "@extism/extism": "^1.0.2",
     "@fortawesome/fontawesome-free": "^6.4.2",
+    "@sardinefish/x509": "^1.2.1",
     "async-mutex": "^0.4.0",
     "axios": "^1.7.5",
     "buffer": "^6.0.3",
@@ -45,9 +46,11 @@
     "redux": "^4.2.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.4.2",
+    "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.3.3",
     "tlsn-js": "../tlsn-js",
-    "tlsn-jsV5.3": "npm:tlsn-js@0.1.0-alpha.5.3"
+    "tlsn-jsV5.3": "npm:tlsn-js@0.1.0-alpha.5.3",
+    "vm-browserify": "^1.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

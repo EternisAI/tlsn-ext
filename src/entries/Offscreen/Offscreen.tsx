@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from './types';
-import { NotaryServer, Prover as _Prover } from 'tlsn-js';
+import { NotaryServer, Prover as _Prover, RemoteAttestation } from 'tlsn-js';
 import { verify } from 'tlsn-jsV5.3';
 
 import { urlify } from '../../utils/misc';
@@ -9,6 +9,30 @@ import { BackgroundActiontype } from '../Background/rpc';
 import browser from 'webextension-polyfill';
 import { Proof, AttrAttestation } from '../../utils/types';
 import { Method } from 'tlsn-js/wasm/pkg';
+
+// import { Certificate, PrivateKey } from '@sardinefish/x509';
+
+//@todo chaincerts is harcoded rn but can be extracted from remote attestation cabundle actually.
+//Only the root CA should be saved or downloaded from aws.
+// export function verifyx509Certificate(certificateBytes: Uint8Array) {
+//   // Add PEM begin and end lines
+
+//   const pemCertificate = Buffer.concat([
+//     Buffer.from(`-----BEGIN CERTIFICATE-----
+// ${Buffer.from(certificateBytes).toString('base64')}
+// -----END CERTIFICATE-----`),
+//   ]);
+//   // Parse the certificate
+//   let cert = Certificate.fromPEM(pemCertificate);
+//   for (let i = 0; i < chainCerts.length - 1; i++) {
+//     const issuer = Certificate.fromPEM(Buffer.from(chainCerts[i].Cert));
+//     if (issuer.checkSignature(cert) !== null) {
+//       return false;
+//     }
+//     cert = issuer;
+//   }
+//   return true;
+// }
 
 const { init, verify_attestation, Prover, NotarizedSession, TlsProof }: any =
   Comlink.wrap(new Worker(new URL('./worker.ts', import.meta.url)));
@@ -29,7 +53,8 @@ const Offscreen = () => {
               console.log(
                 'OffscreenActionTypes.remote_attestation_verification',
               );
-              const remoteAttestation = request.data.remoteAttestation;
+              const remoteAttestation: RemoteAttestation =
+                request.data.remoteAttestation;
               console.log(
                 'OffscreenActionTypes.remote_attestation_verification',
                 remoteAttestation,
@@ -40,7 +65,18 @@ const Offscreen = () => {
               } catch (error) {
                 console.error('wasm aready init');
               }
-              let result = await verify_attestation(remoteAttestation);
+              const result = await verify_attestation(remoteAttestation);
+
+              console.log('remoteAttestation', remoteAttestation);
+              //verify x509 certificate
+              // if (remoteAttestation?.certificate) {
+              //   const certificateUint8Array = new Uint8Array(
+              //     Buffer.from(remoteAttestation?.certificate, 'base64'),
+              //   );
+
+              //   const resultx509 = verifyx509Certificate(certificateUint8Array);
+              //   console.log('resultx509', resultx509);
+              // }
               chrome.runtime.sendMessage({
                 type: OffscreenActionTypes.remote_attestation_verification_response,
                 data: result,

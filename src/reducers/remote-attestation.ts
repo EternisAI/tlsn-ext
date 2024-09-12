@@ -44,35 +44,24 @@ export const useRemoteAttestation = () => {
         //analyze attestation validity here
         const remoteAttestation = decodeCborAll(response.data);
 
+        //verify pcrs values
         let pcrs = remoteAttestation?.payload_object.pcrs;
-        console.log('pcrs', pcrs, pcrs.get(0));
-
-        const pcr1 = Buffer.from(pcrs?.get(1)).toString('base64');
-        const pcr2 = Buffer.from(pcrs?.get(2)).toString('base64');
-
-        console.log('pcr1', pcr1);
-        console.log('pcr2', pcr2);
 
         if (!pcrs) {
           setIsValid(false);
           setLoading(false);
           return setError('pcrs not found');
         }
-        if (pcr1 !== EXPECTED_PCRS[1] || pcr2 !== EXPECTED_PCRS[2]) {
+        if (
+          pcrs?.get(1) !== EXPECTED_PCRS[1] ||
+          pcrs?.get(2) !== EXPECTED_PCRS[2]
+        ) {
           setIsValid(false);
           setLoading(false);
           return setError('pcrs values are not the one expected');
         }
 
-        // if (pcrs[1] !== expectedPcrs[1] || pcrs[2] !== expectedPcrs[2]) {
-        //   setLoading(false);
-        //   console.log('isValid', isValid);
-        // }
-        // const certificateUint8Array = Buffer.from(
-        //   remoteAttestation?.certificate as string,
-        //   'base64',
-        // );
-
+        //verify x509 certificate
         // const resultx509 = verifyx509Certificate(certificateUint8Array);
         // console.log('resultx509', resultx509);
         // if (!resultx509) {
@@ -80,6 +69,7 @@ export const useRemoteAttestation = () => {
         //   setError('x509 certificate is not valid');
         // }
 
+        //verify authenticity of document
         chrome.runtime.sendMessage({
           type: OffscreenActionTypes.remote_attestation_verification,
           data: {

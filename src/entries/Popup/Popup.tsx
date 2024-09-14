@@ -41,6 +41,7 @@ import classNames from 'classnames';
 import { getConnection } from '../Background/db';
 
 import RemoteAttestationBadge from '../../components/RemoteAttestationBadge';
+import ToggleExtensionButton from '../../components/ToggleExtensionButton';
 
 const Popup = () => {
   const dispatch = useDispatch();
@@ -112,7 +113,8 @@ const Popup = () => {
             onClick={() => navigate('/')}
           />
         )}
-        <AppConnectionLogo />
+        <ToggleExtensionButton />
+        {/* <AppConnectionLogo /> */}
       </div>
       <Routes>
         <Route path="/requests/:requestId/*" element={<Request />} />

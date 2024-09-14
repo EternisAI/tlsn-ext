@@ -16,17 +16,9 @@ export const useRemoteAttestation = () => {
     (async () => {
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
-          console.log('OffscreenActionTypes', request);
           switch (request.type) {
             case OffscreenActionTypes.remote_attestation_verification_response: {
-              console.log(
-                'OffscreenActionTypes.remote_attestation_verification_response',
-              );
               const result = request.data;
-              console.log(
-                'OffscreenActionTypes.remote_attestation_verification_response',
-                result,
-              );
               setIsValid(result);
             }
           }

@@ -8,8 +8,14 @@ import mutex from './mutex';
 import browser from 'webextension-polyfill';
 import { addRequest } from '../../reducers/requests';
 import { urlify } from '../../utils/misc';
-import { setCookies, setHeaders } from './db';
-import { NOTARY_API, NOTARY_PROXY } from '../../utils/constants';
+import {
+  setCookies,
+  setHeaders,
+  getNotaryRequestsByUrl,
+  getNotaryRequests,
+  getLastNotaryRequest,
+} from './db';
+import { NOTARY_API, NOTARY_PROXY, BUFFER_TIME } from '../../utils/constants';
 import { Bookmark, BookmarkManager } from '../../reducers/bookmarks';
 import { defaultBookmarks } from '../../utils/defaultBookmarks';
 import { get, NOTARY_API_LS_KEY, PROXY_API_LS_KEY } from '../../utils/storage';
@@ -94,8 +100,18 @@ export const handleNotarization = (
   mutex.runExclusive(async () => {
     const storage = await chrome.storage.sync.get('enable-extension');
     const isEnabled = storage['enable-extension'];
-
     if (!isEnabled) return;
+
+    //prevent spamming of requests
+    const lastNotaryRequest = await getLastNotaryRequest();
+    console.log('lastNotaryRequest', lastNotaryRequest);
+
+    if (lastNotaryRequest) {
+      const timeDiff = Date.now() - lastNotaryRequest.timestamp;
+      if (timeDiff < BUFFER_TIME) {
+        return;
+      }
+    }
 
     const { tabId, requestId, frameId, url, method, type } = details;
     const cache = getCacheByTabId(tabId);
@@ -104,6 +120,7 @@ export const handleNotarization = (
 
     const req = cache.get<RequestLog>(requestId);
 
+    //verify that url is part of the bookmarked providers
     const bookmarkManager = new BookmarkManager();
     const bookmarks = await bookmarkManager.getBookmarks();
     const bookmark = bookmarks.find(

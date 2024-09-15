@@ -5,8 +5,9 @@ import {
   useHistoryOrder,
   useRequestHistory,
   deleteRequestHistory,
+  useAllRequestHistory,
 } from '../../reducers/history';
-import Icon from '../../components/Icon';
+
 import { getNotaryApi, getProxyApi } from '../../utils/storage';
 import { urlify, download, upload } from '../../utils/misc';
 import { BackgroundActiontype } from '../../entries/Background/rpc';
@@ -19,19 +20,37 @@ import {
   getNotaryRequest,
   getNotaryRequests,
   removeNotaryRequest,
+  removeAllNotaryRequests,
 } from '../../entries/Background/db';
 import { BookmarkManager } from '../../reducers/bookmarks';
 import { RequestHistory } from '../../entries/Background/rpc';
+import Icon from '../../components/Icon';
 const charwise = require('charwise');
 
 const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
   const history = useHistoryOrder();
 
-  console.log('history', history);
+  const clearHistory = useCallback(async () => {
+    await removeAllNotaryRequests();
+  }, []);
 
+  const foo = 'ahi';
+
+  const allRequest = useAllRequestHistory();
   return (
     <div className="flex flex-col flex-nowrap overflow-y-auto">
+      <button
+        onClick={clearHistory}
+        className="flex items-center px-3 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors duration-200"
+      >
+        <Icon
+          className="text-slate-500 hover:text-slate-700 cursor-pointer"
+          size={1}
+          fa="fa-solid fa-trash"
+        />
+        Clear History
+      </button>
       {history.map((id) => {
         return <OneRequestHistory key={id} requestId={id} />;
       })}

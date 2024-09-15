@@ -110,6 +110,7 @@ export type RequestLog = {
 };
 
 export type RequestHistory = {
+  timestamp: number;
   id: string;
   url: string;
   method: string;
@@ -345,6 +346,7 @@ export async function handleProveRequestStart(
     websocketProxyUrl,
     secretHeaders,
     secretResps,
+    timestamp: Date.now(),
   });
 
   await setNotaryRequestStatus(id, 'pending');
@@ -409,6 +411,7 @@ async function runPluginProver(request: BackgroundAction, now = Date.now()) {
     maxSentData,
     secretHeaders,
     secretResps,
+    timestamp: now,
   });
 
   await setNotaryRequestStatus(id, 'pending');
@@ -560,8 +563,8 @@ function handleRunPlugin(
     const plugin = await makePlugin(arrayBuffer, config);
     devlog(`plugin::${method}`, params);
     const out = await plugin.call(method, params);
-    devlog(`plugin response: `, out.string());
-    sendResponse(JSON.parse(out.string()));
+    devlog(`plugin response: `, out?.string());
+    sendResponse(JSON.parse(out?.string() || '{}'));
   })();
 
   return true;

@@ -40,6 +40,7 @@ export async function addNotaryRequest(
     ...request,
     id,
     status: '',
+    timestamp: now,
   };
   await historyDb.put(id, newReq);
   return newReq;
@@ -135,6 +136,16 @@ export async function removeNotaryRequest(
   }
 }
 
+export async function removeAllNotaryRequests(): Promise<void> {
+  try {
+    for await (const key of historyDb.keys()) {
+      await historyDb.del(key);
+    }
+  } catch (e) {
+    console.log('error removing all notary requests', e);
+  }
+}
+
 export async function getNotaryRequests(): Promise<RequestHistory[]> {
   const retVal = [];
   for await (const [key, value] of historyDb.iterator()) {
@@ -143,10 +154,33 @@ export async function getNotaryRequests(): Promise<RequestHistory[]> {
   return retVal;
 }
 
+export async function getNotaryRequestsByUrl(
+  url: string,
+): Promise<RequestHistory[]> {
+  const retVal = [];
+  for await (const [key, value] of historyDb.iterator()) {
+    if (value.url === url) {
+      retVal.push(value);
+    }
+  }
+  return retVal;
+}
+
 export async function getNotaryRequest(
   id: string,
 ): Promise<RequestHistory | null> {
   return historyDb.get(id).catch(() => null);
+}
+
+export async function getLastNotaryRequest(): Promise<RequestHistory | null> {
+  let lastRequest: RequestHistory | null = null;
+  for await (const [key, value] of historyDb.iterator({
+    reverse: true,
+    limit: 1,
+  })) {
+    lastRequest = value;
+  }
+  return lastRequest;
 }
 
 export async function getPluginHashes(): Promise<string[]> {

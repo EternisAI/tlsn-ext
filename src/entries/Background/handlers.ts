@@ -92,6 +92,11 @@ export const handleNotarization = (
   details: browser.WebRequest.OnCompletedDetailsType,
 ) => {
   mutex.runExclusive(async () => {
+    const storage = await chrome.storage.sync.get('enable-extension');
+    const isEnabled = storage['enable-extension'];
+
+    if (!isEnabled) return;
+
     const { tabId, requestId, frameId, url, method, type } = details;
     const cache = getCacheByTabId(tabId);
 

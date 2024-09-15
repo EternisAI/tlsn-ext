@@ -13,17 +13,17 @@ export const defaultBookmarks: Bookmark[] = [
     icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstore-app-images.s3.us-east-1.amazonaws.com%2F4b00d4f0a3be5eae76c93058ddb352dc-400x400.png&f=1&nofb=1&ipt=62c13557d086a2c30079a55774f58bfeb46c8b8554af84f22d0a215febfdffa8&ipo=images',
   },
 
-  // {
-  //   url: 'https://dummyjson.com/products/1',
-  //   targetUrl: 'https://dummyjson.com/products/1',
-  //   method: 'GET',
-  //   type: 'main_frame',
-  //   title: 'Dummy JSON',
-  //   description: 'Dummy example',
-  //   responseSelector: '',
-  //   valueTransform: '',
-  //   icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngrepo.com%2Fpng%2F243782%2F180%2Fduck.png&f=1&nofb=1&ipt=0ea3a6d225021c76c798832f8ee2fa451799886985705b85851b8a1731bf1c37&ipo=images',
-  // },
+  {
+    url: 'https://dummyjson.com/products/1',
+    targetUrl: 'https://dummyjson.com/products/1',
+    method: 'GET',
+    type: 'main_frame',
+    title: 'Dummy JSON',
+    description: 'Dummy example',
+    responseSelector: '',
+    valueTransform: '',
+    icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngrepo.com%2Fpng%2F243782%2F180%2Fduck.png&f=1&nofb=1&ipt=0ea3a6d225021c76c798832f8ee2fa451799886985705b85851b8a1731bf1c37&ipo=images',
+  },
   {
     url: 'https://api.x.com/1.1/account/settings.json',
     targetUrl: 'https://www.twitter.com/home',

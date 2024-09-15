@@ -167,12 +167,12 @@ export const makePlugin = async (
   } = {
     redirect: function (context: CallContext, off: bigint) {
       const r = context.read(off);
-      const url = r.text();
+      const url = r?.text();
       browser.tabs.update(tab.id, { url });
     },
     notarize: function (context: CallContext, off: bigint) {
       const r = context.read(off);
-      const params = JSON.parse(r.text());
+      const params = JSON.parse(r?.text() || '{}');
       const now = Date.now();
       const id = charwise.encode(now).toString('hex');
 
@@ -216,7 +216,7 @@ export const makePlugin = async (
 
         if (getSecretResponse) {
           const out = await plugin.call(getSecretResponse, body);
-          secretResps = JSON.parse(out.string());
+          secretResps = JSON.parse(out?.string() || '{}');
         }
 
         handleExecPluginProver({
@@ -314,7 +314,7 @@ export const getPluginConfig = async (
 ): Promise<PluginConfig> => {
   const plugin = data instanceof ArrayBuffer ? await makePlugin(data) : data;
   const out = await plugin.call('config');
-  const config: PluginConfig = JSON.parse(out.string());
+  const config: PluginConfig = JSON.parse(out?.string() || '{}');
 
   assert(typeof config.title === 'string' && config.title.length);
   assert(typeof config.description === 'string' && config.description.length);

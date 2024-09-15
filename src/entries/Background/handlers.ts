@@ -17,7 +17,6 @@ import {
 } from './db';
 import { NOTARY_API, NOTARY_PROXY, BUFFER_TIME } from '../../utils/constants';
 import { Bookmark, BookmarkManager } from '../../reducers/bookmarks';
-import { defaultBookmarks } from '../../utils/defaultBookmarks';
 import { get, NOTARY_API_LS_KEY, PROXY_API_LS_KEY } from '../../utils/storage';
 
 export const onSendHeaders = (

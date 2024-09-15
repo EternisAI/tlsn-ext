@@ -68,7 +68,7 @@ Now, the content of `build` folder will be the extension ready to be submitted t
 
 ## Update default providers
 
-Update the default_providers.json file on AWS S3 bucket eternis-extension-providers?
+Update the default_providers.json file on AWS S3 bucket eternis-extension-providers.
 
 
 ## Access extension build artifacts

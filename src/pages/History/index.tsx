@@ -367,10 +367,9 @@ function ActionButton(props: {
 
   return (
     <button
-      className={classNames(
-        'flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 hover:font-bold',
-        props.className,
-      )}
+      className={
+        'flex items-center px-3 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors duration-200'
+      }
       onClick={props.onClick}
     >
       <Icon className="" fa={props.fa} size={1} />

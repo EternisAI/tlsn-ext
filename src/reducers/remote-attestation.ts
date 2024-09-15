@@ -55,9 +55,9 @@ export const useRemoteAttestation = () => {
         }
         //verify nonce
         const nonce_ = remoteAttestation?.payload_object.nonce;
-        console.log('nonce_', nonce_);
+        console.log('nonce_', nonce_, typeof nonce_);
 
-        console.log('nonce', nonce);
+        console.log('nonce', nonce, typeof nonce);
         if (nonce_ !== nonce) {
           setIsValid(false);
           setLoading(false);

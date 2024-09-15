@@ -101,12 +101,7 @@ const Popup = () => {
         </div>
 
         {location.pathname === '/home' && (
-          <img
-            className="  left-2 h-5 cursor-pointer"
-            src={logo}
-            alt="logo"
-            onClick={() => navigate('/')}
-          />
+          <img className="  left-2 h-5 cursor-pointer" src={logo} alt="logo" />
         )}
         {location.pathname !== '/home' && (
           <Icon

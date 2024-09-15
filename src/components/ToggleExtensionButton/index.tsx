@@ -13,12 +13,7 @@ import Icon from '../Icon';
 import { set } from '../../utils/storage';
 export default function ToggleExtensionButton(): ReactElement {
   return (
-    <div
-      className="absolute right-2 flex flex-nowrap flex-row items-center gap-1 justify-center w-fit cursor-pointer"
-      onClick={() => {
-        console.log('toggle');
-      }}
-    >
+    <div className="absolute right-2 flex flex-nowrap flex-row items-center gap-1 justify-center w-fit cursor-pointer">
       <SimpleToggle />
     </div>
   );
@@ -36,7 +31,6 @@ export function SimpleToggle() {
     async function getIsOn() {
       const enabledExtension =
         await chrome.storage.sync.get('enable-extension');
-      console.log('enabledExtension', enabledExtension);
       setIsOn(enabledExtension['enable-extension']);
     }
     getIsOn();

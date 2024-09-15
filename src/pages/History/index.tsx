@@ -28,6 +28,8 @@ const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
   const history = useHistoryOrder();
 
+  console.log('history', history);
+
   return (
     <div className="flex flex-col flex-nowrap overflow-y-auto">
       {history.map((id) => {

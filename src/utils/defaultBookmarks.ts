@@ -14,17 +14,6 @@ export const defaultBookmarks: Bookmark[] = [
   },
 
   {
-    url: 'https://dummyjson.com/products/1',
-    targetUrl: 'https://dummyjson.com/products/1',
-    method: 'GET',
-    type: 'main_frame',
-    title: 'Dummy JSON',
-    description: 'Dummy example',
-    responseSelector: '',
-    valueTransform: '',
-    icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngrepo.com%2Fpng%2F243782%2F180%2Fduck.png&f=1&nofb=1&ipt=0ea3a6d225021c76c798832f8ee2fa451799886985705b85851b8a1731bf1c37&ipo=images',
-  },
-  {
     url: 'https://api.x.com/1.1/account/settings.json',
     targetUrl: 'https://www.twitter.com/home',
     method: 'GET',
@@ -35,6 +24,29 @@ export const defaultBookmarks: Bookmark[] = [
     responseSelector: '(?<="screen_name":)"(.*?)"',
     valueTransform: '"screen_name":%s',
     icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn-icons-png.flaticon.com%2F128%2F5969%2F5969020.png&f=1&nofb=1&ipt=a56216fd08bcdc1487b23d84251395468cb2459709b08c0e19ba893d72d74897&ipo=images',
+  },
+  {
+    url: 'https://bonfire.robinhood.com/portfolio/performance/589423219?chart_style=PERFORMANCE&chart_type=historical_portfolio&display_span=day&include_all_hours=true',
+    targetUrl: 'https://robinhood.com/',
+    method: 'GET',
+    type: 'xmlhttprequest',
+    title:
+      'https://bonfire.robinhood.com/portfolio/performance/589423219?chart_style=PERFORMANCE&chart_type=historical_portfolio&display_span=day&include_all_hours=true',
+    description: '',
+    responseSelector: '',
+    valueTransform: '',
+    icon: '',
+  },
+  {
+    url: 'https://dummyjson.com/products/1',
+    targetUrl: 'https://dummyjson.com/products/1',
+    method: 'GET',
+    type: 'main_frame',
+    title: 'Dummy JSON',
+    description: 'This is a dummy website to produce attestation example',
+    responseSelector: '',
+    valueTransform: '',
+    icon: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngrepo.com%2Fpng%2F243782%2F180%2Fduck.png&f=1&nofb=1&ipt=0ea3a6d225021c76c798832f8ee2fa451799886985705b85851b8a1731bf1c37&ipo=images',
   },
   // {
   //   url: 'https://gateway.reddit.com/desktopapi/v1/prefs',

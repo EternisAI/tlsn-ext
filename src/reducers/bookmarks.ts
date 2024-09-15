@@ -3,7 +3,6 @@ import { RequestHistory, RequestLog } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
 import { DEFAULT_PROVIDERS_ENDPOINT } from '../utils/constants';
 import { getCacheByTabId } from '../entries/Background/cache';
-import { defaultBookmarks } from '../utils/defaultBookmarks';
 export type Bookmark = {
   id?: string;
   default?: boolean;

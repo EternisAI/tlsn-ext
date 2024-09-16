@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { ENCLAVE_ENDPOINT } from '../utils/constants';
+import { NOTARY_API } from '../utils/constants';
 import { decodeCborAll, RemoteAttestation, generateNonce } from 'tlsn-js';
 import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from '../entries/Offscreen/types';
@@ -30,7 +30,7 @@ export const useRemoteAttestation = () => {
     const fetchData = async () => {
       try {
         const nonce = generateNonce();
-        const enclaveEndpoint = `${ENCLAVE_ENDPOINT}/enclave/attestation?nonce=${nonce}`;
+        const enclaveEndpoint = `${NOTARY_API}/enclave/attestation?nonce=${nonce}`;
 
         const response = await axios.get(enclaveEndpoint);
         setRemoteAttestation(response.data);

@@ -19,7 +19,7 @@ export const MODE: Mode = (process.env.NODE_ENV as Mode) || Mode.Production;
 
 export const EXPECTED_PCRS = {
   '1': 'A0OwVs2Ehcp4kN3YM0dteEYK7SqhYVSOTia+3zIXJmliV9Yj6IBfP2BZRrPYsMaq',
-  '2': 'zSXYI5okdCeoVmYli53NaW/c4QUcs3XCgJ154ksWovEdniGdlkLjWDr0/SJs375/',
+  '2': 'C782kKfD7niAW0qA2cFsf6knoq+LaVkA/6tdyX9g7rngmMCyHTE1/0xQRnm65DRL',
 };
 
 export const EXPECTED_PCRS_DEBUG = {

@@ -25,13 +25,20 @@ export default function RemoteAttestationBadge(): ReactElement {
         {isExtensionEnabled ? (
           <>
             {isValid ? (
-              <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+              <>
+                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                <div className="w-1"></div>
+                <span className="text-xs mr-2"> Notary Authenticated</span>
+              </>
             ) : (
-              <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-            )}
-            <div className="w-1"></div>
+              <>
+                <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                <div className="w-1"></div>
+                <span className="text-xs mr-2"> Notary Not Authenticated</span>
 
-            <span className="text-xs mr-2"> Notary Authenticated</span>
+                <div className="text-xs mr-2">{error}</div>
+              </>
+            )}
           </>
         ) : (
           <>

@@ -414,10 +414,11 @@ function decodeTLSData(hexString: string) {
   }
 
   // Split the decoded string into request and response
-  const [request, response] = decodedString.split('\r\n\r\n');
+  const [request, response_header, response_body] =
+    decodedString.split('\r\n\r\n');
 
   return {
     request,
-    response: response.split('\r\n\r\n'), // Split headers and body
+    response: response_body, // Split headers and body
   };
 }

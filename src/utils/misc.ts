@@ -392,11 +392,32 @@ export function safeParseJSON(data?: string | null) {
 }
 
 export function printAttestation(attrAttestation: AttrAttestation): string {
+  const signedSessionDecoded = decodeTLSData(attrAttestation.signedSession);
+
   return `
     Version: ${attrAttestation.version}
     Notary URL: ${attrAttestation.meta.notaryUrl}
     Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}
     Signature: 0x${attrAttestation.signature}
-    Signed Session: ${attrAttestation.signedSession}
+    Signed Session: ${signedSessionDecoded.response}
   `;
+}
+
+function decodeTLSData(hexString: string) {
+  // Remove any whitespace from the hex string
+  hexString = hexString.replace(/\s/g, '');
+
+  // Decode the hex string to a regular string
+  let decodedString = '';
+  for (let i = 0; i < hexString.length; i += 2) {
+    decodedString += String.fromCharCode(parseInt(hexString.substr(i, 2), 16));
+  }
+
+  // Split the decoded string into request and response
+  const [request, response] = decodedString.split('\r\n\r\n');
+
+  return {
+    request,
+    response: response.split('\r\n\r\n'), // Split headers and body
+  };
 }

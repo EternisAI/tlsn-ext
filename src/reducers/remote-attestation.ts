@@ -34,48 +34,34 @@ export const useRemoteAttestation = () => {
 
         const response = await axios.get(enclaveEndpoint);
         setRemoteAttestation(response.data);
+        const remoteAttbase64 = response.data.trim();
+        console.log('response.data', remoteAttbase64);
+
         //analyze attestation validity here
-        const remoteAttestation = decodeCborAll(response.data);
+        //const remoteAttestation = decodeCborAll(response.data);
 
         //verify pcrs values
-        const pcrs = remoteAttestation?.payload_object.pcrs;
+        // const pcrs = remoteAttestation?.payload_object.pcrs;
 
-        if (!pcrs) {
-          setIsValid(false);
-          setLoading(false);
-          return setError('pcrs not found');
-        }
-        if (
-          pcrs?.get(1) !== EXPECTED_PCRS['1'] ||
-          pcrs?.get(2) !== EXPECTED_PCRS['2']
-        ) {
-          setIsValid(false);
-          setLoading(false);
-          return setError('pcrs values are not the one expected');
-        }
-        //verify nonce
-        const nonce_ = remoteAttestation?.payload_object.nonce;
-        console.log('nonce_', nonce_, typeof nonce_);
-
-        console.log('nonce', nonce, typeof nonce);
-        if (nonce_ !== nonce) {
-          setIsValid(false);
-          setLoading(false);
-          return setError('nonce is not the one expected');
-        }
-        //verify x509 certificate
-        // const resultx509 = verifyx509Certificate(certificateUint8Array);
-        // console.log('resultx509', resultx509);
-        // if (!resultx509) {
-        //   console.log('x509 certificate is not valid');
-        //   setError('x509 certificate is not valid');
+        // if (!pcrs) {
+        //   setIsValid(false);
+        //   setLoading(false);
+        //   return setError('pcrs not found');
+        // }
+        // if (
+        //   pcrs?.get(1) !== EXPECTED_PCRS['1'] ||
+        //   pcrs?.get(2) !== EXPECTED_PCRS['2']
+        // ) {
+        //   setIsValid(false);
+        //   setLoading(false);
+        //   return setError('pcrs values are not the one expected');
         // }
 
-        //verify authenticity of document
         chrome.runtime.sendMessage({
           type: OffscreenActionTypes.remote_attestation_verification,
           data: {
-            remoteAttestation,
+            remoteAttestation: remoteAttbase64,
+            nonce,
           },
         });
       } catch (error) {

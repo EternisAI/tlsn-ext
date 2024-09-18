@@ -392,14 +392,20 @@ export function safeParseJSON(data?: string | null) {
 }
 
 export function printAttestation(attrAttestation: AttrAttestation): string {
-  const signedSessionDecoded = decodeTLSData(attrAttestation.signedSession);
+  console.log('attrAttestation', attrAttestation);
+  let response = '';
+  if (!attrAttestation.attestations) {
+    const signedSessionDecoded = decodeTLSData(attrAttestation.applicationData);
+    response = signedSessionDecoded.response;
+  }
 
   return `
     Version: ${attrAttestation.version}
     Notary URL: ${attrAttestation.meta.notaryUrl}
     Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}
     Signature: 0x${attrAttestation.signature}
-    Signed Session: ${signedSessionDecoded.response}
+    Attestations: 0x${attrAttestation.attestations}
+    Session Data: ${response}
   `;
 }
 

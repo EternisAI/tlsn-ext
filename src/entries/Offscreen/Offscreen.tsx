@@ -267,6 +267,8 @@ async function createProof(options: {
     },
     signature: result.signature,
     signedSession: result.signedSession,
+    applicationData: result.applicationData,
+    attestations: result.attestation,
   };
   return proof;
 }

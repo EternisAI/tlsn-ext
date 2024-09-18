@@ -16,4 +16,6 @@ export type AttrAttestation = {
   };
   signature: string;
   signedSession: string;
+  applicationData: string;
+  attestations: string;
 };

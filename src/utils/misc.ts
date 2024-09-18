@@ -391,25 +391,7 @@ export function safeParseJSON(data?: string | null) {
   }
 }
 
-export function printAttestation(attrAttestation: AttrAttestation): string {
-  console.log('attrAttestation', attrAttestation);
-  let response = '';
-  if (!attrAttestation.attestations) {
-    const signedSessionDecoded = decodeTLSData(attrAttestation.applicationData);
-    response = signedSessionDecoded.response;
-  }
-
-  return `
-    Version: ${attrAttestation.version}
-    Notary URL: ${attrAttestation.meta.notaryUrl}
-    Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}
-    Signature: 0x${attrAttestation.signature}
-    Attestations: 0x${attrAttestation.attestations}
-    Session Data: ${response}
-  `;
-}
-
-function decodeTLSData(hexString: string) {
+export function decodeTLSData(hexString: string) {
   // Remove any whitespace from the hex string
   hexString = hexString.replace(/\s/g, '');
 

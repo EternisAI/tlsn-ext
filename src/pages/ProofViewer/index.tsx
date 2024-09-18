@@ -150,14 +150,15 @@ export function AttributeAttestation(props: {
       <div className="p-6 space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
+            <h3 className="font-semibold">Notary url</h3>
+            <p className="break-all">{attrAttestation.meta.notaryUrl}</p>
+          </div>
+          <div>
             <h3 className="font-semibold">Version</h3>
             <p>{attrAttestation.version}</p>
           </div>
           <div>
-            <h3 className="font-semibold">Notary details</h3>
-            <p className="break-all">
-              notary: {attrAttestation.meta.notaryUrl}
-            </p>
+            <h3 className="font-semibold">Websocket proxy url</h3>
             <p className="break-all">
               websocket proxy: {attrAttestation.meta.websocketProxyUrl}
             </p>

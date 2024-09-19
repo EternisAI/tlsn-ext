@@ -15,11 +15,6 @@ export enum Mode {
 
 export const MODE: Mode = (process.env.NODE_ENV as Mode) || Mode.Production;
 
-export const EXPECTED_PCRS = {
-  '1': 'A0OwVs2Ehcp4kN3YM0dteEYK7SqhYVSOTia+3zIXJmliV9Yj6IBfP2BZRrPYsMaq',
-  '2': 'C782kKfD7niAW0qA2cFsf6knoq+LaVkA/6tdyX9g7rngmMCyHTE1/0xQRnm65DRL',
-};
-
 export const EXPECTED_PCRS_DEBUG = {
   '1': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   '2': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
@@ -28,5 +23,5 @@ export const EXPECTED_PCRS_DEBUG = {
 // 1 second buffer time to prevent spamming of requests
 export const NOTARIZATION_BUFFER_TIME = 5000;
 
-export const DEFAULT_PROVIDERS_ENDPOINT =
-  'https://eternis-extension-providers.s3.amazonaws.com/default_providers.json';
+export const DEFAULT_CONFIG_ENDPOINT =
+  'https://eternis-extension-providers.s3.amazonaws.com/default-config.json';

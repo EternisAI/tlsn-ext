@@ -15,7 +15,11 @@ import {
   getNotaryRequests,
   getLastNotaryRequest,
 } from './db';
-import { NOTARY_API, NOTARY_PROXY, BUFFER_TIME } from '../../utils/constants';
+import {
+  NOTARY_API,
+  NOTARY_PROXY,
+  NOTARIZATION_BUFFER_TIME,
+} from '../../utils/constants';
 import { Bookmark, BookmarkManager } from '../../reducers/bookmarks';
 import { get, NOTARY_API_LS_KEY, PROXY_API_LS_KEY } from '../../utils/storage';
 
@@ -107,7 +111,7 @@ export const handleNotarization = (
 
     if (lastNotaryRequest) {
       const timeDiff = Date.now() - lastNotaryRequest.timestamp;
-      if (timeDiff < BUFFER_TIME) {
+      if (timeDiff < NOTARIZATION_BUFFER_TIME) {
         return;
       }
     }

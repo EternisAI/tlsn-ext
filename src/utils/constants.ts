@@ -26,7 +26,7 @@ export const EXPECTED_PCRS_DEBUG = {
 };
 
 // 1 second buffer time to prevent spamming of requests
-export const BUFFER_TIME = 1000;
+export const NOTARIZATION_BUFFER_TIME = 5000;
 
 export const DEFAULT_PROVIDERS_ENDPOINT =
   'https://eternis-extension-providers.s3.amazonaws.com/default_providers.json';

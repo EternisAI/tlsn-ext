@@ -169,3 +169,15 @@ export const useActiveTabUrl = (): URL | null => {
     return activeTab?.url ? new URL(activeTab.url) : null;
   }, deepEqual);
 };
+
+export const useExtensionEnabled = (): boolean => {
+  const [isEnabled, setIsEnabled] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const storage = await chrome.storage.sync.get('enable-extension');
+      const isEnabled = storage['enable-extension'];
+      setIsEnabled(isEnabled);
+    })();
+  }, []);
+  return isEnabled;
+};

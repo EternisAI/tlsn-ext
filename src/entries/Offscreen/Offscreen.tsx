@@ -10,30 +10,6 @@ import browser from 'webextension-polyfill';
 import { Proof, AttrAttestation } from '../../utils/types';
 import { Method } from 'tlsn-js/wasm/pkg';
 
-// import { Certificate, PrivateKey } from '@sardinefish/x509';
-
-//@todo chaincerts is harcoded rn but can be extracted from remote attestation cabundle actually.
-//Only the root CA should be saved or downloaded from aws.
-// export function verifyx509Certificate(certificateBytes: Uint8Array) {
-//   // Add PEM begin and end lines
-
-//   const pemCertificate = Buffer.concat([
-//     Buffer.from(`-----BEGIN CERTIFICATE-----
-// ${Buffer.from(certificateBytes).toString('base64')}
-// -----END CERTIFICATE-----`),
-//   ]);
-//   // Parse the certificate
-//   let cert = Certificate.fromPEM(pemCertificate);
-//   for (let i = 0; i < chainCerts.length - 1; i++) {
-//     const issuer = Certificate.fromPEM(Buffer.from(chainCerts[i].Cert));
-//     if (issuer.checkSignature(cert) !== null) {
-//       return false;
-//     }
-//     cert = issuer;
-//   }
-//   return true;
-// }
-
 const { init, verify_attestation, Prover, NotarizedSession, TlsProof }: any =
   Comlink.wrap(new Worker(new URL('./worker.ts', import.meta.url)));
 
@@ -43,7 +19,7 @@ const Offscreen = () => {
       const loggingLevel = await browser.runtime.sendMessage({
         type: BackgroundActiontype.get_logging_level,
       });
-      //await init({ loggingLevel }, null);
+
       // @ts-ignore
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
@@ -55,6 +31,7 @@ const Offscreen = () => {
               );
               const remoteAttestation: RemoteAttestation =
                 request.data.remoteAttestation;
+              const nonce = request.data.nonce;
               console.log(
                 'OffscreenActionTypes.remote_attestation_verification',
                 remoteAttestation,
@@ -65,7 +42,7 @@ const Offscreen = () => {
               } catch (error) {
                 console.error('wasm aready init');
               }
-              const result = await verify_attestation(remoteAttestation);
+              const result = await verify_attestation(remoteAttestation, nonce);
 
               console.log('remoteAttestation', remoteAttestation);
               //verify x509 certificate
@@ -290,6 +267,8 @@ async function createProof(options: {
     },
     signature: result.signature,
     signedSession: result.signedSession,
+    applicationData: result.applicationData,
+    attestations: result.attestation,
   };
   return proof;
 }

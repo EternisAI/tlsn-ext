@@ -18,7 +18,7 @@ import Requests from '../../pages/Requests';
 import Options from '../../pages/Options';
 import Request from '../../pages/Requests/Request';
 import Home from '../../pages/Home';
-import logo from '../../assets/img/icon-128.png';
+import logo from '../../assets/img/icon-128-white.png';
 import RequestBuilder from '../../pages/RequestBuilder';
 import Notarize from '../../pages/Notarize';
 import ProofViewer from '../../pages/ProofViewer';
@@ -41,6 +41,7 @@ import classNames from 'classnames';
 import { getConnection } from '../Background/db';
 
 import RemoteAttestationBadge from '../../components/RemoteAttestationBadge';
+import ToggleExtensionButton from '../../components/ToggleExtensionButton';
 
 const Popup = () => {
   const dispatch = useDispatch();
@@ -94,25 +95,23 @@ const Popup = () => {
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
-      <div className="flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 h-9 p-2 cursor-default justify-center bg-slate-300 w-full">
-        <RemoteAttestationBadge />
+      <div className="bg-blue-600 text-white  flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 h-9 p-2 cursor-default justify-center w-full">
+        <div className="absolute left-2">
+          <RemoteAttestationBadge />
+        </div>
 
         {location.pathname === '/home' && (
-          <img
-            className="absolute left-2 h-5 cursor-pointer"
-            src={logo}
-            alt="logo"
-            onClick={() => navigate('/')}
-          />
+          <img className="  left-2 h-5 cursor-pointer" src={logo} alt="logo" />
         )}
         {location.pathname !== '/home' && (
           <Icon
-            className="absolute left-2 h-5 cursor-pointer"
+            className="  left-2 h-5 cursor-pointer"
             fa="fa-solid fa-chevron-left"
             onClick={() => navigate('/')}
           />
         )}
-        <AppConnectionLogo />
+        <ToggleExtensionButton />
+        {/* <AppConnectionLogo /> */}
       </div>
       <Routes>
         <Route path="/requests/:requestId/*" element={<Request />} />

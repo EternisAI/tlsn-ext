@@ -106,3 +106,17 @@ export const useRequestHistory = (id?: string): RequestHistory | undefined => {
     return state.history.map[id];
   }, deepEqual);
 };
+
+export const useAllRequestHistory = (): RequestHistory[] => {
+  return useSelector((state: AppRootState) => {
+    return state.history.order.map((id) => state.history.map[id]);
+  }, deepEqual);
+};
+
+export const useAllRequestHistoryByUrl = (url: string): RequestHistory[] => {
+  return useSelector((state: AppRootState) => {
+    return state.history.order
+      .map((id) => state.history.map[id])
+      .filter((req) => req.url === url);
+  }, deepEqual);
+};

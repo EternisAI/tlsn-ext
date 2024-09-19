@@ -167,12 +167,12 @@ export const makePlugin = async (
   } = {
     redirect: function (context: CallContext, off: bigint) {
       const r = context.read(off);
-      const url = r.text();
+      const url = r?.text();
       browser.tabs.update(tab.id, { url });
     },
     notarize: function (context: CallContext, off: bigint) {
       const r = context.read(off);
-      const params = JSON.parse(r.text());
+      const params = JSON.parse(r?.text() || '{}');
       const now = Date.now();
       const id = charwise.encode(now).toString('hex');
 
@@ -216,7 +216,7 @@ export const makePlugin = async (
 
         if (getSecretResponse) {
           const out = await plugin.call(getSecretResponse, body);
-          secretResps = JSON.parse(out.string());
+          secretResps = JSON.parse(out?.string() || '{}');
         }
 
         handleExecPluginProver({
@@ -314,7 +314,7 @@ export const getPluginConfig = async (
 ): Promise<PluginConfig> => {
   const plugin = data instanceof ArrayBuffer ? await makePlugin(data) : data;
   const out = await plugin.call('config');
-  const config: PluginConfig = JSON.parse(out.string());
+  const config: PluginConfig = JSON.parse(out?.string() || '{}');
 
   assert(typeof config.title === 'string' && config.title.length);
   assert(typeof config.description === 'string' && config.description.length);
@@ -391,12 +391,22 @@ export function safeParseJSON(data?: string | null) {
   }
 }
 
-export function printAttestation(attrAttestation: AttrAttestation): string {
-  return `
-    Version: ${attrAttestation.version}
-    Notary URL: ${attrAttestation.meta.notaryUrl}
-    Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}
-    Signature: 0x${attrAttestation.signature}
-    Signed Session: ${attrAttestation.signedSession}
-  `;
+export function decodeTLSData(hexString: string) {
+  // Remove any whitespace from the hex string
+  hexString = hexString.replace(/\s/g, '');
+
+  // Decode the hex string to a regular string
+  let decodedString = '';
+  for (let i = 0; i < hexString.length; i += 2) {
+    decodedString += String.fromCharCode(parseInt(hexString.substr(i, 2), 16));
+  }
+
+  // Split the decoded string into request and response
+  const [request, response_header, response_body] =
+    decodedString.split('\r\n\r\n');
+
+  return {
+    request,
+    response: response_body, // Split headers and body
+  };
 }

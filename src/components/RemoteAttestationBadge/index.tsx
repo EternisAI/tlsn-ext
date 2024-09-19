@@ -8,32 +8,46 @@ import React, {
   useState,
 } from 'react';
 
+import { CheckCircle, XCircle } from 'lucide-react';
+
 import { useRemoteAttestation } from '../../reducers/remote-attestation';
 import Icon from '../Icon';
+import { useExtensionEnabled } from '../../reducers/requests';
+
 export default function RemoteAttestationBadge(): ReactElement {
   const { remoteAttestation, loading, error, isValid } = useRemoteAttestation();
+  const isExtensionEnabled = useExtensionEnabled();
 
   if (isValid === null) return <></>;
   return (
     <>
-      {isValid ? (
-        <span>🟢 Notary Authenticated</span>
-      ) : (
-        <span title={error}>🔴 Notary Not Authentified</span>
-      )}
+      <div className="flex items-center">
+        {isExtensionEnabled ? (
+          <>
+            {isValid ? (
+              <>
+                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                <div className="w-1"></div>
+                <span className="text-xs mr-2"> Notary Authenticated</span>
+              </>
+            ) : (
+              <>
+                <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                <div className="w-1"></div>
+                <span className="text-xs mr-2"> Notary Not Authenticated</span>
 
-      <a
-        href="https://aws.amazon.com/blogs/compute/validating-attestation-documents-produced-by-aws-nitro-enclaves/"
-        target="_blank"
-        title={
-          (isValid
-            ? 'Valid remote attestation ! '
-            : 'Invalid remoteattestation') +
-          `The remote attestation guarantees the
-      authenticity of the code running the notary. Click to learn more`
-        }
-        style={{ color: 'black', textDecoration: 'none' }}
-      ></a>
+                <div className="text-xs mr-2">{error}</div>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+            <div className="w-1"></div>
+            <span className="text-xs mr-2">Extension disabled</span>
+          </>
+        )}
+      </div>
     </>
   );
 }

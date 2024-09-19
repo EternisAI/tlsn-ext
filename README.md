@@ -66,9 +66,9 @@ $ NODE_ENV=production npm run build
 
 Now, the content of `build` folder will be the extension ready to be submitted to the Chrome Web Store. Just take a look at the [official guide](https://developer.chrome.com/webstore/publish) to more infos about publishing.
 
-## Providers 
+## Update default providers
 
-Defined in [utils/defaultBookmarks.ts](/src/utils/defaultBookmarks.ts)
+Update the default_providers.json file on AWS S3 bucket eternis-extension-providers.
 
 
 ## Access extension build artifacts

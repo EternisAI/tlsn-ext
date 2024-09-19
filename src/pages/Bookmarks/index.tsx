@@ -54,10 +54,10 @@ function GenerateAttButton(p: {
   if (p.hidden) return <></>;
   return (
     <button
-      className="flex flex-row flex-grow-0 gap-2 self-end items-center justify-end px-2 py-1 bg-slate-100 text-slate-300 hover:bg-slate-200 hover:text-slate-500 hover:font-bold"
       onClick={generateAttestation}
+      className="flex items-center px-3 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors duration-200"
     >
-      <span className="text-xs font-bold">Generate Attestation</span>
+      Generate Attestation
     </button>
   );
 }

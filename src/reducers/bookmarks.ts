@@ -1,8 +1,8 @@
 import { db } from '../entries/Background/db';
 import { RequestHistory, RequestLog } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
+import { DEFAULT_PROVIDERS_ENDPOINT } from '../utils/constants';
 import { getCacheByTabId } from '../entries/Background/cache';
-import { defaultBookmarks } from '../utils/defaultBookmarks';
 export type Bookmark = {
   id?: string;
   default?: boolean;
@@ -57,11 +57,19 @@ export class BookmarkManager {
     }
   }
 
+  async getDefaultProviders(): Promise<Bookmark[]> {
+    const res = await fetch(DEFAULT_PROVIDERS_ENDPOINT);
+    const data = await res.json();
+    return data;
+  }
+
   async getBookmarks(): Promise<Bookmark[]> {
     const bookmarkIds = await this.getBookmarkIds();
     const bookmarks = await Promise.all(
       bookmarkIds.map((id) => this.getBookmark(id)),
     );
+
+    const defaultBookmarks: Bookmark[] = await this.getDefaultProviders();
 
     const allBookmarks = [
       ...defaultBookmarks.map((bookmark) => ({ ...bookmark, default: true })),

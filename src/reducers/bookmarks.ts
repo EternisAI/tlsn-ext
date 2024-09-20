@@ -1,7 +1,7 @@
 import { db } from '../entries/Background/db';
 import { RequestHistory, RequestLog } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
-import { DEFAULT_PROVIDERS_ENDPOINT } from '../utils/constants';
+import { DEFAULT_CONFIG_ENDPOINT } from '../utils/constants';
 import { getCacheByTabId } from '../entries/Background/cache';
 export type Bookmark = {
   id?: string;
@@ -58,9 +58,9 @@ export class BookmarkManager {
   }
 
   async getDefaultProviders(): Promise<Bookmark[]> {
-    const res = await fetch(DEFAULT_PROVIDERS_ENDPOINT);
-    const data = await res.json();
-    return data;
+    const res = await fetch(DEFAULT_CONFIG_ENDPOINT);
+    const config = await res.json();
+    return config.PROVIDERS;
   }
 
   async getBookmarks(): Promise<Bookmark[]> {

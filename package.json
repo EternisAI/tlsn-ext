@@ -8,9 +8,9 @@
   },
   "scripts": {
     "clone:tlsn": "bash ./utils/download-tlsn.sh",
-    "build": "NODE_ENV=production node utils/build.js",
-    "build:dev": "NODE_ENV=development node utils/build.js",
-    "build:webpack": "NODE_ENV=production webpack --config webpack.config.js",
+    "build": "rm -rf build zip && NODE_ENV=production node utils/build.js",
+    "build:dev": "rm -rf build zip && NODE_ENV=development node utils/build.js",
+    "build:webpack": "rm -rf build zip && NODE_ENV=production webpack --config webpack.config.js",
     "websockify": "docker run -it --rm -p 55688:80 -v $(pwd):/app novnc/websockify 80 --target-config /app/websockify_config",
     "dev": "NODE_ENV=development node utils/webserver.js",
     "lint": "eslint .",

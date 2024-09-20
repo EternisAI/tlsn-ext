@@ -42,6 +42,7 @@ import { getConnection } from '../Background/db';
 
 import RemoteAttestationBadge from '../../components/RemoteAttestationBadge';
 import ToggleExtensionButton from '../../components/ToggleExtensionButton';
+import NavHeader from '../../components/NavHeader';
 
 const Popup = () => {
   const dispatch = useDispatch();
@@ -94,8 +95,9 @@ const Popup = () => {
   }, []);
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden">
-      <div className="bg-blue-600 text-white  flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 h-9 p-2 cursor-default justify-center w-full">
+    <div className="flex flex-col w-full h-full overflow-hidden bg-[#F9FAFB]">
+      <NavHeader pathname={location.pathname} navigate={navigate} />
+      {/* <div className="bg-blue-600 text-white  flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 h-9 p-2 cursor-default justify-center w-full">
         <div className="absolute left-2">
           <RemoteAttestationBadge />
         </div>
@@ -111,8 +113,8 @@ const Popup = () => {
           />
         )}
         <ToggleExtensionButton />
-        {/* <AppConnectionLogo /> */}
-      </div>
+        <AppConnectionLogo />
+      </div> */}
       <Routes>
         <Route path="/requests/:requestId/*" element={<Request />} />
         <Route path="/notary/:requestId" element={<Notarize />} />

@@ -77,6 +77,29 @@ export async function upload(filename: string, content: string) {
   return data;
 }
 
+export function printAttestation(
+  attrAttestation: AttrAttestation,
+  arrayOutput = false,
+): string | string[] {
+  if (!arrayOutput) {
+    return `
+    Version: ${attrAttestation.version}
+    Notary URL: ${attrAttestation.meta.notaryUrl}
+    Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}
+    Signature: 0x${attrAttestation.signature}
+    Signed Session: ${attrAttestation.signedSession}
+  `;
+  }
+
+  return [
+    `Version: ${attrAttestation.version}`,
+    `Notary URL: ${attrAttestation.meta.notaryUrl}`,
+    `Websocket Proxy URL: ${attrAttestation.meta.websocketProxyUrl}`,
+    `Signature: 0x${attrAttestation.signature}`,
+    `Signed Session: ${attrAttestation.signedSession}`,
+  ];
+}
+
 export const copyText = async (text: string): Promise<void> => {
   try {
     await navigator.clipboard.writeText(text);
@@ -409,4 +432,14 @@ export function decodeTLSData(hexString: string) {
     request,
     response: response_body, // Split headers and body
   };
+}
+
+export function extractHostFromUrl(url: string) {
+  const u = new URL(url);
+  return u.host;
+}
+
+export function extractPathFromUrl(url: string) {
+  const u = new URL(url);
+  return u.pathname.substring(1);
 }

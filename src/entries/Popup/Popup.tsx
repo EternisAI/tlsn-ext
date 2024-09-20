@@ -43,6 +43,8 @@ import { getConnection } from '../Background/db';
 import RemoteAttestationBadge from '../../components/RemoteAttestationBadge';
 import ToggleExtensionButton from '../../components/ToggleExtensionButton';
 import NavHeader from '../../components/NavHeader';
+import Websites from '../../pages/Websites';
+import AttestationDetails from '../../pages/AttestationDetails';
 
 const Popup = () => {
   const dispatch = useDispatch();
@@ -120,8 +122,33 @@ const Popup = () => {
         <Route path="/notary/:requestId" element={<Notarize />} />
         <Route path="/verify/:requestId/*" element={<ProofViewer />} />
         <Route path="/verify" element={<ProofUploader />} />
+
         <Route path="/history" element={<History />} />
+        <Route path="/history/:host" element={<History />} />
+        <Route path="/websites/history/:host" element={<History />} />
+        <Route path="/websites/favorites/history/:host" element={<History />} />
+
         <Route path="/bookmarks" element={<Bookmarks />} />
+
+        <Route
+          path="/websites/favorites"
+          element={<Websites onlyFavorites />}
+        />
+        <Route path="/websites" element={<Websites />} />
+
+        <Route
+          path="/history/:host/attestation/:requestId"
+          element={<AttestationDetails />}
+        />
+        <Route
+          path="/websites/history/:host/attestation/:requestId"
+          element={<AttestationDetails />}
+        />
+        <Route
+          path="/websites/favorites/history/:host/attestation/:requestId"
+          element={<AttestationDetails />}
+        />
+
         <Route path="/requests" element={<Requests />} />
         <Route path="/custom/*" element={<RequestBuilder />} />
         <Route path="/options" element={<Options />} />
@@ -137,6 +164,7 @@ const Popup = () => {
           path="/install-plugin-approval"
           element={<InstallPluginApproval />}
         />
+
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
     </div>

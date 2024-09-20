@@ -1,6 +1,6 @@
 import React, { ReactElement, useState, useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import {
   useHistoryOrder,
   useRequestHistory,
@@ -25,37 +25,83 @@ import {
 import { BookmarkManager } from '../../reducers/bookmarks';
 import { RequestHistory } from '../../entries/Background/rpc';
 import Icon from '../../components/Icon';
+import { AttestationCard } from '../../components/AttestationCard';
 const charwise = require('charwise');
 
 const bookmarkManager = new BookmarkManager();
 export default function History(): ReactElement {
-  const history = useHistoryOrder();
+  const params = useParams<{ host: string }>();
+  const history = useHistoryOrder(params.host);
+  const showDate = !Boolean(params.host);
+
+  const request = useRequestHistory(history[0]);
 
   const clearHistory = useCallback(async () => {
     await removeAllNotaryRequests();
   }, []);
 
-  const foo = 'ahi';
-
   const allRequest = useAllRequestHistory();
+
   return (
-    <div className="flex flex-col flex-nowrap overflow-y-auto">
-      <button
-        onClick={clearHistory}
-        className="flex items-center px-3 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors duration-200"
-      >
-        <Icon
-          className="text-slate-500 hover:text-slate-700 cursor-pointer"
-          size={1}
-          fa="fa-solid fa-trash"
-        />
-        Clear History
-      </button>
-      {history.map((id) => {
-        return <OneRequestHistory key={id} requestId={id} />;
-      })}
+    <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
+      <div className="flex flex-col flex-nowrap justify-center gap-2 mx-4">
+        {/* <div className="flex flex-row bg-red-300 relative z-20">
+          <button
+            className="absolute -bottom-7 right-0 hover:font-bold"
+            onClick={clearHistory}
+          >
+            Clear Entire History
+          </button>
+        </div> */}
+        {!showDate && (
+          <div className="text-sm font-bold mb-2 leading-5">
+            Previous Attestations
+          </div>
+        )}
+        {history.map((id, index) => (
+          <AttestationCard
+            key={id}
+            requestId={id}
+            showDate={showDate}
+            previousRequestId={index > 0 ? history[index - 1] : undefined}
+          />
+        ))}
+
+        {!showDate && (
+          <div
+            onClick={() => {
+              const targetUrl = urlify(request?.url || '');
+              const host = targetUrl?.host;
+              const scheme = targetUrl?.protocol;
+              window.open(`${scheme}//${host}`, '_blank');
+            }}
+            className="cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[10px] px-2 rounded-lg text-center"
+          >
+            Generate new attestation
+          </div>
+        )}
+      </div>
     </div>
   );
+
+  // return (
+  //   <div className="flex flex-col flex-nowrap overflow-y-auto">
+  //     <button
+  //       onClick={clearHistory}
+  //       className="flex items-center px-3 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors duration-200"
+  //     >
+  //       <Icon
+  //         className="text-slate-500 hover:text-slate-700 cursor-pointer"
+  //         size={1}
+  //         fa="fa-solid fa-trash"
+  //       />
+  //       Clear History
+  //     </button>
+  //     {history.map((id) => {
+  //       return <OneRequestHistory key={id} requestId={id} />;
+  //     })}
+  //   </div>
+  // );
 }
 
 export function OneRequestHistory(props: {

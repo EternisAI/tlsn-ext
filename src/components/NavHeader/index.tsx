@@ -5,6 +5,7 @@ import { FavoritesManager } from '../../reducers/favorites';
 import { SimpleToggle } from '../ToggleExtensionButton';
 import { useRemoteAttestation } from '../../reducers/remote-attestation';
 import { useExtensionEnabled } from '../../reducers/requests';
+import logo from '../../assets/img/icon-128.png';
 
 const favoritesManager = new FavoritesManager();
 
@@ -22,11 +23,11 @@ const getTitleFromPath = (path: string) => {
   return titles[step] || 'Eternis';
 };
 
-const handleBackClick = (path: string, navigate: (path: string) => void) => {
+const handleBackClick = (path: string, navigate: any) => {
   const steps = path.split('/');
-  const lastTwo = steps.slice(-2);
 
-  if (lastTwo[0] === 'history' && steps.length > 2) {
+  // special case to handle webiste history path
+  if (steps.length > 2 && steps.at(-2) === 'history') {
     if (steps.at(-3) === 'favorites') {
       navigate('/websites/favorites');
       return;
@@ -35,10 +36,15 @@ const handleBackClick = (path: string, navigate: (path: string) => void) => {
       navigate('/websites');
       return;
     }
-    return;
+
+    if (steps.length === 3) {
+      navigate('/websites');
+      return;
+    }
   }
 
-  if (lastTwo[0] === 'attestation' && steps.length > 2) {
+  // special case to handle attestations history path
+  if (steps.length > 2 && steps.at(-2) === 'attestation') {
     if (steps.at(-5) === 'favorites') {
       navigate('/websites/favorites/history/' + steps.at(-3));
       return;
@@ -48,14 +54,21 @@ const handleBackClick = (path: string, navigate: (path: string) => void) => {
       navigate('/websites/history/' + steps.at(-3));
       return;
     }
+
+    if (steps.at(-4) === 'history') {
+      navigate('/history');
+      return;
+    }
   }
 
-  if (lastTwo[0] === 'favorites' && steps.length > 2) {
+  // special case to handle favorites path
+  if (steps.length > 2 && steps.at(-2) === 'favorites') {
     navigate('/websites');
     return;
   }
 
-  navigate(steps.slice(0, -1).join('/'));
+  steps.pop();
+  navigate(steps.join('/'));
 };
 
 export default function NavHeader({
@@ -96,7 +109,7 @@ export default function NavHeader({
       ['history', 'attestation'].includes(steps.at(-2) || '')
     ) {
       return (
-        <div className="cursor-pointer leading-6 text-[1rem] flex items-center">
+        <div className="cursor-pointer leading-6 text-[1rem] flex items-center ml-auto">
           <div
             className="h-4 w-4 mr-1"
             onClick={() => {
@@ -139,7 +152,9 @@ export default function NavHeader({
           <Back />
         </div>
       ) : (
-        <div className="w-8 h-8 ml-[18px] border border-[transparent]"></div>
+        <div className="w-8 h-8 ml-[18px] border border-[transparent]">
+          <img src={logo} alt="logo" />
+        </div>
       )}
       {renderHeader()}
       <div className="mr-[18px] ml-auto flex flex-col items-center justify-center w-8 h-7">

@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NOTARY_API } from '../utils/constants';
 import { decodeCborAll, RemoteAttestation, generateNonce } from 'tlsn-js';
-import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from '../entries/Offscreen/types';
 import { DEFAULT_CONFIG_ENDPOINT } from '../utils/constants';
 
@@ -11,7 +10,7 @@ export const useRemoteAttestation = () => {
     useState<RemoteAttestation | null>(null);
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [expectedPcrs, setExpectedPcrs] = useState<any>(null);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ export const useRemoteAttestation = () => {
   }, []);
 
   useEffect(() => {
-    (async () => {
+    (() => {
       chrome.runtime.onMessage.addListener(
         async (request, sender, sendResponse) => {
           switch (request.type) {

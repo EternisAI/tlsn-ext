@@ -20,7 +20,7 @@ jobs:
           repository: eternisai/tlsn-js
           token: ${{ secrets.GITHUB_TOKEN }}
           path: tlsn-js
-          ref: tee-tls
+          ref: remote-attestation
 
       - name: Install Node.js
         uses: actions/setup-node@v3

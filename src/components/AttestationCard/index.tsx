@@ -8,6 +8,7 @@ import { getNotaryApi, getProxyApi } from '../../utils/storage';
 import { BackgroundActiontype } from '../../entries/Background/rpc';
 import Modal, { ModalContent } from '../Modal/Modal';
 import Error from '../SvgIcons/Error';
+import { BadgeCheck } from 'lucide-react';
 const charwise = require('charwise');
 
 function formatDate(requestId: string) {
@@ -144,15 +145,27 @@ export function AttestationCard({
               </div>
             </>
           )}
-          <div
-            onClick={() => {
-              if (status === 'pending') return;
-              onRetry();
-            }}
-            className="cursor-pointer ml-2 border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[6px] px-2 rounded-lg"
-          >
-            {status === 'pending' ? 'Pending' : 'Retry'}
-          </div>
+          {status !== 'success' && (
+            <div
+              onClick={() => {
+                if (status === 'pending') return;
+                onRetry();
+              }}
+              className="cursor-pointer ml-2 border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[6px] px-2 rounded-lg"
+            >
+              {status === 'pending' ? 'Pending' : 'Retry'}
+            </div>
+          )}
+          {status === 'success' && (
+            <div>
+              <div className="inline-flex items-center px-2 py-1.5 rounded-full bg-[#e4f5e5]">
+                <BadgeCheck className="w-5 h-5 mr-1 text-[#e4f5e5] fill-[#00b037]" />
+                <span className="text-sm font-bold text-green-600">
+                  Verified
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-[80px,1fr] gap-2 mt-4">

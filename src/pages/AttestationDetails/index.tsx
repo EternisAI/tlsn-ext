@@ -118,18 +118,95 @@ export function AttributeAttestation(props: {
           </div>
         </div>
         <div className="border-t pt-4">
-          <h3 className="font-semibold mb-2">Attributes</h3>
+          {attributes.length > 0 ? (
+            <>
+              <h3 className="font-semibold mb-2">Attributes</h3>
+              {props.attributes.map((attribute) => (
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-700 text-green-100 text-sm font-medium">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  {attribute}
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <h3 className="font-semibold mb-2">Data</h3>
 
-          {props.attributes.map((attribute) => (
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-700 text-green-100 text-sm font-medium">
-              <CheckCircle className="w-4 h-4 mr-2" />
-              {attribute}
-            </div>
-          ))}
-
-          {!attributes.length && <p>{sessionData}</p>}
+              {(() => {
+                try {
+                  const parsedData = JSON.parse(sessionData);
+                  return <StylizedJSON data={parsedData} />;
+                } catch (error) {
+                  return <p>{sessionData}</p>;
+                }
+              })()}
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+interface StylizedJSONProps {
+  data: any;
+}
+
+const StylizedJSON: React.FC<StylizedJSONProps> = ({ data }) => {
+  const convertToStylizedYAML = (obj: any, indent = 0): React.ReactNode[] => {
+    if (typeof obj !== 'object' || obj === null) {
+      throw new Error('Input must be a valid JSON object');
+    }
+
+    return Object.entries(obj).map(([key, value], index) => {
+      const indentation = '  '.repeat(indent);
+      const isArray = Array.isArray(value);
+      const isObject = typeof value === 'object' && value !== null && !isArray;
+
+      let content: React.ReactNode;
+
+      if (isObject || isArray) {
+        content = (
+          <>
+            <span className="text-purple-600">{key}:</span> {isArray ? '▼' : ''}
+            {convertToStylizedYAML(value, indent + 1)}
+          </>
+        );
+      } else {
+        let valueClass = 'text-blue-600';
+        if (typeof value === 'string') {
+          valueClass = 'text-green-600';
+          value = `"${value}"`;
+        } else if (typeof value === 'number') {
+          valueClass = 'text-orange-600';
+        }
+        content = (
+          <>
+            <span className="text-purple-600">{key}:</span>{' '}
+            <span className={valueClass}>{value as any}</span>
+          </>
+        );
+      }
+
+      return (
+        <div key={index} style={{ marginLeft: `${indent * 20}px` }}>
+          {indentation}
+          {content}
+        </div>
+      );
+    });
+  };
+
+  try {
+    const stylizedContent = convertToStylizedYAML(data);
+    return (
+      <pre className="font-mono text-sm bg-gray-100 p-4 rounded-lg overflow-x-auto">
+        {stylizedContent}
+      </pre>
+    );
+  } catch (error) {
+    return (
+      <div className="text-red-600">Error: {(error as Error).message}</div>
+    );
+  }
+};

@@ -14,7 +14,7 @@ import { set } from '../../utils/storage';
 export default function ToggleExtensionButton(): ReactElement {
   return (
     <div className="absolute right-2 flex flex-nowrap flex-row items-center gap-1 justify-center w-fit cursor-pointer">
-      <SimpleToggle onToggle={() => {}} />
+      <SimpleToggle onToggle={() => ''} />
     </div>
   );
 }
@@ -54,24 +54,6 @@ export function SimpleToggle({ onToggle }: { onToggle: () => void }) {
       <span
         className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
           isOn ? 'translate-x-[13px]' : 'translate-x-1'
-        }`}
-      />
-    </button>
-  );
-
-  return (
-    <button
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
-        isOn ? 'bg-green-600' : 'bg-gray-200'
-      }`}
-      onClick={toggle}
-      role="switch"
-      aria-checked={isOn}
-    >
-      <span className="sr-only">Toggle switch</span>
-      <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-          isOn ? 'translate-x-6' : 'translate-x-1'
         }`}
       />
     </button>

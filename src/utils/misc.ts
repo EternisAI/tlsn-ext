@@ -37,6 +37,18 @@ export function urlify(
   }
 }
 
+export function parseHexSignature(input: string) {
+  const regex = /\(([^()]+)\)/;
+  const match = input.match(regex);
+
+  if (match && match[1]) {
+    const hexString = match[1].replace(/[^0-9A-Fa-f]/g, '');
+    return `0x${hexString}`;
+  }
+
+  return input;
+}
+
 export function devlog(...args: any[]) {
   if (process.env.NODE_ENV === 'development') {
     console.log(...args);

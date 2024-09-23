@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { download, printAttestation, urlify } from '../../utils/misc';
 import { useRequestHistory } from '../../reducers/history';
 
-import { decodeTLSData } from '../../utils/misc';
+import { decodeTLSData, parseHexSignature } from '../../utils/misc';
 import { AttrAttestation } from '../../utils/types';
 import { CheckCircle } from 'lucide-react';
 
@@ -98,7 +98,7 @@ export function AttributeAttestation(props: {
       <div className="p-6 space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <h3 className="font-semibold">Notary url</h3>
+            <h3 className="font-semibold">Notary</h3>
             <p className="break-all">{attrAttestation.meta.notaryUrl}</p>
           </div>
           <div>
@@ -106,7 +106,7 @@ export function AttributeAttestation(props: {
             <p>{attrAttestation.version}</p>
           </div>
           <div>
-            <h3 className="font-semibold">Websocket proxy url</h3>
+            <h3 className="font-semibold">Websocket proxy</h3>
             <p className="break-all">
               websocket proxy: {attrAttestation.meta.websocketProxyUrl}
             </p>
@@ -114,7 +114,9 @@ export function AttributeAttestation(props: {
 
           <div className="col-span-2">
             <h3 className="font-semibold">Signature</h3>
-            <p className="break-all text-xs">{attrAttestation.signature}</p>
+            <p className="break-all text-xs">
+              {parseHexSignature(attrAttestation.signature)}
+            </p>
           </div>
         </div>
         <div className="border-t pt-4">

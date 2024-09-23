@@ -73,7 +73,7 @@ export default function History(): ReactElement {
               const targetUrl = urlify(request?.url || '');
               const host = targetUrl?.host;
               const scheme = targetUrl?.protocol;
-              window.open(`${scheme}//${host}`, '_blank');
+              window.open(request?.url || '', '_blank');
             }}
             className="cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[10px] px-2 rounded-lg text-center"
           >

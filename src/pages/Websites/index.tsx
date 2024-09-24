@@ -110,7 +110,13 @@ export default function Websites({
           })
           .map((bookmark) => (
             <NavButton
-              ImageIcon={<div className="w-4 h-4 bg-transparent rounded-sm" />}
+              ImageIcon={
+                bookmark.icon ? (
+                  <img src={bookmark.icon} className="w-4 h-4" />
+                ) : (
+                  <div className="w-4 h-4 bg-transparent rounded-sm" />
+                )
+              }
               title={bookmark.title}
               subtitle={bookmark.description}
               onClick={() => {

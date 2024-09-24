@@ -15,11 +15,9 @@ import { TLSN } from '../../entries/Content/content';
 import { Bookmark } from '../../reducers/bookmarks';
 import NavButton from '../../components/NavButton';
 
-const tlsn = new TLSN();
 const bookmarkManager = new BookmarkManager();
 export default function Bookmarks(): ReactElement {
-  const requests = useUniqueRequests();
-
+  const navigate = useNavigate();
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
   const fetchBookmarks = useCallback(async () => {
@@ -51,8 +49,8 @@ export default function Bookmarks(): ReactElement {
                 title={bookmark.title}
                 subtitle={bookmark.description}
                 onClick={() => {
-                  const targetUrl = bookmark.targetUrl || bookmark.url;
-                  window.open(targetUrl, '_blank');
+                  navigate(`/websites/favorites/bookmarks/${bookmark.id}`);
+                  return;
                 }}
               />
             );

@@ -19,6 +19,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@eternis/tlsn-js": "0.1.0",
     "@extism/extism": "^1.0.2",
     "@fortawesome/fontawesome-free": "^6.4.2",
     "@sardinefish/x509": "^1.2.1",
@@ -50,8 +51,7 @@
     "redux-thunk": "^2.4.2",
     "stream-browserify": "^3.0.0",
     "tailwind-merge": "^2.5.2",
-    "tailwindcss": "^3.3.3",
-    "tlsn-js": "../tlsn-js"
+    "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

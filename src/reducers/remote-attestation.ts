@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NOTARY_API } from '../utils/constants';
-import { RemoteAttestation, generateNonce } from 'tlsn-js';
+import { RemoteAttestation, generateNonce } from '@eternis/tlsn-js';
 import { OffscreenActionTypes } from '../entries/Offscreen/types';
 import { DEFAULT_CONFIG_ENDPOINT, CONFIG_CACHE_AGE } from '../utils/constants';
 

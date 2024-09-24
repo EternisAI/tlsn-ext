@@ -30,10 +30,11 @@ import {
 } from '../../utils/constants';
 import Modal, { ModalContent } from '../../components/Modal/Modal';
 import browser from 'webextension-polyfill';
-import { LoggingLevel } from 'tlsn-js';
+import { LoggingLevel } from '@eternis/tlsn-js';
 
 import { Input } from '../../components/Table/table';
 import RemoteAttestationBadge from '../../components/RemoteAttestationBadge';
+// import { version } from '../../../package.json';
 
 export default function Options(): ReactElement {
   const [notary, setNotary] = useState(NOTARY_API);

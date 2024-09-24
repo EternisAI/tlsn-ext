@@ -29,6 +29,8 @@ export function cn(...inputs: ClassValue[]) {
 export function parseAttributeFromRequest(
   attributeAttestation: AttrAttestation,
 ) {
+  if (!attributeAttestation)
+    return { attributes: null, signedSessionDecoded: null };
   const signedSessionDecoded = decodeTLSData(
     attributeAttestation.applicationData,
   );

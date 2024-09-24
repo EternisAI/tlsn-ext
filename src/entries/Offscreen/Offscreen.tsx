@@ -43,7 +43,11 @@ const Offscreen = () => {
               } catch (error) {
                 console.error('wasm aready init');
               }
-              const result = await verify_attestation(remoteAttestation, nonce, pcrs);
+              const result = await verify_attestation(
+                remoteAttestation,
+                nonce,
+                pcrs,
+              );
 
               console.log('remoteAttestation', remoteAttestation);
 

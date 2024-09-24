@@ -12,10 +12,7 @@ var ExtReloader = require('webpack-ext-reloader');
 
 const ASSET_PATH = process.env.ASSET_PATH || "/";
 
-var alias = {
-  stream: require.resolve('stream-browserify'),
-  vm: require.resolve('vm-browserify'),
-};
+var alias = { };
 
 // load the secrets
 var secretsPath = path.join(__dirname, "secrets." + env.NODE_ENV + ".js");

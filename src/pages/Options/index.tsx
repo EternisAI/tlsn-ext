@@ -113,10 +113,6 @@ export default function Options(): ReactElement {
         </Modal>
       )}
 
-      <div className="flex justify-center">
-        <RemoteAttestationBadge />
-      </div>
-
       <NormalOptions
         notary={notary}
         setNotary={setNotary}
@@ -161,6 +157,9 @@ export default function Options(): ReactElement {
         >
           Save
         </button>
+      </div>
+      <div className="flex justify-center">
+        <RemoteAttestationBadge />
       </div>
     </div>
   );

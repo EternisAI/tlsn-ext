@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
 import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from './types';
-import { NotaryServer, Prover as _Prover, RemoteAttestation } from '@eternis/tlsn-js';
+import {
+  NotaryServer,
+  Prover as _Prover,
+  RemoteAttestation,
+} from '@eternis/tlsn-js';
 
 import { urlify } from '../../utils/misc';
 import { BackgroundActiontype } from '../Background/rpc';

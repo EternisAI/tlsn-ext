@@ -88,9 +88,7 @@ export default function Websites({
               />
             );
           })}
-        {onlyFavorites && (
-          <div className="text-sm font-bold mt-3">Popularz</div>
-        )}
+        {onlyFavorites && <div className="text-sm font-bold mt-3">Popular</div>}
         {bookmarks
           .filter((bookmark) => {
             if (!onlyFavorites) {

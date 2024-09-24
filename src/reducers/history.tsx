@@ -99,7 +99,7 @@ export const useHistoryOrder = (host?: string, url?: string): string[] => {
         return extractHostFromUrl(req.url) === host;
       } else if (url) {
         const req = state.history.map[id];
-        return req.url === url;
+        return req.url.includes(url);
       }
     });
   }, deepEqual);

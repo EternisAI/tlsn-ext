@@ -26,6 +26,7 @@ import { BookmarkManager } from '../../reducers/bookmarks';
 import { RequestHistory } from '../../entries/Background/rpc';
 import Icon from '../../components/Icon';
 import { AttestationCard } from '../../components/AttestationCard';
+import { Bookmark } from '../../reducers/bookmarks';
 const charwise = require('charwise');
 
 const bookmarkManager = new BookmarkManager();
@@ -33,11 +34,11 @@ export default function BookmarkHistory(): ReactElement {
   const params = useParams<{ id: string }>();
 
   const { id } = params;
-  const history = useHistoryOrder(undefined, id);
+
   const showDate = !Boolean(id);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  const [targetUrl, setTargetUrl] = useState<string | undefined>(undefined);
+  const [bookmark, setBookmark] = useState<Bookmark | undefined>(undefined);
 
   //retrieve bookmark detail
   useEffect(() => {
@@ -45,22 +46,22 @@ export default function BookmarkHistory(): ReactElement {
       if (!id) return;
       const bookmark = await bookmarkManager.getBookmarkById(id);
 
-      const bookmarks = await bookmarkManager.getBookmarks();
-      console.log('bookmarks', bookmarks);
-      console.log('id', id);
-
       if (!bookmark) setError('Bookmark not found');
       if (bookmark) {
-        setTargetUrl(bookmark.targetUrl);
+        setBookmark(bookmark);
       }
     }
     fetchBookmarks();
   }, [id]);
 
+  const history = useHistoryOrder(undefined, bookmark?.url);
+
+  const allHistory = useAllRequestHistory();
   const clearHistory = useCallback(async () => {
     await removeAllNotaryRequests();
   }, []);
 
+  if (!bookmark) return <></>;
   if (error)
     return (
       <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
@@ -84,7 +85,7 @@ export default function BookmarkHistory(): ReactElement {
         {!showDate && (
           <div
             onClick={() => {
-              window.open(targetUrl || '', '_blank');
+              window.open(bookmark?.targetUrl || '', '_blank');
             }}
             className="cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[10px] px-2 rounded-lg text-center"
           >

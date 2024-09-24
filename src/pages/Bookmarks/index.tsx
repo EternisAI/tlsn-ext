@@ -32,6 +32,7 @@ export default function Bookmarks(): ReactElement {
     fetchBookmarks();
   }, []);
 
+  console.log('bookmarks', bookmarks);
   return (
     <div className="flex flex-col flex-nowrap">
       <div className="text-sm font-bold mt-3 ml-4 mb-2">Popular</div>
@@ -47,10 +48,8 @@ export default function Bookmarks(): ReactElement {
                     <div className="w-4 h-4 bg-transparent rounded-sm" />
                   )
                 }
-                title={extractHostFromUrl(bookmark.url)}
-                subtitle={extractPathFromUrl(
-                  bookmark.targetUrl || bookmark.url,
-                )}
+                title={bookmark.title}
+                subtitle={bookmark.description}
                 onClick={() => {
                   const targetUrl = bookmark.targetUrl || bookmark.url;
                   window.open(targetUrl, '_blank');

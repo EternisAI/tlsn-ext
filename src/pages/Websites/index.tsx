@@ -45,6 +45,8 @@ export default function Websites({
     })();
   }, [onlyFavorites]);
 
+  console.log('bookmarks', bookmarks);
+
   return (
     <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
       {onlyFavorites && emptyContainer && (
@@ -107,8 +109,8 @@ export default function Websites({
           .map((bookmark) => (
             <NavButton
               ImageIcon={<div className="w-4 h-4 bg-transparent rounded-sm" />}
-              title={extractHostFromUrl(bookmark.url)}
-              subtitle={extractPathFromUrl(bookmark.targetUrl || bookmark.url)}
+              title={bookmark.title}
+              subtitle={bookmark.description}
               onClick={() => {
                 if (onlyFavorites) {
                   navigate(

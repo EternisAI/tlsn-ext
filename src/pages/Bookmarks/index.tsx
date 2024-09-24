@@ -36,25 +36,27 @@ export default function Bookmarks(): ReactElement {
       <div className="text-sm font-bold mt-3 ml-4 mb-2">Popular</div>
       <div className="flex flex-col gap-2 mx-4">
         {bookmarks.length > 0 &&
-          bookmarks.map((bookmark) => {
-            return (
-              <NavButton
-                ImageIcon={
-                  bookmark.icon ? (
-                    <img src={bookmark.icon} className="w-4 h-4" />
-                  ) : (
-                    <div className="w-4 h-4 bg-transparent rounded-sm" />
-                  )
-                }
-                title={bookmark.title}
-                subtitle={bookmark.description}
-                onClick={() => {
-                  navigate(`/websites/favorites/bookmarks/${bookmark.id}`);
-                  return;
-                }}
-              />
-            );
-          })}
+          bookmarks
+            .filter((bookmark, index) => index < 2)
+            .map((bookmark) => {
+              return (
+                <NavButton
+                  ImageIcon={
+                    bookmark.icon ? (
+                      <img src={bookmark.icon} className="w-4 h-4" />
+                    ) : (
+                      <div className="w-4 h-4 bg-transparent rounded-sm" />
+                    )
+                  }
+                  title={bookmark.title}
+                  subtitle={bookmark.description}
+                  onClick={() => {
+                    navigate(`/websites/favorites/bookmarks/${bookmark.id}`);
+                    return;
+                  }}
+                />
+              );
+            })}
       </div>
     </div>
   );

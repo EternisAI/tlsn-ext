@@ -35,13 +35,32 @@ export default function History(): ReactElement {
   const showDate = !Boolean(params.host);
 
   const request = useRequestHistory(history[0]);
+  const [targetUrl, setTargetUrl] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    async function fetchBookmarks() {
+      const bookmarks = await bookmarkManager.getBookmarks();
+      console.log('bookmarks', bookmarks);
+      const bookmark = bookmarks.find((b) => b.url === request?.url);
+
+      if (bookmark) {
+        console.log('bookmark', bookmark);
+        setTargetUrl(bookmark.url);
+      } else {
+        const targetUrl = urlify(request?.url || '');
+        const host = targetUrl?.host;
+        const scheme = targetUrl?.protocol;
+        setTargetUrl(targetUrl?.toString());
+      }
+    }
+    fetchBookmarks();
+  }, [request]);
 
   const clearHistory = useCallback(async () => {
     await removeAllNotaryRequests();
   }, []);
 
   const allRequest = useAllRequestHistory();
-
+  console.log('history', request);
   return (
     <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
       <div className="flex flex-col flex-nowrap justify-center gap-2 mx-4">
@@ -53,6 +72,18 @@ export default function History(): ReactElement {
             Clear Entire History
           </button>
         </div> */}
+
+        {!showDate && (
+          <div
+            onClick={() => {
+              window.open(targetUrl || '', '_blank');
+            }}
+            className="cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[10px] px-2 rounded-lg text-center"
+          >
+            Generate new attestation
+          </div>
+        )}
+
         {!showDate && (
           <div className="text-sm font-bold mb-2 leading-5">
             Previous Attestations
@@ -66,20 +97,6 @@ export default function History(): ReactElement {
             previousRequestId={index > 0 ? history[index - 1] : undefined}
           />
         ))}
-
-        {!showDate && (
-          <div
-            onClick={() => {
-              const targetUrl = urlify(request?.url || '');
-              const host = targetUrl?.host;
-              const scheme = targetUrl?.protocol;
-              window.open(request?.url || '', '_blank');
-            }}
-            className="cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[10px] px-2 rounded-lg text-center"
-          >
-            Generate new attestation
-          </div>
-        )}
       </div>
     </div>
   );

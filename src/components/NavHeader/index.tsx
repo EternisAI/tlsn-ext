@@ -20,7 +20,7 @@ const getTitleFromPath = (path: string) => {
     options: 'Settings',
     home: 'Home',
   };
-  return titles[step] || 'Eternis';
+  return titles[step] || 'Pangea';
 };
 
 const handleBackClick = (path: string, navigate: any) => {

@@ -79,7 +79,7 @@ export default function NavHeader({
   navigate: (path: string) => void;
 }) {
   const { error, isValid } = useRemoteAttestation();
-  const isExtensionEnabled = useExtensionEnabled();
+  const [isExtensionEnabled, setIsExtensionEnabled] = useExtensionEnabled();
   const [extensionStatus, setExtensionStatus] = useState<boolean | null>(null);
 
   useEffect(() => {

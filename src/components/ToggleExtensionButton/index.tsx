@@ -8,7 +8,7 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-
+import { useExtensionEnabled } from '../../reducers/requests';
 import Icon from '../Icon';
 import { set } from '../../utils/storage';
 export default function ToggleExtensionButton(): ReactElement {
@@ -20,22 +20,13 @@ export default function ToggleExtensionButton(): ReactElement {
 }
 
 export function SimpleToggle({ onToggle }: { onToggle: () => void }) {
-  const [isOn, setIsOn] = useState<boolean | null>(null);
-
+  //const [isOn, setIsOn] = useState<boolean | null>(null);
+  const [isOn, setIsEnabled] = useExtensionEnabled();
   const toggle = () => {
-    setIsOn(!isOn);
+    setIsEnabled(!isOn);
     onToggle();
     chrome.storage.sync.set({ 'enable-extension': !isOn });
   };
-
-  useEffect(() => {
-    async function getIsOn() {
-      const enabledExtension =
-        await chrome.storage.sync.get('enable-extension');
-      setIsOn(enabledExtension['enable-extension']);
-    }
-    getIsOn();
-  }, []);
 
   if (isOn === null) {
     return <></>;

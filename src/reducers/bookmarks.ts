@@ -1,7 +1,7 @@
 import { db } from '../entries/Background/db';
 import { RequestHistory, RequestLog } from '../entries/Background/rpc';
 import { sha256 } from '../utils/misc';
-import { DEFAULT_CONFIG_ENDPOINT } from '../utils/constants';
+import { DEFAULT_CONFIG_ENDPOINT, CONFIG_CACHE_AGE } from '../utils/constants';
 import { getCacheByTabId } from '../entries/Background/cache';
 export type Bookmark = {
   id?: string;
@@ -63,7 +63,11 @@ export class BookmarkManager {
   }
 
   async getDefaultProviders(): Promise<Bookmark[]> {
-    const res = await fetch(DEFAULT_CONFIG_ENDPOINT);
+    const res = await fetch(DEFAULT_CONFIG_ENDPOINT, {
+      headers: {
+        'Cache-Control': `max-age=${CONFIG_CACHE_AGE}`,
+      },
+    });
     const config = await res.json();
     return config.PROVIDERS;
   }

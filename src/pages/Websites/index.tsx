@@ -45,8 +45,6 @@ export default function Websites({
     })();
   }, [onlyFavorites]);
 
-  console.log('bookmarks', bookmarks);
-
   return (
     <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
       {onlyFavorites && emptyContainer && (

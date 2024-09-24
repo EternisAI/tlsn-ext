@@ -82,6 +82,8 @@ export default function BookmarkHistory(): ReactElement {
           </button>
         </div> */}
 
+        <div className="text-sm mb-2 leading-5">{bookmark.description}</div>
+
         {!showDate && (
           <div
             onClick={() => {

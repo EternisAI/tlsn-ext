@@ -62,11 +62,8 @@ export default function Websites({
             onClick={() => navigate('/websites/favorites')}
           />
         )}
-
         {websites
-          .filter(
-            ({ host }) => !onlyFavorites || favorites.hasOwnProperty(host),
-          )
+          .filter(({ host }) => favorites.hasOwnProperty(host))
           .map(({ host, requests, faviconUrl }) => {
             return (
               <NavButton
@@ -86,43 +83,42 @@ export default function Websites({
               />
             );
           })}
-        {onlyFavorites && <div className="text-sm font-bold mt-3">Popular</div>}
-        {bookmarks
-          .filter((bookmark) => {
-            if (!onlyFavorites) {
-              return false;
-            }
+        {!onlyFavorites && bookmarks?.length && (
+          <>
+            <div className="text-sm font-bold mt-3">Popular</div>
 
-            if (
-              websites.find(
-                ({ host }) => host === extractHostFromUrl(bookmark.url),
-              ) &&
-              favorites.hasOwnProperty(extractHostFromUrl(bookmark.url))
-            ) {
-              return false;
-            }
-
-            return true;
-          })
-          .map((bookmark) => (
-            <NavButton
-              ImageIcon={
-                bookmark.icon ? (
-                  <img src={bookmark.icon} className="w-4 h-4" />
-                ) : (
-                  <div className="w-4 h-4 bg-transparent rounded-sm" />
-                )
-              }
-              title={bookmark.title}
-              subtitle={bookmark.description}
-              onClick={() => {
-                if (onlyFavorites) {
-                  navigate(`/websites/favorites/bookmarks/${bookmark.id}`);
-                  return;
+            {bookmarks
+              .filter((bookmark) => {
+                if (
+                  websites.find(
+                    ({ host }) => host === extractHostFromUrl(bookmark.url),
+                  ) &&
+                  favorites.hasOwnProperty(extractHostFromUrl(bookmark.url))
+                ) {
+                  return false;
                 }
-              }}
-            />
-          ))}
+
+                return true;
+              })
+              .map((bookmark) => (
+                <NavButton
+                  ImageIcon={
+                    bookmark.icon ? (
+                      <img src={bookmark.icon} className="w-4 h-4" />
+                    ) : (
+                      <div className="w-4 h-4 bg-transparent rounded-sm" />
+                    )
+                  }
+                  title={bookmark.title}
+                  subtitle={bookmark.description}
+                  onClick={() => {
+                    navigate(`/websites/favorites/bookmarks/${bookmark.id}`);
+                    return;
+                  }}
+                />
+              ))}
+          </>
+        )}
       </div>
     </div>
   );

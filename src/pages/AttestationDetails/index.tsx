@@ -31,7 +31,7 @@ export default function AttestationDetails() {
       parseAttributeFromRequest(AttributeAttestation);
     if (attributes) setAttributes(attributes);
 
-    setSessionData(signedSessionDecoded?.response);
+    setSessionData(signedSessionDecoded?.response || '');
   }, [request]);
 
   if (!attributeAttestation) return <>ahi</>;

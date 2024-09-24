@@ -121,9 +121,7 @@ export default function Websites({
               subtitle={bookmark.description}
               onClick={() => {
                 if (onlyFavorites) {
-                  navigate(
-                    `/websites/favorites/history/${extractHostFromUrl(bookmark.url)}`,
-                  );
+                  navigate(`/websites/favorites/bookmarks/${bookmark.id}`);
                   return;
                 }
               }}

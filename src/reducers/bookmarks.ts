@@ -48,10 +48,15 @@ export class BookmarkManager {
     }
   }
 
-  async getBookmark(id: string): Promise<Bookmark | null> {
+  async getBookmarkById(id: string): Promise<Bookmark | null> {
+    const bookmarks = await this.getBookmarks();
+    return bookmarks.find((bookmark) => bookmark.id === id) || null;
+  }
+
+  async getBookmark(cid: string): Promise<Bookmark | null> {
     try {
-      const existing = await chrome.storage.sync.get(id);
-      return existing[id] ? JSON.parse(existing[id]) : null;
+      const existing = await chrome.storage.sync.get(cid);
+      return existing[cid] ? JSON.parse(existing[cid]) : null;
     } catch (e) {
       return null;
     }

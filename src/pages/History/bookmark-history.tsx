@@ -29,26 +29,46 @@ import { AttestationCard } from '../../components/AttestationCard';
 const charwise = require('charwise');
 
 const bookmarkManager = new BookmarkManager();
-export default function History(): ReactElement {
-  const params = useParams<{ host: string }>();
-  const history = useHistoryOrder(params.host);
-  const showDate = !Boolean(params.host);
+export default function BookmarkHistory(): ReactElement {
+  const params = useParams<{ id: string }>();
 
-  const request = useRequestHistory(history[0]);
+  const { id } = params;
+  const history = useHistoryOrder(undefined, id);
+  const showDate = !Boolean(id);
+  const [error, setError] = useState<string | undefined>(undefined);
+
   const [targetUrl, setTargetUrl] = useState<string | undefined>(undefined);
+
+  //retrieve bookmark detail
   useEffect(() => {
-    const targetUrl = urlify(request?.url || '');
-    const host = targetUrl?.host;
-    const scheme = targetUrl?.protocol;
-    setTargetUrl(targetUrl?.toString());
-  }, [request]);
+    async function fetchBookmarks() {
+      if (!id) return;
+      const bookmark = await bookmarkManager.getBookmarkById(id);
+
+      const bookmarks = await bookmarkManager.getBookmarks();
+      console.log('bookmarks', bookmarks);
+      console.log('id', id);
+
+      if (!bookmark) setError('Bookmark not found');
+      if (bookmark) {
+        setTargetUrl(bookmark.targetUrl);
+      }
+    }
+    fetchBookmarks();
+  }, [id]);
 
   const clearHistory = useCallback(async () => {
     await removeAllNotaryRequests();
   }, []);
 
-  const allRequest = useAllRequestHistory();
-  console.log('history', request);
+  if (error)
+    return (
+      <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
+        <div className="flex flex-col flex-nowrap justify-center gap-2 mx-4">
+          <div className="text-red-500">{error}</div>
+        </div>
+      </div>
+    );
   return (
     <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
       <div className="flex flex-col flex-nowrap justify-center gap-2 mx-4">
@@ -108,6 +128,10 @@ export default function History(): ReactElement {
   //   </div>
   // );
 }
+
+// export default function BookmarkHistory(): ReactElement {
+//   return <div>Bookmark History</div>;
+// }
 
 export function OneRequestHistory(props: {
   requestId: string;

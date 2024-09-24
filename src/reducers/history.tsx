@@ -89,13 +89,18 @@ export default function history(
   }
 }
 
-export const useHistoryOrder = (host?: string): string[] => {
+export const useHistoryOrder = (host?: string, url?: string): string[] => {
   return useSelector((state: AppRootState) => {
     const allRequests = [...state.history.order].reverse();
     return allRequests.filter((id) => {
-      if (!host) return true;
-      const req = state.history.map[id];
-      return extractHostFromUrl(req.url) === host;
+      if (!host && !url) return true;
+      else if (host) {
+        const req = state.history.map[id];
+        return extractHostFromUrl(req.url) === host;
+      } else if (url) {
+        const req = state.history.map[id];
+        return req.url === url;
+      }
     });
   }, deepEqual);
 };

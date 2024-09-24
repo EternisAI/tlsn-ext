@@ -23,6 +23,7 @@ import RequestBuilder from '../../pages/RequestBuilder';
 import Notarize from '../../pages/Notarize';
 import ProofViewer from '../../pages/ProofViewer';
 import History from '../../pages/History';
+import BookmarkHistory from '../../pages/History/bookmark-history';
 import Bookmarks from '../../pages/Bookmarks';
 import ProofUploader from '../../pages/ProofUploader';
 import browser from 'webextension-polyfill';
@@ -127,7 +128,10 @@ const Popup = () => {
         <Route path="/history/:host" element={<History />} />
         <Route path="/websites/history/:host" element={<History />} />
         <Route path="/websites/favorites/history/:host" element={<History />} />
-
+        <Route
+          path="/websites/favorites/bookmarks/:id"
+          element={<BookmarkHistory />}
+        />
         <Route path="/bookmarks" element={<Bookmarks />} />
 
         <Route

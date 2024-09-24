@@ -1,6 +1,7 @@
 import {
   BackgroundActiontype,
   handleExecPluginProver,
+  RequestHistory,
   RequestLog,
 } from '../entries/Background/rpc';
 import { EXPLORER_API } from './constants';
@@ -23,6 +24,26 @@ const charwise = require('charwise');
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function parseAttributeFromRequest(
+  attributeAttestation: AttrAttestation,
+) {
+  const signedSessionDecoded = decodeTLSData(
+    attributeAttestation.applicationData,
+  );
+
+  if (attributeAttestation.attestations) {
+    const attestations = attributeAttestation.attestations.split(';');
+    const attributes = [];
+    console.log(attestations);
+    for (const attestation of attestations) {
+      const [key] = attestation.split(':');
+      if (key) attributes.push(key);
+    }
+    return { attributes, signedSessionDecoded };
+  }
+  return { attributes: null, signedSessionDecoded };
 }
 
 export function urlify(

@@ -3,7 +3,11 @@ import { useParams } from 'react-router';
 import { download, printAttestation, urlify } from '../../utils/misc';
 import { useRequestHistory } from '../../reducers/history';
 
-import { decodeTLSData, parseHexSignature } from '../../utils/misc';
+import {
+  decodeTLSData,
+  parseHexSignature,
+  parseAttributeFromRequest,
+} from '../../utils/misc';
 import { AttrAttestation } from '../../utils/types';
 import { CheckCircle } from 'lucide-react';
 
@@ -20,24 +24,14 @@ export default function AttestationDetails() {
 
   useEffect(() => {
     const AttributeAttestation = request?.proof as AttrAttestation;
-    console.log('AttributeAttestation', AttributeAttestation);
     if (!AttributeAttestation) return;
     setAttributeAttestation(AttributeAttestation);
-    if (AttributeAttestation.attestations) {
-      const attestations = AttributeAttestation.attestations.split(';');
-      const attributes = [];
-      for (const attestation of attestations) {
-        const [key] = attestation.split(':');
-        if (key) attributes.push(key);
-      }
-      console.log('attributes', attributes);
-      setAttributes(attributes);
-    } else {
-      const signedSessionDecoded = decodeTLSData(
-        AttributeAttestation.applicationData,
-      );
-      setSessionData(signedSessionDecoded.response);
-    }
+
+    const { attributes, signedSessionDecoded } =
+      parseAttributeFromRequest(AttributeAttestation);
+    if (attributes) setAttributes(attributes);
+
+    setSessionData(signedSessionDecoded?.response);
   }, [request]);
 
   if (!attributeAttestation) return <>ahi</>;

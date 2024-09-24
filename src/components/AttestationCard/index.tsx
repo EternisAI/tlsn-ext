@@ -6,9 +6,11 @@ import { useRequestHistory } from '../../reducers/history';
 import { deleteRequestHistory } from '../../reducers/history';
 import { getNotaryApi, getProxyApi } from '../../utils/storage';
 import { BackgroundActiontype } from '../../entries/Background/rpc';
+import { parseAttributeFromRequest } from '../../utils/misc';
 import Modal, { ModalContent } from '../Modal/Modal';
 import Error from '../SvgIcons/Error';
 import { BadgeCheck } from 'lucide-react';
+import { AttrAttestation } from '../../utils/types';
 const charwise = require('charwise');
 
 function formatDate(requestId: string) {
@@ -123,6 +125,10 @@ export function AttestationCard({
     );
   }
 
+  const { attributes, signedSessionDecoded } = parseAttributeFromRequest(
+    request?.proof as AttrAttestation,
+  );
+
   return (
     <div className="flex flex-col">
       <ErrorModal />
@@ -169,13 +175,15 @@ export function AttestationCard({
         </div>
 
         <div className="grid grid-cols-[80px,1fr] gap-2 mt-4">
-          <div className="text-[#9BA2AE] text-sm leading-5 font-bold">Path</div>
-          <div className="text-[#4B5563] text-sm leading-5 truncate">
-            {requestUrl?.pathname}
-          </div>
-
+          {attributes?.map((attribute) => (
+            <>
+              <div className="text-[#9BA2AE] text-sm leading-5 font-semibold">
+                {attribute}
+              </div>
+              <div className="text-[#4B5563] text-sm leading-5 truncate"></div>
+            </>
+          ))}
           {[
-            { label: 'Url', value: request?.url },
             {
               label: 'Time',
               value: new Date(charwise.decode(requestId, 'hex')).toISOString(),

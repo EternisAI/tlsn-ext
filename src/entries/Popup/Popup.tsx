@@ -41,8 +41,6 @@ import Icon from '../../components/Icon';
 import classNames from 'classnames';
 import { getConnection } from '../Background/db';
 
-import RemoteAttestationBadge from '../../components/RemoteAttestationBadge';
-import ToggleExtensionButton from '../../components/ToggleExtensionButton';
 import NavHeader from '../../components/NavHeader';
 import Websites from '../../pages/Websites';
 import AttestationDetails from '../../pages/AttestationDetails';
@@ -100,24 +98,7 @@ const Popup = () => {
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-[#F9FAFB]">
       <NavHeader pathname={location.pathname} navigate={navigate} />
-      {/* <div className="bg-blue-600 text-white  flex flex-nowrap flex-shrink-0 flex-row items-center relative gap-2 h-9 p-2 cursor-default justify-center w-full">
-        <div className="absolute left-2">
-          <RemoteAttestationBadge />
-        </div>
 
-        {location.pathname === '/home' && (
-          <img className="  left-2 h-5 cursor-pointer" src={logo} alt="logo" />
-        )}
-        {location.pathname !== '/home' && (
-          <Icon
-            className="  left-2 h-5 cursor-pointer"
-            fa="fa-solid fa-chevron-left"
-            onClick={() => navigate('/')}
-          />
-        )}
-        <ToggleExtensionButton />
-        <AppConnectionLogo />
-      </div> */}
       <Routes>
         <Route path="/requests/:requestId/*" element={<Request />} />
         <Route path="/notary/:requestId" element={<Notarize />} />

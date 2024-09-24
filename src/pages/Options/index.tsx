@@ -33,6 +33,7 @@ import browser from 'webextension-polyfill';
 import { LoggingLevel } from 'tlsn-js';
 
 import { Input } from '../../components/Table/table';
+import RemoteAttestationBadge from '../../components/RemoteAttestationBadge';
 
 export default function Options(): ReactElement {
   const [notary, setNotary] = useState(NOTARY_API);
@@ -111,6 +112,10 @@ export default function Options(): ReactElement {
           </div>
         </Modal>
       )}
+
+      <div className="flex justify-center">
+        <RemoteAttestationBadge />
+      </div>
 
       <NormalOptions
         notary={notary}

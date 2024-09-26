@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Pangea",
+  "name": "Pangea Attestor",
   "description": "Attest to your personal data.",
   "options_page": "options.html",
   "background": {

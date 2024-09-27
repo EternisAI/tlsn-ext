@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
 import * as Comlink from 'comlink';
 import { OffscreenActionTypes } from './types';
-import { NotaryServer, Prover as _Prover, RemoteAttestation } from 'tlsn-js';
+import {
+  NotaryServer,
+  Prover as _Prover,
+  RemoteAttestation,
+} from '@eternis/tlsn-js';
 
 import { urlify } from '../../utils/misc';
 import { BackgroundActiontype } from '../Background/rpc';
 import browser from 'webextension-polyfill';
 import { Proof, AttrAttestation } from '../../utils/types';
-import { Method } from 'tlsn-js/wasm/pkg';
+import { Method } from '@eternis/tlsn-js/wasm/pkg';
 
 const { init, verify_attestation, Prover, NotarizedSession, TlsProof }: any =
   Comlink.wrap(new Worker(new URL('./worker.ts', import.meta.url)));

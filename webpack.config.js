@@ -50,7 +50,6 @@ var options = {
     contentScript: path.join(__dirname, "src", "entries", "Content", "index.ts"),
     content: path.join(__dirname, "src", "entries", "Content", "content.ts"),
     offscreen: path.join(__dirname, "src", "entries", "Offscreen", "index.tsx"),
-    sidePanel: path.join(__dirname, "src", "entries", "SidePanel", "index.tsx"),
   },
   // chromeExtensionBoilerplate: {
   //   notHotReload: ["background", "contentScript", "devtools"],
@@ -243,12 +242,6 @@ var options = {
       template: path.join(__dirname, "src", "entries", "Offscreen", "index.html"),
       filename: "offscreen.html",
       chunks: ["offscreen"],
-      cache: false,
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "entries", "SidePanel", "index.html"),
-      filename: "sidePanel.html",
-      chunks: ["sidePanel"],
       cache: false,
     }),
     new webpack.ProvidePlugin({

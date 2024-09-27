@@ -3,7 +3,7 @@ import axios from 'axios';
 import { NOTARY_API } from '../utils/constants';
 import { RemoteAttestation, generateNonce } from 'tlsn-js';
 import { OffscreenActionTypes } from '../entries/Offscreen/types';
-import { DEFAULT_CONFIG_ENDPOINT } from '../utils/constants';
+import { DEFAULT_CONFIG_ENDPOINT, CONFIG_CACHE_AGE } from '../utils/constants';
 
 export const useRemoteAttestation = () => {
   const [remoteAttestation, setRemoteAttestation] =
@@ -15,7 +15,11 @@ export const useRemoteAttestation = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await fetch(DEFAULT_CONFIG_ENDPOINT);
+      const res = await fetch(DEFAULT_CONFIG_ENDPOINT, {
+        headers: {
+          'Cache-Control': `max-age=${CONFIG_CACHE_AGE}`,
+        },
+      });
       const config = await res.json();
       console.log('config', config);
       setExpectedPcrs(config.EXPECTED_PCRS);

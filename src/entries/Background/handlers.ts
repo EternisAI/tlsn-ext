@@ -130,6 +130,9 @@ export const handleNotarization = (
       (bm) => url.includes(bm.url) && method === bm.method && type === bm.type,
     );
     const bookmarkIds = await bookmarkManager.getBookmarkIds();
+    if (url.includes('bonfire.robinhood.com') && url.includes('/settings_v2')) {
+      return;
+    }
 
     // console.log('=================');
     // console.log('handleNotarization');
@@ -167,6 +170,13 @@ export const handleNotarization = (
     const notaryUrl = await get(NOTARY_API_LS_KEY, NOTARY_API);
     const websocketProxyUrl = await get(PROXY_API_LS_KEY, NOTARY_PROXY);
 
+    console.log(
+      'handleProveRequestStart',
+      requestId,
+      notaryUrl,
+      websocketProxyUrl,
+    );
+
     await handleProveRequestStart(
       {
         type: BackgroundActiontype.prove_request_start,
@@ -185,7 +195,7 @@ export const handleNotarization = (
         },
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => {},
+      () => { },
     );
   });
 };

@@ -188,7 +188,7 @@ export const handleNotarization = (
         },
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => { },
+      () => {},
     );
   });
 };

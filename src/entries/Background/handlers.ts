@@ -170,13 +170,6 @@ export const handleNotarization = (
     const notaryUrl = await get(NOTARY_API_LS_KEY, NOTARY_API);
     const websocketProxyUrl = await get(PROXY_API_LS_KEY, NOTARY_PROXY);
 
-    console.log(
-      'handleProveRequestStart',
-      requestId,
-      notaryUrl,
-      websocketProxyUrl,
-    );
-
     await handleProveRequestStart(
       {
         type: BackgroundActiontype.prove_request_start,

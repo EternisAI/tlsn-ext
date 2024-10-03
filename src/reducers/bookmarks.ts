@@ -16,6 +16,8 @@ export type Bookmark = {
   responseSelector: string;
   valueTransform: string;
   icon?: string;
+  toNotarize?: boolean;
+  notarizedAt?: number;
 };
 
 export class BookmarkManager {
@@ -69,30 +71,56 @@ export class BookmarkManager {
       },
     });
     const config = await res.json();
+    for (const bookmark of config.PROVIDERS) {
+      await this.addBookmark(bookmark);
+    }
     return config.PROVIDERS;
   }
 
+  async findBookmark(
+    url: string,
+    method: string,
+    type: string,
+  ): Promise<Bookmark | null> {
+    const bookmarks = await this.getBookmarks();
+    return (
+      bookmarks.find(
+        (bookmark) =>
+          url.includes(bookmark.url) &&
+          bookmark.method === method &&
+          bookmark.type === type,
+      ) || null
+    );
+  }
+
   async getBookmarks(): Promise<Bookmark[]> {
+    await this.getDefaultProviders();
+
     const bookmarkIds = await this.getBookmarkIds();
     const bookmarks = await Promise.all(
       bookmarkIds.map((id) => this.getBookmark(id)),
     );
-
-    const defaultBookmarks: Bookmark[] = await this.getDefaultProviders();
-
-    const allBookmarks = [
-      ...defaultBookmarks.map((bookmark) => ({ ...bookmark, default: true })),
-      ...bookmarks.filter((bookmark) => bookmark !== null),
-    ];
-    return allBookmarks as Bookmark[];
+    return bookmarks.filter((bookmark) => bookmark !== null);
   }
 
   async deleteBookmark(bookmark: Bookmark): Promise<void> {
     await chrome.storage.sync.remove([bookmark.id || '']);
   }
 
+  async updateBookmark(bookmark: Bookmark): Promise<void> {
+    const id = await sha256(bookmark.url);
+    await chrome.storage.sync.set({
+      [id]: JSON.stringify(bookmark),
+    });
+  }
+
   async addBookmark(request: RequestHistory) {
     const id = await sha256(request.url);
+    const existing = await chrome.storage.sync.get(id);
+    if (existing[id]) {
+      return;
+    }
+    console.log('adding bookmark', id);
     const bookmark: Bookmark = await this.convertRequestToBookmark(request, id);
 
     await this.addBookmarkId(id);

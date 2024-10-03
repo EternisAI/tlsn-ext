@@ -118,9 +118,6 @@ export const handleNotarization = (
     if (!bookmark || !bookmark.toNotarize) {
       return;
     }
-    if (url.includes('bonfire.robinhood.com') && url.includes('/settings_v2')) {
-      return;
-    }
 
     //prevent spamming of requests
     const lastNotaryRequest = await getLastNotaryRequest();

@@ -100,7 +100,9 @@ export class BookmarkManager {
     const bookmarks = await Promise.all(
       bookmarkIds.map((id) => this.getBookmark(id)),
     );
-    return bookmarks.filter((bookmark) => bookmark !== null);
+    return bookmarks.filter(
+      (bookmark): bookmark is Bookmark => bookmark !== null,
+    );
   }
 
   async deleteBookmark(bookmark: Bookmark): Promise<void> {

@@ -133,7 +133,6 @@ export const handleNotarization = (
       }
     }
 
-
     if (!bookmark) return;
 
     const hostname = urlify(req.url)?.hostname;

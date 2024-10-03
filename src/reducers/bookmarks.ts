@@ -119,19 +119,27 @@ export class BookmarkManager {
     const bookmarks = await Promise.all(
       bookmarkIds.map((id) => this.getBookmark(id)),
     );
-    return bookmarks.filter(
-      (bookmark): bookmark is Bookmark => bookmark !== null,
-    );
+    return bookmarks.filter((bookmark) => bookmark !== null) as Bookmark[];
   }
 
   async deleteBookmark(bookmark: Bookmark): Promise<void> {
     await chrome.storage.sync.remove([bookmark.id || '']);
   }
 
+  async convertBookmarkToJson(bookmark: Bookmark): Promise<string> {
+    const jsonData = JSON.stringify(bookmark, (key, value) => {
+      if (value instanceof RegExp) {
+        return value.source;
+      }
+      return value;
+    });
+    return jsonData;
+  }
   async updateBookmark(bookmark: Bookmark): Promise<void> {
     const id = await sha256(bookmark.url.toString());
+    const jsonData = await this.convertBookmarkToJson(bookmark);
     await chrome.storage.sync.set({
-      [id]: JSON.stringify(bookmark),
+      [id]: jsonData,
     });
   }
 
@@ -141,13 +149,7 @@ export class BookmarkManager {
     if (existing[id]) {
       return;
     }
-    const jsonData = JSON.stringify(bookmark, (key, value) => {
-      if (value instanceof RegExp) {
-        return value.toString();
-      }
-      return value;
-    });
-    console.log('jsonData', jsonData);
+    const jsonData = await this.convertBookmarkToJson(bookmark);
     await this.addBookmarkId(id);
     await chrome.storage.sync.set({ [id]: jsonData });
   }

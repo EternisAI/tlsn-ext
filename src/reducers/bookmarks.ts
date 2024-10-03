@@ -8,6 +8,7 @@ export type Bookmark = {
   default?: boolean;
   requestId?: string;
   url: string;
+  urlRegex: RegExp;
   targetUrl: string;
   method: string;
   type: string;
@@ -58,7 +59,23 @@ export class BookmarkManager {
   async getBookmark(cid: string): Promise<Bookmark | null> {
     try {
       const existing = await chrome.storage.sync.get(cid);
-      return existing[cid] ? JSON.parse(existing[cid]) : null;
+      if (existing[cid]) {
+        const bookmark = JSON.parse(existing[cid], (key, value) => {
+          if (
+            typeof value === 'string' &&
+            value.startsWith('/') &&
+            value.endsWith('/')
+          ) {
+            const parts = value.match(/\/(.*?)\/([gimsuy]*)/);
+            if (parts) {
+              return new RegExp(parts[1], parts[2]);
+            }
+          }
+          return value;
+        });
+        return bookmark;
+      }
+      return null;
     } catch (e) {
       return null;
     }
@@ -71,7 +88,7 @@ export class BookmarkManager {
       },
     });
     const config = await res.json();
-    for (const bookmark of config.PROVIDERS) {
+    for (const bookmark of config.PROVIDERS as Bookmark[]) {
       await this.addBookmark(bookmark);
     }
     return config.PROVIDERS;
@@ -84,12 +101,14 @@ export class BookmarkManager {
   ): Promise<Bookmark | null> {
     const bookmarks = await this.getBookmarks();
     return (
-      bookmarks.find(
-        (bookmark) =>
-          url.includes(bookmark.url) &&
+      bookmarks.find((bookmark) => {
+        bookmark.urlRegex = new RegExp(bookmark.urlRegex);
+        const result =
+          bookmark.urlRegex.test(url) &&
           bookmark.method === method &&
-          bookmark.type === type,
-      ) || null
+          bookmark.type === type;
+        return result;
+      }) || null
     );
   }
 
@@ -110,27 +129,31 @@ export class BookmarkManager {
   }
 
   async updateBookmark(bookmark: Bookmark): Promise<void> {
-    const id = await sha256(bookmark.url);
+    const id = await sha256(bookmark.url.toString());
     await chrome.storage.sync.set({
       [id]: JSON.stringify(bookmark),
     });
   }
 
-  async addBookmark(request: RequestHistory) {
-    const id = await sha256(request.url);
+  async addBookmark(bookmark: Bookmark) {
+    const id = await sha256(bookmark.url.toString());
     const existing = await chrome.storage.sync.get(id);
     if (existing[id]) {
       return;
     }
-    console.log('adding bookmark', id);
-    const bookmark: Bookmark = await this.convertRequestToBookmark(request, id);
-
+    const jsonData = JSON.stringify(bookmark, (key, value) => {
+      if (value instanceof RegExp) {
+        return value.toString();
+      }
+      return value;
+    });
+    console.log('jsonData', jsonData);
     await this.addBookmarkId(id);
-    await chrome.storage.sync.set({ [id]: JSON.stringify(bookmark) });
+    await chrome.storage.sync.set({ [id]: jsonData });
   }
 
-  async addBookMarks(requests: RequestHistory[]) {
-    await Promise.all(requests.map((request) => this.addBookmark(request)));
+  async addBookMarks(bookmarks: Bookmark[]) {
+    await Promise.all(bookmarks.map((bookmark) => this.addBookmark(bookmark)));
   }
 
   async getCurrentTabInfo(): Promise<chrome.tabs.Tab | null> {
@@ -145,15 +168,30 @@ export class BookmarkManager {
     });
   }
 
-  async convertRequestToBookmark(request: RequestHistory, id: string) {
+  urlToRegex(url: string): string {
+    // Escape special regex characters
+    const escapedUrl = url.replace(/[-\/\\^$.*+?()[\]{}|]/g, '\\$&');
+
+    // Replace dynamic segments (e.g., numeric IDs)
+    // Here we assume segments like '12345' are numeric
+    const regexPattern = escapedUrl.replace(/\\d+/g, '\\d+'); // Adjust as needed for other patterns
+
+    // Allow for optional query strings
+    const finalPattern = `^${regexPattern}(\\?.*)?$`;
+
+    return finalPattern;
+  }
+
+  async convertRequestToBookmark(request: RequestHistory) {
     const currentTabInfo = await this.getCurrentTabInfo();
 
     const cache = getCacheByTabId(currentTabInfo?.id || 0);
 
     const bookmark: Bookmark = {
       requestId: request.id,
-      id,
+      id: await sha256(request?.url || ''),
       url: request?.url || '',
+      urlRegex: new RegExp(this.urlToRegex(request?.url || '')), // this conversion should be improved
       targetUrl: currentTabInfo?.url || '',
       method: request?.method || '',
       type: request?.type || '',

@@ -22,7 +22,6 @@ export default function Bookmarks(): ReactElement {
 
   const fetchBookmarks = useCallback(async () => {
     const bookmarks = await bookmarkManager.getBookmarks();
-    console.log('bookmarks', bookmarks);
     setBookmarks(bookmarks);
   }, []);
 
@@ -30,7 +29,6 @@ export default function Bookmarks(): ReactElement {
     fetchBookmarks();
   }, []);
 
-  console.log('bookmarks', bookmarks);
   return (
     <div className="flex flex-col flex-nowrap">
       <div className="text-sm font-bold mt-3 ml-4 mb-2">Popular</div>

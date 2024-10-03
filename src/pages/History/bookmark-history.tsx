@@ -86,7 +86,11 @@ export default function BookmarkHistory(): ReactElement {
 
         {!showDate && (
           <div
-            onClick={() => {
+            onClick={async () => {
+              await bookmarkManager.updateBookmark({
+                ...bookmark,
+                toNotarize: true,
+              });
               window.open(bookmark?.targetUrl || '', '_blank');
             }}
             className="cursor-pointer border border-[#E4E6EA] bg-white hover:bg-slate-100 text-[#092EEA] text-sm font-medium py-[10px] px-2 rounded-lg text-center"
@@ -205,7 +209,8 @@ export function OneRequestHistory(props: {
   const addBookmark = useCallback(
     async (request: RequestHistory) => {
       setSuccessBookmark(true);
-      bookmarkManager.addBookmark(request);
+      const bm = await bookmarkManager.convertRequestToBookmark(request);
+      bookmarkManager.addBookmark(bm);
     },
     [request],
   );

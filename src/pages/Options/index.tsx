@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useCallback,
   MouseEvent,
+  ReactNode,
 } from 'react';
 import {
   set,
@@ -68,10 +69,8 @@ export default function Options(): ReactElement {
   useEffect(() => {
     console.log('useEffect');
     (async () => {
-      let identity = await identityManager.getIdentity();
-      if (!identity) {
-        identity = await identityManager.createIdentity();
-      }
+      const identity = await identityManager.getIdentity();
+      console.log('identity', identity);
       setIdentity(identity);
     })();
   }, []);
@@ -182,13 +181,14 @@ export default function Options(): ReactElement {
 
 function InputField(props: {
   label?: string;
-  LabelIcon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  LabelIcon?: ReactNode;
   placeholder?: string;
   value?: string;
   type?: string;
   min?: number;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   multiline?: boolean;
+  readOnly?: boolean;
 }) {
   const {
     label,
@@ -199,6 +199,7 @@ function InputField(props: {
     min,
     onChange,
     multiline,
+    readOnly,
   } = props;
 
   return (
@@ -206,7 +207,7 @@ function InputField(props: {
       <div className="text-sm font-medium cursor-default flex items-center">
         {label}
         {LabelIcon && <span>&nbsp;</span>}
-        {LabelIcon && <LabelIcon />}
+        {LabelIcon}
       </div>
 
       {/* <Input
@@ -224,6 +225,7 @@ function InputField(props: {
         placeholder={placeholder}
         id="search"
         rows={multiline ? 2 : 1}
+        readOnly={readOnly}
       />
     </div>
   );
@@ -251,9 +253,20 @@ function NormalOptions(props: {
         placeholder="Public key"
         value={bigintToHex(identity?.commitment)}
         type="text"
-        onChange={() => {}}
+        readOnly
         multiline
-        LabelIcon={InfoCircle}
+        LabelIcon={
+          <div
+            onClick={() => {
+              chrome.tabs.create({
+                url: 'https://eternis.ai/',
+              });
+            }}
+            className="cursor-pointer"
+          >
+            <InfoCircle />
+          </div>
+        }
       />
 
       {MODE === Mode.Development && (

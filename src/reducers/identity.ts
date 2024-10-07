@@ -6,34 +6,37 @@ export class IdentityManager {
     const identityStorageId = await sha256('identity');
     try {
       const storage = await chrome.storage.sync.get(identityStorageId);
-      return storage[identityStorageId]
-        ? JSON.parse(storage[identityStorageId])
-        : new Identity();
+      const identity = storage[identityStorageId];
+      if (!identity) {
+        return this._createIdentity();
+      }
+      return new Identity(identity);
     } catch (e) {
-      return new Identity();
+      return this._createIdentity();
     }
   }
 
-  async saveIdentity(identity: Identity): Promise<void> {
+  async _saveIdentity(identity: Identity): Promise<void> {
     const identityStorageId = await sha256('identity');
     try {
       await chrome.storage.sync.set({
-        [identityStorageId]: JSON.stringify(identity),
+        [identityStorageId]: identity.privateKey.toString(), // Only PRIVATE KEY is enough to reconstruct the identity
       });
     } catch (e) {
       console.error('Error saving identity', e);
     }
   }
 
-  async createIdentity(): Promise<Identity> {
+  async _createIdentity(): Promise<Identity> {
+    console.log('creating identity');
     const identity = new Identity();
-    await this.saveIdentity(identity);
+    await this._saveIdentity(identity);
     return identity;
   }
 
   async loadIdentity(privateKey: string): Promise<Identity> {
     const identity = new Identity(privateKey);
-    await this.saveIdentity(identity);
+    await this._saveIdentity(identity);
     return identity;
   }
 }

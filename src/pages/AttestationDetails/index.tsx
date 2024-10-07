@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { download, printAttestation, urlify } from '../../utils/misc';
+import {
+  bigintToHex,
+  download,
+  printAttestation,
+  urlify,
+} from '../../utils/misc';
 import { useRequestHistory } from '../../reducers/history';
 
 import {
@@ -10,8 +15,12 @@ import {
 } from '../../utils/misc';
 import { AttrAttestation } from '../../utils/types';
 import { CheckCircle } from 'lucide-react';
+import { IdentityManager } from '../../reducers/identity';
+import { Identity } from '@semaphore-protocol/identity';
 
+const identityManager = new IdentityManager();
 export default function AttestationDetails() {
+  const [identity, setIdentity] = useState<Identity>();
   const params = useParams<{ host: string; requestId: string }>();
 
   const request = useRequestHistory(params.requestId);
@@ -34,10 +43,39 @@ export default function AttestationDetails() {
     setSessionData(signedSessionDecoded?.response || '');
   }, [request]);
 
+  useEffect(() => {
+    identityManager.getIdentity().then(setIdentity);
+  }, []);
+
   if (!attributeAttestation) return <>ahi</>;
   return (
     <div className="flex flex-col gap-4 py-4 overflow-y-auto flex-1">
       <div className="flex flex-col flex-nowrap justify-center gap-2 mx-4">
+        <div className="p-4 border border-[#E4E6EA] bg-white rounded-xl flex flex-col">
+          <div className="flex flex-row items-center">
+            <div className="flex-1 font-bold text-[#4B5563] text-lg truncate">
+              Your public key
+            </div>
+          </div>
+          <div className="text-base mt-4 text-[#9BA2AE] break-all">
+            {bigintToHex(identity?.commitment)}
+          </div>
+          <div className="text-sm text-[#1F2937] mt-4">
+            Every attestation you create will be associated with your public
+            cryptographic key.&nbsp;
+            <span
+              className="text-[#092EEA] cursor-pointer"
+              onClick={() => {
+                chrome.tabs.create({
+                  url: 'https://eternis.ai/',
+                });
+              }}
+            >
+              Learn more
+            </span>
+          </div>
+        </div>
+
         <div className="p-4 border border-[#E4E6EA] bg-white rounded-xl flex flex-col">
           <div className="flex flex-row items-center">
             <div className="flex-1 font-bold text-[#4B5563] text-lg truncate">

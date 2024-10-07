@@ -485,3 +485,8 @@ export function extractPathFromUrl(url: string) {
   const u = new URL(url);
   return u.pathname.substring(1);
 }
+
+export function bigintToHex(bigint?: bigint) {
+  if (!bigint) return '';
+  return `0x${bigint.toString(16)}`;
+}

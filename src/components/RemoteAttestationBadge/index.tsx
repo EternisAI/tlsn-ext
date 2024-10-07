@@ -12,7 +12,7 @@ export default function RemoteAttestationBadge(): ReactElement {
   if (isValid === null) return <></>;
   return (
     <>
-      <div className="  items-center">
+      <div className="mt-5 items-center">
         <>
           {isValid ? (
             <div

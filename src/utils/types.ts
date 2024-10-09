@@ -20,20 +20,26 @@ export type AttrAttestation = {
   attestations: string;
 };
 
-type AssertionOperator = 'exist' | '=' | '!=' | '<' | '>' | '<=' | '>=';
+type AssertionOperator =
+  | 'exist'
+  | '='
+  | '!='
+  | '<'
+  | '>'
+  | '<='
+  | '>='
+  | 'contains'
+  | 'does not contain';
 type Assertion = {
   item: string;
   operator: AssertionOperator;
   value: string; //if operator exist then expects empty string
 };
 
-export const CONFIG_SIGNING_KEY = '0x02022'; // secp256k1 key
-
 export type NotarizationConfig = {
   EXPECTED_PCRS: {
     [key: string]: string;
   };
-  SIGNATURE_PROVIDERS: `0x${string}`; // secp256k1 signature of the stringified PROVIDERS object to avoid any tampering. Signed by CONFIG_SIGNING_KEY;
   PROVIDERS: Array<{
     id: string;
     url: string;
@@ -43,13 +49,13 @@ export type NotarizationConfig = {
     title: string;
     description: string;
     responseSelector: string[]; // regex to extract elements from the response
+    responseTransformations: string[]; // transformations to apply to the response before making assertions
     assertions: Assertion[]; // assertions that will be made for element selected, in same order as in response selector
     icon: string;
   }>;
 };
 
 // const CONFIG_EXAMPLE: Config = {
-//   SIGNATURE_PROVIDERS: '0x304502210089f4528b2ab1e4cc',
 //   EXPECTED_PCRS: {
 //     '1': 'A0OwVs2Ehcp4kN3YM0dteEYK7SqhYVSOTia+3zIXJmliV9Yj6IBfP2BZRrPYsMaq',
 //     '2': 'mfIvNWlBpHcMpqXGm+xkpSxBYrFGMvRrXXy0HDhpGR1Wh5cIOauUyapKk4xmajFs',

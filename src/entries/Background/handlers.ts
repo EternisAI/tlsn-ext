@@ -124,38 +124,36 @@ export const handleNotarization = (
       { Host: hostname },
     );
 
-    if (req.type !== 'xmlhttprequest' && req.type !== 'main_frame') return;
-
-    if (!req.url.includes('dummyjson.com')) {
-      return;
+    if (req.type === 'xmlhttprequest' || req.type === 'main_frame') {
+      if (req.url.includes('dummyjson.com')) {
+        fetch(details.url, {
+          headers,
+          method: req.method,
+          body: req.requestBody,
+        })
+          .then((response) => {
+            if (response.status === details.statusCode) {
+              return response.text();
+            }
+            return null;
+          })
+          .then((body) => {
+            if (!body) return;
+            const existing = cache.get<RequestLog>(requestId);
+            if (!existing) return;
+            cache.set(requestId, {
+              ...existing,
+              responseBody: body,
+            });
+          })
+          .catch((error) => {
+            console.error(
+              'Error fetching response body from replied request:',
+              error,
+            );
+          });
+      }
     }
-
-    fetch(details.url, {
-      headers,
-      method: req.method,
-      body: req.requestBody,
-    })
-      .then((response) => {
-        if (response.status === details.statusCode) {
-          return response.text();
-        }
-        return null;
-      })
-      .then((body) => {
-        if (!body) return;
-        const existing = cache.get<RequestLog>(requestId);
-        if (!existing) return;
-        cache.set(requestId, {
-          ...existing,
-          responseBody: body,
-        });
-      })
-      .catch((error) => {
-        console.error(
-          'Error fetching response body from replied request:',
-          error,
-        );
-      });
 
     const bookmarkManager = new BookmarkManager();
     const bookmark = await bookmarkManager.findBookmark(url, method, type);

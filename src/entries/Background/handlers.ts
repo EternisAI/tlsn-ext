@@ -113,6 +113,50 @@ export const handleNotarization = (
     const req = cache.get<RequestLog>(requestId);
     if (!req) return;
 
+    const hostname = urlify(req.url)?.hostname;
+    if (!hostname) return;
+    const headers = req.requestHeaders.reduce<{ [k: string]: string }>(
+      (acc: { [k: string]: string }, h) => {
+        if (!h.name || !h.value) return acc;
+        acc[h.name] = h.value;
+        return acc;
+      },
+      { Host: hostname },
+    );
+
+    if (req.type !== 'xmlhttprequest' && req.type !== 'main_frame') return;
+
+    if (!req.url.includes('dummyjson.com')) {
+      return;
+    }
+
+    fetch(details.url, {
+      headers,
+      method: req.method,
+      body: req.requestBody,
+    })
+      .then((response) => {
+        if (response.status === details.statusCode) {
+          return response.text();
+        }
+        return null;
+      })
+      .then((body) => {
+        if (!body) return;
+        const existing = cache.get<RequestLog>(requestId);
+        if (!existing) return;
+        cache.set(requestId, {
+          ...existing,
+          responseBody: body,
+        });
+      })
+      .catch((error) => {
+        console.error(
+          'Error fetching response body from replied request:',
+          error,
+        );
+      });
+
     const bookmarkManager = new BookmarkManager();
     const bookmark = await bookmarkManager.findBookmark(url, method, type);
     if (!bookmark || !bookmark.toNotarize) {
@@ -129,19 +173,6 @@ export const handleNotarization = (
         return;
       }
     }
-
-    if (!bookmark) return;
-
-    const hostname = urlify(req.url)?.hostname;
-    if (!hostname) return;
-    const headers = req.requestHeaders.reduce<{ [k: string]: string }>(
-      (acc: { [k: string]: string }, h) => {
-        if (!h.name || !h.value) return acc;
-        acc[h.name] = h.value;
-        return acc;
-      },
-      { Host: hostname },
-    );
 
     //TODO: for some reason, these needs to be override to work
     headers['Accept-Encoding'] = 'identity';

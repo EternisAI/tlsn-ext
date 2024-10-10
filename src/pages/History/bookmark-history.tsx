@@ -54,7 +54,12 @@ export default function BookmarkHistory(): ReactElement {
     fetchBookmarks();
   }, [id]);
 
-  const history = useHistoryOrder(undefined, bookmark?.url);
+  const history = useHistoryOrder(
+    undefined,
+    undefined,
+    bookmark?.urlRegex?.toString(),
+  );
+  console.log('history', history);
 
   const allHistory = useAllRequestHistory();
   const clearHistory = useCallback(async () => {

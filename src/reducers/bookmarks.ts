@@ -8,7 +8,7 @@ export type Bookmark = {
   host?: string;
   default?: boolean;
   requestId?: string;
-  urlRegex: RegExp;
+  urlRegex: string;
   targetUrl: string;
   method: string;
   type: string;
@@ -98,9 +98,9 @@ export class BookmarkManager {
     const bookmarks = await this.getBookmarks();
     return (
       bookmarks.find((bookmark) => {
-        bookmark.urlRegex = new RegExp(bookmark.urlRegex);
+        const regex = new RegExp(bookmark.urlRegex);
         const result =
-          bookmark.urlRegex.test(url) &&
+          regex.test(url) &&
           bookmark.method === method &&
           bookmark.type === type;
         return result;
@@ -183,13 +183,10 @@ export class BookmarkManager {
   async convertRequestToBookmark(request: RequestHistory) {
     const currentTabInfo = await this.getCurrentTabInfo();
 
-    const cache = getCacheByTabId(currentTabInfo?.id || 0);
-
     const bookmark: Bookmark = {
       requestId: request.id,
       id: await sha256(request?.url || ''),
-      url: request?.url || '',
-      urlRegex: new RegExp(this.urlToRegex(request?.url || '')), // this conversion should be improved
+      urlRegex: new RegExp(this.urlToRegex(request?.url || '')).toString(), // this conversion should be improved
       targetUrl: currentTabInfo?.url || '',
       method: request?.method || '',
       type: request?.type || '',
